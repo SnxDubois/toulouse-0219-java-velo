@@ -29,6 +29,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Location mLocation;
     static ArrayList<Station> stations = new ArrayList<>();
     LocationManager mLocationManager = null;
+    static LatLng userLocation;
 
 
     @Override
@@ -63,6 +64,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.addMarker(new MarkerOptions().position(locateStations.get(index)).title(""));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(locateStations.get(index)));
         }
+        checkPermission();
+        googleMap.setMyLocationEnabled(true);
     }
 
 
@@ -111,7 +114,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LocationListener locationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
             // TODO : effectuer une action ici !
-            Toast.makeText(MapsActivity.this, location.toString(), Toast.LENGTH_LONG).show();
+            userLocation = new LatLng(location.getLatitude(), location.getLongitude());
+            System.out.println(userLocation);
         }
 
         public void onStatusChanged(String provider, int status, Bundle extras) {}
