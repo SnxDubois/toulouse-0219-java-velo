@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        TextView tvHello = findViewById(R.id.tvHello);
+        TextView tvHello = findViewById(R.id.textView);
         try {
             JSONArray root = new JSONArray(json);
             for(int i = 0 ; i < root.length() ; i++){

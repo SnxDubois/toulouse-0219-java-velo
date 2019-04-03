@@ -7,7 +7,7 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/tvHello"
+        android:id="@+id/textView"
         android:layout_width="215dp"
         android:layout_height="332dp"
         app:layout_constraintBottom_toBottomOf="parent"
