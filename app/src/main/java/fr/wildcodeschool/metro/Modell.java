@@ -1,5 +1,11 @@
 package fr.wildcodeschool.metro;
 import android.content.Context;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,6 +15,7 @@ import java.util.ArrayList;
 
 public class Modell {
     static ArrayList<Station> stations = new ArrayList<>();
+    private static GoogleMap mMap;
 
 
     public static ArrayList<Station> extractStation(Context context){
@@ -29,18 +36,16 @@ public class Modell {
                 JSONObject parcVelo = (JSONObject) root.get(i);
                 int StationNumber = (int) parcVelo.get("number");
                 String StationName = (String) parcVelo.get("name");
-                //tvHello.append(name.toString());
-                String StationAdress = (String) parcVelo.get("adress");
+                String StationAddress = (String) parcVelo.get("address");
                 double StationLatitude = (double) parcVelo.get("latitude");
                 double StationLongitude = (double) parcVelo.get("longitude");
-                Station station = new Station (StationNumber,StationName,StationAdress,StationLatitude,StationLongitude);
+                Station station = new Station (StationNumber,StationName,StationAddress,StationLatitude,StationLongitude);
                 stations.add(station);
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
     return stations;
     }
-
-
 }

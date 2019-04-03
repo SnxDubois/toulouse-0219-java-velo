@@ -13,20 +13,17 @@ import android.os.IBinder;
 import android.support.v4.content.ContextCompat;
 
 public class GPSTracker extends Service implements LocationListener {
-
     private final Context context;
-
     boolean isGPSEnabled = false;
     boolean isNetworkEnabled = false;
     boolean canGetLocation = false;
-
     Location location;
     protected LocationManager locationManager;
 
     public GPSTracker(Context context){
         this.context=context;
-
     }
+
 
     public Location getLocation(){
         try{
@@ -65,21 +62,22 @@ public class GPSTracker extends Service implements LocationListener {
         return location;
     }
 
-    public void onLocationChanged(Location location){
 
+    public void onLocationChanged(Location location){
     }
+
 
     public void onStatusChanged(String Provider, int status, Bundle extras) {
-
     }
+
 
     public void onProviderEnabled(String Provider) {
-
     }
+
 
     public void onProviderDisabled(String Provider) {
-
     }
+
 
     public IBinder onBind(Intent arg0) {
         return null;
