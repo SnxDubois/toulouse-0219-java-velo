@@ -11,6 +11,9 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -38,14 +41,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mLocation = gpsTracker.getLocation();
 
 
-        Button switchButton = findViewById(R.id.switch1);
-        switchButton.setOnClickListener(new View.OnClickListener() {
+        Switch switchButton = findViewById(R.id.switch1);
+        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Intent goListStationAcitvity = new Intent(MapsActivity.this,ListStations.class);
                 startActivity(goListStationAcitvity);
             }
         });
+
         checkPermission();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
