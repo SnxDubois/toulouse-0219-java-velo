@@ -1,17 +1,11 @@
 package fr.wildcodeschool.metro;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class StationAdapter extends ArrayAdapter<Station> {
@@ -32,7 +26,7 @@ public class StationAdapter extends ArrayAdapter<Station> {
         TextView stationNumber = convertView.findViewById(R.id.textView2);
         TextView stationAddress = convertView.findViewById(R.id.textView3);
         stationName.setText(stationItem.getStationName());
-        stationNumber.setText(stationItem.getStationNumber());
+        stationNumber.setText(Integer.toString(stationItem.getStationNumber()));
         stationAddress.setText(stationItem.getStationAddress());
         return convertView;
     }
