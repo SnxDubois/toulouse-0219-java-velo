@@ -1,26 +1,20 @@
 package fr.wildcodeschool.metro;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import java.util.ArrayList;
-
 import static fr.wildcodeschool.metro.Modell.extractStation;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -70,23 +64,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     public void checkPermission() {
-        // vérification de l'autorisation d'accéder à la position GPS
-
         if (ContextCompat.checkSelfPermission(MapsActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-
             // l'autorisation n'est pas acceptée
-
             if (ActivityCompat.shouldShowRequestPermissionRationale(MapsActivity.this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
-
                 // l'autorisation a été refusée précédemment, on peut prévenir l'utilisateur ici
-
             } else {
-
                 // l'autorisation n'a jamais été réclamée, on la demande à l'utilisateur
-
                 ActivityCompat.requestPermissions(MapsActivity.this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         100);

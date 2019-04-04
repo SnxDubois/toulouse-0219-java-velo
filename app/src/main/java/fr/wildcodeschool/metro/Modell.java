@@ -1,5 +1,9 @@
 package fr.wildcodeschool.metro;
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -45,10 +49,6 @@ public class Modell {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     return stations;
     }
-
-
-
 }

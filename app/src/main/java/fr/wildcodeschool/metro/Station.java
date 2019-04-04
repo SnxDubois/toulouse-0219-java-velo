@@ -2,63 +2,64 @@ package fr.wildcodeschool.metro;
 
 public class Station {
 
-    int StationNumber;
-    String StationName;
-    String StationAddress;
-    double StationLatitude;
-    double StationLongitude;
+    int stationNumber;
+    String stationName;
+    String stationAddress;
+    double stationLatitude;
+    double stationLongitude;
 
 
     public Station(int stationNumber, String stationName, String stationAddress, double stationLatitude, double stationLongitude) {
-        this.StationNumber = stationNumber;
-        this.StationName = stationName;
-        this.StationAddress = stationAddress;
-        this.StationLatitude = stationLatitude;
-        this.StationLongitude = stationLongitude;
+        this.stationNumber = stationNumber;
+        this.stationName = stationName;
+        this.stationAddress = stationAddress;
+        this.stationLatitude = stationLatitude;
+        this.stationLongitude = stationLongitude;
     }
 
     public int getStationNumber() {
-        return StationNumber;
+        return stationNumber;
     }
 
 
     public String getStationName() {
-        return StationName;
+        return stationName;
     }
 
 
 
     public double getStationLatitude() {
-        return StationLatitude;
+        return stationLatitude;
     }
 
     public double getStationLongitude() {
-        return StationLongitude;
+        return stationLongitude;
     }
 
     public void setStationNumber(int stationNumber) {
-        StationNumber = stationNumber;
+
+        stationNumber = stationNumber;
     }
 
     public void setStationName(String stationName) {
-        StationName = stationName;
+        stationName = stationName;
     }
 
 
 
     public void setStationLatitude(double stationLatitude) {
-        StationLatitude = stationLatitude;
+        stationLatitude = stationLatitude;
     }
 
     public void setStationLongitude(double stationLongitude) {
-        StationLongitude = stationLongitude;
+        stationLongitude = stationLongitude;
     }
 
     public String getStationAddress() {
-        return StationAddress;
+        return stationAddress;
     }
 
     public void setStationAddress(String stationAddress) {
-        StationAddress = stationAddress;
+        stationAddress = stationAddress;
     }
 }
