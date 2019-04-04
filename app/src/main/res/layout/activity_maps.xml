@@ -17,8 +17,10 @@
         android:layout_marginBottom="60dp"
         map:layout_constraintBottom_toBottomOf="parent"
         map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintHorizontal_bias="0.0"
         map:layout_constraintStart_toStartOf="parent"
-        map:layout_constraintTop_toTopOf="parent" />
+        map:layout_constraintTop_toTopOf="parent"
+        map:layout_constraintVertical_bias="0.0" />
 
     <Switch
         android:id="@+id/switch1"
@@ -35,6 +37,24 @@
         map:layout_constraintStart_toStartOf="parent"
         map:layout_constraintTop_toBottomOf="@+id/map"
         map:layout_constraintVertical_bias="0.529"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floatingActionButton2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:clickable="true"
+        map:layout_constraintBottom_toBottomOf="parent"
+        map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintHorizontal_bias="0.086"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintTop_toTopOf="parent"
+        map:layout_constraintVertical_bias="0.031" />
 
 </android.support.constraint.ConstraintLayout>
 
