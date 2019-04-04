@@ -1,16 +1,18 @@
 package fr.wildcodeschool.metro;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.view.View;
-import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -26,8 +28,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GPSTracker gpsTracker;
     private Location mLocation;
     static ArrayList<Station> stations = new ArrayList<>();
-    LocationManager mLocationManager = null;
-    static LatLng userLocation;
 
 
     @Override
@@ -38,16 +38,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mLocation = gpsTracker.getLocation();
 
 
-        Button switchButton = findViewById(R.id.switch1);
-        switchButton.setOnClickListener(new View.OnClickListener() {
+
+        Switch switchButton = findViewById(R.id.switch1);
+        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Intent goListStationAcitvity = new Intent(MapsActivity.this,ListStations.class);
                 startActivity(goListStationAcitvity);
+
             }
         });
-        checkPermission();
-
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -58,11 +58,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         createStationMarker();
+        LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 
 
         checkPermission();
+        LocationListener locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 12.0f));
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
         googleMap.setMyLocationEnabled(true);
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+
     }
 
     public void createStationMarker(){
@@ -72,7 +95,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).title(station.getStationAddress())));
         }
     }
-
 
     public void checkPermission() {
         if (ContextCompat.checkSelfPermission(MapsActivity.this,

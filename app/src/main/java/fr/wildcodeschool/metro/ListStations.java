@@ -5,7 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.Switch;
 
 import java.util.ArrayList;
 
@@ -25,13 +27,16 @@ public class ListStations extends AppCompatActivity {
         ListView listView = findViewById(R.id.listView);
         StationAdapter stationAdapter = new StationAdapter(ListStations.this,stations);
         listView.setAdapter(stationAdapter);
-        Button switchButton = findViewById(R.id.switch1);
-        switchButton.setOnClickListener(new View.OnClickListener() {
+        Switch switchButton = findViewById(R.id.switch1);
+        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Intent goMapsActivity = new Intent(ListStations.this,MapsActivity.class);
                 startActivity(goMapsActivity);
             }
         });
     }
 }
+
+
+
