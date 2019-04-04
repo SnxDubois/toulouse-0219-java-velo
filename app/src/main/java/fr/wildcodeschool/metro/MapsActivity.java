@@ -66,7 +66,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         checkPermission();
         googleMap.setMyLocationEnabled(true);
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+
     }
 
     public void createStationMarker(){
