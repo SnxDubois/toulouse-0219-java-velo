@@ -18,11 +18,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 public class Helper {
-    static ArrayList<Station> stations = new ArrayList<>();
-    private static GoogleMap mMap;
-
 
     public static ArrayList<Station> extractStation(Context context){
+        ArrayList<Station> stations = new ArrayList<>();
         String json = null;
         try {
             InputStream is = context.getAssets().open("velos.json");

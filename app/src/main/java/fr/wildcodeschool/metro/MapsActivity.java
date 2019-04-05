@@ -1,24 +1,22 @@
 package fr.wildcodeschool.metro;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -31,54 +29,27 @@ import static fr.wildcodeschool.metro.Helper.extractStation;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
-    private GPSTracker gpsTracker;
-    private Location mLocation;
-    static ArrayList<Station> stations = new ArrayList<>();
-
+    Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        gpsTracker = new GPSTracker(getApplicationContext());
-        mLocation = gpsTracker.getLocation();
-
-
-
+        FloatingActionButton button = findViewById(R.id.floatingActionButton2);
         Switch switchButton = findViewById(R.id.switch1);
+
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Intent goListStationAcitvity = new Intent(MapsActivity.this,ListStations.class);
+                Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStations.class);
                 startActivity(goListStationAcitvity);
-
             }
         });
-        FloatingActionButton button = findViewById(R.id.floatingActionButton2);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setTitle("Settings");
-        builder.setMessage("I accept to read resources on every step!");
-        builder.setNegativeButton("CANCEL", null);
-        builder.setPositiveButton("ACCEPT",new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                Toast.makeText(MapsActivity.this, "Settings Updated!",Toast.LENGTH_LONG).show();
-            }
-        });
-
-        final AlertDialog dialog = builder.create();
-
+        checkPermission();
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
-                dialog.show();
-
-
+                displaySettings();
             }
         });
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -86,46 +57,42 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         createStationMarker();
         LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 
-
         checkPermission();
-        LocationListener locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 12.0f));
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-        };
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
         googleMap.setMyLocationEnabled(true);
-
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
     }
 
-    public void createStationMarker(){
-        stations = extractStation(MapsActivity.this);
-        for(Station station : stations) {
-            LatLng newStation = new LatLng(station.getStationLatitude(), station.getStationLongitude());
-            Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).title(station.getStationAddress())));
+    public void displaySettings(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Settings");
+
+        String[] distance = {"3km", "2km", "1km", "500m", "200m"};
+        builder.setItems(distance, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                }
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+    public void createStationMarker() {
+        ArrayList<Station> stations = extractStation(MapsActivity.this);
+        for (Station station : stations) {
+            LatLng newStation = new LatLng(station.getLatitude(), station.getLongitude());
+            Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).title(station.getAddress())));
         }
     }
 

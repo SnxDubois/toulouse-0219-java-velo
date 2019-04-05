@@ -2,68 +2,60 @@ package fr.wildcodeschool.metro;
 
 public class Station {
 
-    int stationNumber;
-    String stationName;
-    String stationAddress;
-    double stationLatitude;
-    double stationLongitude;
+    private int number;
+    private String name;
+    private String address;
+    private double latitude;
+    private double longitude;
 
-
-    public Station(int stationNumber, String stationName, String stationAddress, double stationLatitude, double stationLongitude) {
-        this.stationNumber = stationNumber;
-        this.stationName = stationName;
-        this.stationAddress = stationAddress;
-        this.stationLatitude = stationLatitude;
-        this.stationLongitude = stationLongitude;
+    public Station(int number, String name, String address, double latitude, double longitude) {
+        this.number = number;
+        this.name = name;
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
 
-    public int getStationNumber() {
-        return stationNumber;
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        number = number;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        name = name;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        longitude = longitude;
     }
 
 
-    public String getStationName() {
-        return stationName;
+    public String getAddress() {
+        return address;
     }
 
 
-    public double getStationLatitude() {
-        return stationLatitude;
-    }
-
-
-    public double getStationLongitude() {
-        return stationLongitude;
-    }
-
-
-    public void setStationNumber(int stationNumber) {
-        stationNumber = stationNumber;
-    }
-
-
-    public void setStationName(String stationName) {
-        stationName = stationName;
-    }
-
-
-    public void setStationLatitude(double stationLatitude) {
-        stationLatitude = stationLatitude;
-    }
-
-
-    public void setStationLongitude(double stationLongitude) {
-        stationLongitude = stationLongitude;
-    }
-
-
-    public String getStationAddress() {
-        return stationAddress;
-    }
-
-
-    public void setStationAddress(String stationAddress) {
-        stationAddress = stationAddress;
+    public void setAddress(String address) {
+        address = address;
     }
 }
