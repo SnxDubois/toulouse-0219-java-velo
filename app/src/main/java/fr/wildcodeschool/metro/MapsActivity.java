@@ -3,49 +3,37 @@ package fr.wildcodeschool.metro;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationManager;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.view.View;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 import java.util.ArrayList;
-import static fr.wildcodeschool.metro.Modell.extractStation;
+
+import static fr.wildcodeschool.metro.Helper.extractStation;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
-    private GPSTracker gpsTracker;
-    private Location mLocation;
-    static ArrayList<Station> stations = new ArrayList<>();
-    LocationManager mLocationManager = null;
-    static LatLng userLocation;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        gpsTracker = new GPSTracker(getApplicationContext());
-        mLocation = gpsTracker.getLocation();
-
 
         Switch switchButton = findViewById(R.id.switch1);
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Intent goListStationAcitvity = new Intent(MapsActivity.this,ListStations.class);
+                Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStations.class);
                 startActivity(goListStationAcitvity);
             }
         });
@@ -57,26 +45,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         createStationMarker();
 
-
         checkPermission();
         googleMap.setMyLocationEnabled(true);
-
     }
 
-    public void createStationMarker(){
-        stations = extractStation(MapsActivity.this);
-        for(Station station : stations) {
-            LatLng newStation = new LatLng(station.getStationLatitude(), station.getStationLongitude());
-            Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).title(station.getStationAddress())));
+    public void createStationMarker() {
+        ArrayList<Station> stations = extractStation(MapsActivity.this);
+        for (Station station : stations) {
+            LatLng newStation = new LatLng(station.getLatitude(), station.getLongitude());
+            Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).title(station.getAddress())));
         }
     }
-
 
     public void checkPermission() {
         if (ContextCompat.checkSelfPermission(MapsActivity.this,
@@ -94,6 +78,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
-
 }
 

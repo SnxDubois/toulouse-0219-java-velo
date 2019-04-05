@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Metro</string>
+    <string name="app_name">LibertyBike</string>
     <string name="title_activity_maps">Map</string>
     <string name="textview">Stations</string>
 </resources>
