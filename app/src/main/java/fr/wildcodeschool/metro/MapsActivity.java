@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
@@ -29,7 +30,7 @@ import static fr.wildcodeschool.metro.Helper.extractStation;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
-    Dialog dialog;
+    boolean dropOff;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,22 +73,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Settings");
 
-        String[] distance = {"3km", "2km", "1km", "500m", "200m"};
-        builder.setItems(distance, new DialogInterface.OnClickListener() {
+        String[] animals = {"1km", "800m", "600m", "300m", "100m"};
+        boolean[] checkedItems = {false, false, false, true, false};
+        builder.setMultiChoiceItems(animals, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                // user checked or unchecked a box
+            }
+        });
+        View switchButtonView = LayoutInflater.from(this).inflate(R.layout.activity_toggle,null);
+        builder.setView(switchButtonView);
+        Switch switchButton = findViewById(R.id.switch2);
+        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                dropOff = isChecked ? true : false;
+                if (dropOff) {
+                    Toast.makeText(MapsActivity.this, "Take a bike",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MapsActivity.this, "Drop off a bike", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        builder.setNegativeButton("CANCEL", null);
+        builder.setPositiveButton("OK",new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case 0:
-                    case 1:
-                    case 2:
-                    case 3:
-                    case 4:
-                }
+
+                Toast.makeText(MapsActivity.this, "Settings applied!",Toast.LENGTH_LONG).show();
             }
         });
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
     public void createStationMarker() {
         ArrayList<Station> stations = extractStation(MapsActivity.this);
         for (Station station : stations) {
@@ -112,6 +131,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
-
 }
 
