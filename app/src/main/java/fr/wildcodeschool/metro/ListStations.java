@@ -3,15 +3,13 @@ package fr.wildcodeschool.metro;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
 
 import java.util.ArrayList;
 
-import static fr.wildcodeschool.metro.Modell.extractStation;
+import static fr.wildcodeschool.metro.Helper.extractStation;
 
 public class ListStations extends AppCompatActivity {
 

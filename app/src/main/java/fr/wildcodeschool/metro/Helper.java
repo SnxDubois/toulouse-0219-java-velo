@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-public class Modell {
+public class Helper {
     static ArrayList<Station> stations = new ArrayList<>();
     private static GoogleMap mMap;
 
