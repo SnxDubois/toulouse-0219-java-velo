@@ -1,7 +1,6 @@
 package fr.wildcodeschool.metro;
 
 import android.Manifest;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -30,7 +29,8 @@ import static fr.wildcodeschool.metro.Helper.extractStation;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
-    boolean dropOff;
+    boolean dropOff = true;
+    int zoom = 15;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +38,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         FloatingActionButton button = findViewById(R.id.floatingActionButton2);
         Switch switchButton = findViewById(R.id.switch1);
+
 
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -53,6 +54,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 displaySettings();
             }
         });
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -66,24 +68,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         checkPermission();
         googleMap.setMyLocationEnabled(true);
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom));
     }
 
     public void displaySettings(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Settings");
+        String[] animals = {"1km", "700m", "500m", "200m", "100m"};
+        final boolean[] checkedItems = {false, false, false, true, false};
+        View switchButtonView = LayoutInflater.from(this).inflate(R.layout.activity_toggle,null);
+        Switch switchButton = switchButtonView.findViewById(R.id.switch2);
 
-        String[] animals = {"1km", "800m", "600m", "300m", "100m"};
-        boolean[] checkedItems = {false, false, false, true, false};
+        builder.setTitle("Settings");
         builder.setMultiChoiceItems(animals, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                // user checked or unchecked a box
+                zoom = checkedItems[0]  ? 16 : checkedItems[1] ? 17 : checkedItems[2] ? 18 : checkedItems[3] ? 19 :  20;
+
             }
         });
-        View switchButtonView = LayoutInflater.from(this).inflate(R.layout.activity_toggle,null);
         builder.setView(switchButtonView);
-        Switch switchButton = findViewById(R.id.switch2);
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -99,7 +102,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         builder.setPositiveButton("OK",new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom));
                 Toast.makeText(MapsActivity.this, "Settings applied!",Toast.LENGTH_LONG).show();
             }
         });
@@ -108,7 +111,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void createStationMarker() {
-        ArrayList<Station> stations = extractStation(MapsActivity.this);
+        ArrayList<Station> stations = extractStation(MapsActivity.this,dropOff,zoom);
         for (Station station : stations) {
             LatLng newStation = new LatLng(station.getLatitude(), station.getLongitude());
             Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).title(station.getAddress())));

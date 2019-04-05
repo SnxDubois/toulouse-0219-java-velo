@@ -12,13 +12,15 @@ import java.util.ArrayList;
 import static fr.wildcodeschool.metro.Helper.extractStation;
 
 public class ListStations extends AppCompatActivity {
+    boolean dropOff = true;
+    int zoom = 15;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_stations);
 
-        ArrayList<Station> stations = extractStation(ListStations.this);
+        ArrayList<Station> stations = extractStation(ListStations.this, dropOff, zoom);
         ListView listView = findViewById(R.id.listView);
         StationAdapter stationAdapter = new StationAdapter(ListStations.this, stations);
         listView.setAdapter(stationAdapter);
