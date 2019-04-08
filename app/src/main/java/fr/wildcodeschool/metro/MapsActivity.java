@@ -37,18 +37,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        FloatingActionButton button = findViewById(R.id.floatingActionButton2);
-        Switch switchButton = findViewById(R.id.switch1);
 
-        //TODO divide in fundtions
-        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStations.class);
-                startActivity(goListStationAcitvity);
-            }
-        });
+        switchButton();
         checkPermission();
+        floatingButton();
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+    }
+
+    private void floatingButton(){
+        FloatingActionButton button = findViewById(R.id.floatingActionButton2);
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -56,9 +57,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+    }
+
+    private void switchButton(){
+        Switch switchButton = findViewById(R.id.switch1);
+
+        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStations.class);
+                startActivity(goListStationAcitvity);
+            }
+        });
     }
 
     @Override
@@ -72,7 +82,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom));
     }
 
-    public void displaySettings(){
+    private void displaySettings(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         String[] animals = {"1km", "700m", "500m", "200m", "100m"};
         final boolean[] checkedItems = {false, false, false, true, false};
@@ -111,7 +121,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         dialog.show();
     }
 
-    public void createStationMarker() {
+    private void createStationMarker() {
         ArrayList<Station> stations = extractStation(MapsActivity.this,dropOff,zoom);
         for (Station station : stations) {
             LatLng newStation = new LatLng(station.getLatitude(), station.getLongitude());
@@ -119,7 +129,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public void checkPermission() {
+    private void checkPermission() {
         if (ContextCompat.checkSelfPermission(MapsActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
