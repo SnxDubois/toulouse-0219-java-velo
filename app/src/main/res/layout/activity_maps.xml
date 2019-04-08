@@ -51,10 +51,10 @@
         android:clickable="true"
         map:layout_constraintBottom_toBottomOf="parent"
         map:layout_constraintEnd_toEndOf="parent"
-        map:layout_constraintHorizontal_bias="0.086"
+        map:layout_constraintHorizontal_bias="0.89"
         map:layout_constraintStart_toStartOf="parent"
         map:layout_constraintTop_toTopOf="parent"
-        map:layout_constraintVertical_bias="0.031" />
+        map:layout_constraintVertical_bias="0.854" />
 
 </android.support.constraint.ConstraintLayout>
 

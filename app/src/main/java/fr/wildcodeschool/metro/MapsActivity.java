@@ -1,7 +1,6 @@
 package fr.wildcodeschool.metro;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -45,7 +44,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         switchButton();
         checkPermission();
         floatingButton();
-
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -75,8 +73,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    @SuppressLint("MissingPermission")
-    public void initLocation() {
+    private void initLocation() {
 
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
@@ -103,7 +100,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         checkPermission();
         googleMap.setMyLocationEnabled(true);
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom));
     }
 
     private void displaySettings(){
