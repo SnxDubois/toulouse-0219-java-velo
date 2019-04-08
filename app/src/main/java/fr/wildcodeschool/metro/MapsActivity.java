@@ -1,10 +1,13 @@
 package fr.wildcodeschool.metro;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -32,6 +35,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     boolean dropOff = true;
     int zoom = 15;
+    LocationManager mLocationManager = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +73,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 startActivity(goListStationAcitvity);
             }
         });
+    }
+
+    @SuppressLint("MissingPermission")
+    public void initLocation() {
+
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()),zoom));
+                mMap.getUiSettings().setZoomControlsEnabled(true);
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            public void onProviderEnabled(String provider) {}
+
+            public void onProviderDisabled(String provider) {}
+        };
+
+        mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
     }
 
     @Override
@@ -134,6 +158,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             // l'autorisation n'est pas acceptée
+            initLocation();
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(MapsActivity.this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -157,6 +182,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
+                    initLocation();
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
