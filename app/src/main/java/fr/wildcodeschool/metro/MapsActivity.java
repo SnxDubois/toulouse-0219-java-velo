@@ -39,7 +39,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         FloatingActionButton button = findViewById(R.id.floatingActionButton2);
         Switch switchButton = findViewById(R.id.switch1);
 
-
+        //TODO divide in fundtions
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
