@@ -33,12 +33,10 @@ public class Helper {
                                 JSONObject bikeStation = (JSONObject) listStation.get(i);
                                 int availableBike = (int) bikeStation.get("available_bikes");
                                 int availabeStands = (int) bikeStation.get("available_bike_stands");
-                                if (bikeStation.get("status").equals("OPEN") && availableBike!= 0 && dropoff) {
+                                if ((bikeStation.get("status").equals("OPEN") && availableBike!= 0 && dropoff) || (bikeStation.get("status").equals("OPEN") && availabeStands!= 0 && !dropoff)) {
                                     stations.add(extractOneSation( bikeStation,  availableBike, availabeStands));
                                 }
-                                if (bikeStation.get("status").equals("OPEN") && availabeStands!= 0 && !dropoff) {
-                                    stations.add(extractOneSation( bikeStation,  availableBike, availabeStands));
-                                }
+
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

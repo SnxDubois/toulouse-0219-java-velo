@@ -85,6 +85,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onLocationChanged(Location location) {
 
                 mMap.setMyLocationEnabled(true);
+                createStationMarker(location);
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -104,9 +105,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        createStationMarker();
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         checkPermission();
     }
 
@@ -149,7 +149,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         dialog.show();
     }
 
-    private void createStationMarker() {
+    private void createStationMarker(Location location) {
 
         extractStation(MapsActivity.this, dropOff, zoom, new Helper.BikeStationListener() {
             @Override
