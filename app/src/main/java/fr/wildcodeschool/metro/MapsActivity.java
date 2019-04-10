@@ -20,11 +20,11 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -43,7 +43,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_maps);
 
         switchButton();
@@ -152,12 +151,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void createStationMarker() {
+
         extractStation(MapsActivity.this, dropOff, zoom, new Helper.BikeStationListener() {
             @Override
             public void onResult(ArrayList<Station> stations) {
                 for (Station station : stations) {
                     LatLng newStation = new LatLng(station.getLatitude(), station.getLongitude());
-                    Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).title(station.getAddress())));
+                    Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)).title(station.getAddress()).snippet(station.getName())));
+                    marker.showInfoWindow();
+                    mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(MapsActivity.this));
                 }
             }
         });
