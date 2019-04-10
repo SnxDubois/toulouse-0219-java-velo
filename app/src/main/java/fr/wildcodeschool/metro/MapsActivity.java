@@ -83,8 +83,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LocationListener locationListener = new LocationListener() {
             @SuppressLint("MissingPermission")
             public void onLocationChanged(Location location) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), zoom));
-                mMap.getUiSettings().setZoomControlsEnabled(true);
+
                 mMap.setMyLocationEnabled(true);
             }
 
