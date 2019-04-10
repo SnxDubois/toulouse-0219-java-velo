@@ -24,6 +24,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -108,13 +109,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void displaySettings(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        String[] animals = {"1km", "700m", "500m", "200m", "100m"};
+        String[]/*TODO :modifier animals*/ animals = {"1km", "700m", "500m", "200m", "100m"};
         final boolean[] checkedItems = {false, false, false, true, false};
         View switchButtonView = LayoutInflater.from(this).inflate(R.layout.activity_toggle,null);
         Switch switchButton = switchButtonView.findViewById(R.id.switch2);
 
         builder.setTitle("Settings");
-        builder.setMultiChoiceItems(animals, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+        builder.setMultiChoiceItems(/*TODO*/animals, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
                 zoom = checkedItems[0]  ? 16 : checkedItems[1] ? 17 : checkedItems[2] ? 18 : checkedItems[3] ? 19 :  20;
@@ -128,6 +129,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 dropOff = isChecked ? true : false;
                 if (dropOff) {
                     Toast.makeText(MapsActivity.this, "Take a bike",Toast.LENGTH_SHORT).show();
+
                 } else {
                     Toast.makeText(MapsActivity.this, "Drop off a bike", Toast.LENGTH_SHORT).show();
                 }
@@ -149,7 +151,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ArrayList<Station> stations = extractStation(MapsActivity.this,dropOff,zoom);
         for (Station station : stations) {
             LatLng newStation = new LatLng(station.getLatitude(), station.getLongitude());
-            Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).title(station.getAddress())));
+            Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)).title(station.getAddress()).snippet(station.getName())));
+            marker.showInfoWindow();
+            mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(MapsActivity.this));
+
         }
     }
 
