@@ -24,9 +24,17 @@ public class StationAdapter extends ArrayAdapter<Station> {
         TextView stationName = convertView.findViewById(R.id.tvStationName);
         TextView stationNumber = convertView.findViewById(R.id.tvStationNumber);
         TextView stationAddress = convertView.findViewById(R.id.tvStationAddress);
+        TextView stationAvailableStands = convertView.findViewById(R.id.tvStands);
+        TextView stationAvailableBikes = convertView.findViewById(R.id.tvBikes);
+        TextView stationStatus = convertView.findViewById(R.id.tvStatus);
+        System.out.println(stationItem.getName());
         stationName.setText(stationItem.getName());
         stationNumber.setText(Integer.toString(stationItem.getNumber()));
         stationAddress.setText(stationItem.getAddress());
+        stationAvailableStands.setText(Integer.toString(stationItem.getAvailableStands()));
+        stationAvailableBikes.setText(Integer.toString(stationItem.getAvailableBikes()));
+        stationStatus.setText(stationItem.getStatus());
+
         return convertView;
     }
 }
