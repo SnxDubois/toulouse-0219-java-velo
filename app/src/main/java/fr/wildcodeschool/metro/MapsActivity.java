@@ -1,6 +1,7 @@
 package fr.wildcodeschool.metro;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -26,19 +28,32 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 import java.util.ArrayList;
+
 import static fr.wildcodeschool.metro.Helper.extractStation;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-    private static final int REQUEST_LOCATION = 2000 ;
-    private GoogleMap mMap;
-    boolean dropOff = true;
-    int zoom = 15;
-    LocationManager mLocationManager = null;
+    private static final int REQUEST_LOCATION = 2000;
+    private static GoogleMap mMap;
+    private static boolean dropOff = true;
+    private static int zoom = 15;
+    public static final String TAKE_BIKE = "Take a bike";
+    public static final String DROP_BIKE = "Drop off a bike";
+    public static final String CANCEL = "Cancel";
+    public static final String OK = "OK";
+    public static final String SETTING_APPLIED = "OK";
+    public static final String SETTING = "Settings";
+    public static final String PERIMETER1 = "1Km";
+    public static final String PERIMETER2 = "700m";
+    public static final String PERIMETER3 = "500m";
+    public static final String PERIMETER4 = "200m";
+    public static final String PERIMETER5 = "100m";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_maps);
 
         switchButton();
@@ -49,8 +64,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
-    private void floatingButton(){
-        FloatingActionButton button = findViewById(R.id.floatingActionButton2);
+    private void floatingButton() {
+        FloatingActionButton button = findViewById(R.id.buttonSettings);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +75,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    private void switchButton(){
+    private void switchButton() {
         Switch switchButton = findViewById(R.id.switch1);
 
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -72,20 +87,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    @SuppressLint("MissingPermission")
     private void initLocation() {
+        LocationManager mLocationManager = null;
 
         LocationListener locationListener = new LocationListener() {
+            @SuppressLint("MissingPermission")
             public void onLocationChanged(Location location) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()),zoom));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), zoom));
                 mMap.getUiSettings().setZoomControlsEnabled(true);
                 mMap.setMyLocationEnabled(true);
             }
 
-            public void onStatusChanged(String provider, int status, Bundle extras) {}
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
 
-            public void onProviderEnabled(String provider) {}
+            public void onProviderEnabled(String provider) {
+            }
 
-            public void onProviderDisabled(String provider) {}
+            public void onProviderDisabled(String provider) {
+            }
         };
 
         mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -96,23 +117,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         createStationMarker();
-        LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         checkPermission();
     }
 
-    private void displaySettings(){
+    private void displaySettings() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        String[] animals = {"1km", "700m", "500m", "200m", "100m"};
+        String[] perimeter = {PERIMETER1, PERIMETER2, PERIMETER3, PERIMETER4, PERIMETER5};
         final boolean[] checkedItems = {false, false, false, true, false};
-        View switchButtonView = LayoutInflater.from(this).inflate(R.layout.activity_toggle,null);
+        View switchButtonView = LayoutInflater.from(this).inflate(R.layout.activity_toggle, null);
         Switch switchButton = switchButtonView.findViewById(R.id.switch2);
 
-        builder.setTitle("Settings");
-        builder.setMultiChoiceItems(animals, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+        builder.setTitle(SETTING);
+        builder.setMultiChoiceItems(perimeter, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                zoom = checkedItems[0]  ? 16 : checkedItems[1] ? 17 : checkedItems[2] ? 18 : checkedItems[3] ? 19 :  20;
+                zoom = checkedItems[0] ? 16 : checkedItems[1] ? 17 : checkedItems[2] ? 18 : checkedItems[3] ? 19 : 20;
 
             }
         });
@@ -122,18 +143,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 dropOff = isChecked ? true : false;
                 if (dropOff) {
-                    Toast.makeText(MapsActivity.this, "Take a bike",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MapsActivity.this, TAKE_BIKE, Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(MapsActivity.this, "Drop off a bike", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MapsActivity.this, DROP_BIKE, Toast.LENGTH_SHORT).show();
                 }
             }
         });
-        builder.setNegativeButton("CANCEL", null);
-        builder.setPositiveButton("OK",new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(CANCEL, null);
+        builder.setPositiveButton(OK, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom));
-                Toast.makeText(MapsActivity.this, "Settings applied!",Toast.LENGTH_LONG).show();
+                Toast.makeText(MapsActivity.this, SETTING_APPLIED, Toast.LENGTH_LONG).show();
             }
         });
         AlertDialog dialog = builder.create();

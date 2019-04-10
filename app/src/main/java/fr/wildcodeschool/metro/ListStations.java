@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import static fr.wildcodeschool.metro.Helper.extractStation;
 
 public class ListStations extends AppCompatActivity {
-    boolean dropOff = true;
-    int zoom = 15;
+    private static boolean dropOff = true;
+    private static int zoom = 15;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
