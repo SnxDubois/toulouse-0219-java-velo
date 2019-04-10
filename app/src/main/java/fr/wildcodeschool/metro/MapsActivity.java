@@ -31,6 +31,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
+import static android.icu.text.DateTimePatternGenerator.PatternInfo.OK;
 import static fr.wildcodeschool.metro.Helper.extractStation;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -38,17 +39,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static GoogleMap mMap;
     private static boolean dropOff = true;
     private static int zoom = 15;
-    public static final String TAKE_BIKE = "Take a bike";
-    public static final String DROP_BIKE = "Drop off a bike";
-    public static final String CANCEL = "Cancel";
-    public static final String OK = "OK";
-    public static final String SETTING_APPLIED = "OK";
-    public static final String SETTING = "Settings";
-    public static final String PERIMETER1 = "1Km";
-    public static final String PERIMETER2 = "700m";
-    public static final String PERIMETER3 = "500m";
-    public static final String PERIMETER4 = "200m";
-    public static final String PERIMETER5 = "100m";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +79,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @SuppressLint("MissingPermission")
     private void initLocation() {
-        LocationManager mLocationManager = null;
+        LocationManager mLocationManager;
 
         LocationListener locationListener = new LocationListener() {
             @SuppressLint("MissingPermission")
@@ -124,12 +114,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void displaySettings() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        String[] perimeter = {PERIMETER1, PERIMETER2, PERIMETER3, PERIMETER4, PERIMETER5};
+        String[] perimeter = {getString(R.string.perimeter1), getString(R.string.perimeter2), getString(R.string.perimeter3), getString(R.string.perimeter4), getString(R.string.perimeter5)};
         final boolean[] checkedItems = {false, false, false, true, false};
         View switchButtonView = LayoutInflater.from(this).inflate(R.layout.activity_toggle, null);
         Switch switchButton = switchButtonView.findViewById(R.id.switch2);
 
-        builder.setTitle(SETTING);
+        builder.setTitle(R.string.settings);
         builder.setMultiChoiceItems(perimeter, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
@@ -143,18 +133,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 dropOff = isChecked ? true : false;
                 if (dropOff) {
-                    Toast.makeText(MapsActivity.this, TAKE_BIKE, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MapsActivity.this, getString(R.string.takeBike), Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(MapsActivity.this, DROP_BIKE, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MapsActivity.this, getString(R.string.dropBike), Toast.LENGTH_SHORT).show();
                 }
             }
         });
-        builder.setNegativeButton(CANCEL, null);
-        builder.setPositiveButton(OK, new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.cancel, null);
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom));
-                Toast.makeText(MapsActivity.this, SETTING_APPLIED, Toast.LENGTH_LONG).show();
+                Toast.makeText(MapsActivity.this, getString(R.string.appliedSettings), Toast.LENGTH_LONG).show();
             }
         });
         AlertDialog dialog = builder.create();

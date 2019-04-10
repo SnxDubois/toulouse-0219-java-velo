@@ -32,7 +32,7 @@ public class StationAdapter extends ArrayAdapter<Station> {
         stationNumber.setText(Integer.toString(stationItem.getNumber()));
         stationAddress.setText(stationItem.getAddress());
         stationAvailableStands.setText(Integer.toString(stationItem.getAvailableStands()));
-        stationAvailableBikes.setText(Integer.toString(stationItem.getAvailableBike()));
+        stationAvailableBikes.setText(Integer.toString(stationItem.getAvailableBikes()));
         stationStatus.setText(stationItem.getStatus());
 
         return convertView;

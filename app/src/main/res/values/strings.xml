@@ -2,4 +2,15 @@
     <string name="app_name">LibertyBike</string>
     <string name="title_activity_maps">Map</string>
     <string name="textview">Stations</string>
+    <string name="perimeter1">1km</string>
+    <string name="perimeter2">700m</string>
+    <string name="perimeter3">500m</string>
+    <string name="perimeter4">200m</string>
+    <string name="perimeter5">100m</string>
+    <string name="settings">Settings</string>
+    <string name="takeBike">take bike</string>
+    <string name="dropBike">drop off bike</string>
+    <string name="cancel">Cancel</string>
+    <string name="appliedSettings">Settings applied</string>
+    <string name="ok">OK</string>
 </resources>

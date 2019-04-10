@@ -7,18 +7,21 @@ public class Station {
     private String address;
     private double latitude;
     private double longitude;
+    private int stands;
+    private int availableBikes;
     private int availableStands;
-    private int availableBike;
+
     private String status;
 
-    public Station(int number, String name, String address, double latitude, double longitude, int availableStands, int availableBike, String  status) {
+    public Station(int number, String name, String address, double latitude, double longitude, int stands, int availableBike, int availableStands, String  status) {
         this.number = number;
         this.name = name;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.stands = stands;
+        this.availableBikes = availableBike;
         this.availableStands = availableStands;
-        this.availableBike = availableBike;
         this.status = status;
     }
 
@@ -66,21 +69,21 @@ public class Station {
     }
 
     public int getAvailableStands() {
-        return availableStands;
+        return stands;
     }
 
-    public int getAvailableBike() {
-        return availableBike;
+    public int getAvailableBikes() {
+        return availableBikes;
     }
 
 
 
     public void setAvailableStands(int availableStands) {
-        this.availableStands = availableStands;
+        this.stands = availableStands;
     }
 
-    public void setAvailableBike(int availableBike) {
-        this.availableBike = availableBike;
+    public void setAvailableBikes(int availableBike) {
+        this.availableBikes = availableBike;
     }
 
 
@@ -90,5 +93,13 @@ public class Station {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public int getStands() {
+        return stands;
+    }
+
+    public void setStands(int stands) {
+        this.stands = stands;
     }
 }

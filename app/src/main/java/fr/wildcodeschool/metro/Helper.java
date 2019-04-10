@@ -40,10 +40,11 @@ public class Helper {
                                 JSONObject position = (JSONObject) bikeStation.get("position");
                                 double latitude = (double) position.get("lat");
                                 double longitude = (double) position.get("lng");
-                                int availableStands = (int) bikeStation.get("available_bike_stands");
+                                int stands = (int) bikeStation.get("bike_stands");
+                                int availabeStands = (int) bikeStation.get("available_bike_stands");
                                 int availableBike = (int) bikeStation.get("available_bikes");
                                 String status = (String) bikeStation.get("status");
-                                Station station = new Station(number, name, address, latitude, longitude, availableStands, availableBike, status);
+                                Station station = new Station(number, name, address, latitude, longitude, stands, availableBike, availabeStands, status);
                                 stations.add(station);
 
                             }
