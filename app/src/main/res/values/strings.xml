@@ -13,4 +13,9 @@
     <string name="cancel">Cancel</string>
     <string name="appliedSettings">Settings applied</string>
     <string name="ok">OK</string>
+    <string name="compte_utilisateur">compte_utilisateur</string>
+    <string name="favoris">favoris</string>
+    <string name="open">open</string>
+    <string name="close">close</string>
+
 </resources>
