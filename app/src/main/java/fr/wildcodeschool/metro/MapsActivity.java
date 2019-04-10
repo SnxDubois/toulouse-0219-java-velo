@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import static fr.wildcodeschool.metro.Helper.extractStation;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1 ;
+    private static final int REQUEST_LOCATION = 2000 ;
     private GoogleMap mMap;
     boolean dropOff = true;
     int zoom = 15;
@@ -58,7 +58,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 displaySettings();
             }
         });
-
     }
 
     private void switchButton(){
@@ -79,6 +78,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onLocationChanged(Location location) {
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()),zoom));
                 mMap.getUiSettings().setZoomControlsEnabled(true);
+                mMap.setMyLocationEnabled(true);
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -99,7 +99,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 
         checkPermission();
-        googleMap.setMyLocationEnabled(true);
     }
 
     private void displaySettings(){
@@ -142,29 +141,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void createStationMarker() {
-        ArrayList<Station> stations = extractStation(MapsActivity.this,dropOff,zoom);
-        for (Station station : stations) {
-            LatLng newStation = new LatLng(station.getLatitude(), station.getLongitude());
-            Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).title(station.getAddress())));
-        }
+        extractStation(MapsActivity.this, dropOff, zoom, new Helper.BikeStationListener() {
+            @Override
+            public void onResult(ArrayList<Station> stations) {
+                for (Station station : stations) {
+                    LatLng newStation = new LatLng(station.getLatitude(), station.getLongitude());
+                    Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).title(station.getAddress())));
+                }
+            }
+        });
     }
 
     private void checkPermission() {
         if (ContextCompat.checkSelfPermission(MapsActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            // l'autorisation n'est pas acceptée
-            initLocation();
 
+            // Permission is not granted
+            // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(MapsActivity.this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
-                // l'autorisation a été refusée précédemment, on peut prévenir l'utilisateur ici
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
             } else {
-                // l'autorisation n'a jamais été réclamée, on la demande à l'utilisateur
+                // No explanation needed; request the permission
                 ActivityCompat.requestPermissions(MapsActivity.this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        100);
+                        REQUEST_LOCATION);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
             }
+        } else {
+            initLocation();
         }
     }
 
@@ -172,7 +183,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions, int[] grantResults) {
         switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
+            case REQUEST_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
