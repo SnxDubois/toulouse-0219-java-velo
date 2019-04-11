@@ -5,11 +5,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Settings implements Parcelable {
-    int zoom;
-    boolean dropOff;
-    Location location;
-    boolean init;
-    boolean changeActivity;
+    private int zoom;
+    private boolean dropOff;
+    private Location location;
+    private boolean init;
+    private boolean changeActivity;
 
     public Settings(int zoom, boolean dropOff, Location location, boolean init, boolean changeActivity) {
         this.zoom = zoom;

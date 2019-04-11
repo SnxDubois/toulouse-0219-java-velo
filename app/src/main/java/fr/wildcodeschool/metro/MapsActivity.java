@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -99,15 +100,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                lastKnownlocation = location;
-                removeMarkers();
-                mMap.setMyLocationEnabled(true);
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), zoom));
-                mMap.getUiSettings().setZoomControlsEnabled(true);
-                if (!changeActivity) {settings = new Settings(zoom,dropOff,lastKnownlocation,init, changeActivity);}
-                createStationMarker(settings);
                 if (location != null) {
-                    // Logic to handle location object
+                    lastKnownlocation = location;
+                    if (!changeActivity) {settings = new Settings(zoom,dropOff,lastKnownlocation,init, changeActivity);}
+                    removeMarkers();
+                    mMap.setMyLocationEnabled(true);
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), zoom));
+                    mMap.getUiSettings().setZoomControlsEnabled(true);
+                    createStationMarker(settings);
                 }
             }
         });
@@ -200,7 +200,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void removeMarkers() {
-        System.out.println(stationMarkers.size());
         for (Marker marker : stationMarkers) {
             marker.remove();
         }

@@ -46,7 +46,6 @@ public class ListStations extends AppCompatActivity {
                         Intent goMapsActivity = new Intent(ListStations.this, MapsActivity.class);
                         goMapsActivity.putExtra(SETTINGS_RETURN, (Parcelable) settings);
                         startActivity(goMapsActivity);
-                        startActivity(goMapsActivity);
                     }
                 });
             }
