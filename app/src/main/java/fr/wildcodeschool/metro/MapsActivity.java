@@ -32,27 +32,37 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+
 import java.util.ArrayList;
+
 import static fr.wildcodeschool.metro.Helper.extractStation;
+import static fr.wildcodeschool.metro.ListStations.SETTINGS_RETURN;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final int REQUEST_LOCATION = 2000;
     private static GoogleMap mMap;
     private static boolean dropOff = true;
-    private static int zoom;
+    private static int zoom = 14;
     private static Settings settings;
     public static final String SETTINGS = "Settings";
     private static Location lastKnownlocation;
     public static   ArrayList<Marker> stationMarkers = new ArrayList<Marker>();
     public static boolean init = false;
+    public static boolean changeActivity = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        if (!init) {
+            checkPermission();
+        } else {
+            lastKnownLocation();
+        }
+        Intent receiveListActivity = getIntent();
+        settings = receiveListActivity.getParcelableExtra(SETTINGS_RETURN);
         switchButton();
-        if (!init) {checkPermission();} else {lastKnownLocation();}
         floatingButton();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -74,6 +84,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                changeActivity = true;
                 Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStations.class);
                 goListStationAcitvity.putExtra(SETTINGS, (Parcelable) settings);
                 startActivity(goListStationAcitvity);
@@ -93,7 +104,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mMap.setMyLocationEnabled(true);
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), zoom));
                 mMap.getUiSettings().setZoomControlsEnabled(true);
-                settings = new Settings(zoom,dropOff,location,init);
+                if (!changeActivity) {settings = new Settings(zoom,dropOff,lastKnownlocation,init, changeActivity);}
                 createStationMarker(settings);
                 if (location != null) {
                     // Logic to handle location object
@@ -135,7 +146,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void displaySettings() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         String[] perimeter = {getString(R.string.perimeter1), getString(R.string.perimeter2), getString(R.string.perimeter3), getString(R.string.perimeter4), getString(R.string.perimeter5)};
-        final boolean[] checkedItems = {false, false, false, true, false};
+        final boolean[] checkedItems = {false, false, false, false, false};
         View switchButtonView = LayoutInflater.from(this).inflate(R.layout.activity_toggle, null);
         Switch switchButton = switchButtonView.findViewById(R.id.switch2);
         builder.setTitle(R.string.settings);
@@ -161,6 +172,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                settings.setDropOff(dropOff);
+                settings.setZoom(zoom);
                 lastKnownLocation();
                 Toast.makeText(MapsActivity.this, getString(R.string.appliedSettings), Toast.LENGTH_LONG).show();
             }
@@ -217,8 +230,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // result of the request.
             }
         } else {
-            init = true;
-            zoom = 14;
+
             lastKnownLocation();
         }
     }
@@ -233,8 +245,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-                    init = true;
-                    zoom = 14;
+
                     lastKnownLocation();
                 } else {
                     // permission denied, boo! Disable the
