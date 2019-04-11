@@ -190,7 +190,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onResult(ArrayList<Station> stations) {
                 for (int i = 0 ; i < stations.size() ; i++) {
                     LatLng newStation = new LatLng(stations.get(i).getLatitude(), stations.get(i).getLongitude());
-                    Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)).title(stations.get(i).getAddress()).snippet(stations.get(i).getName())));
+                    Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).icon(BitmapDescriptorFactory.fromResource(R.drawable.icon)).title(stations.get(i).getAddress()).snippet(stations.get(i).getName())));
                     stationMarkers.add(marker);
                     marker.showInfoWindow();
                     mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(MapsActivity.this));
