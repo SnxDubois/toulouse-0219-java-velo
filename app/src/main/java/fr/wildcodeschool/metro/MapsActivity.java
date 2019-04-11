@@ -21,7 +21,6 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -33,19 +32,19 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
-
 import java.util.ArrayList;
-
-import static android.icu.text.DateTimePatternGenerator.PatternInfo.OK;
 import static fr.wildcodeschool.metro.Helper.extractStation;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final int REQUEST_LOCATION = 2000;
     private static GoogleMap mMap;
     private static boolean dropOff = true;
-    private static int zoom = 15;
+    private static int zoom;
     private static Settings settings;
     public static final String SETTINGS = "Settings";
+    private static Location lastKnownlocation;
+    public static   ArrayList<Marker> stationMarkers = new ArrayList<Marker>();
+    public static boolean init = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +52,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
 
         switchButton();
-        checkPermission();
+        if (!init) {checkPermission();} else {lastKnownLocation();}
         floatingButton();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -62,7 +61,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void floatingButton() {
         FloatingActionButton button = findViewById(R.id.buttonSettings);
-
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -73,7 +71,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void switchButton() {
         Switch switchButton = findViewById(R.id.switch1);
-
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -88,16 +85,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void lastKnownLocation(){
         FusedLocationProviderClient fusedLocationClient =  LocationServices.getFusedLocationProviderClient(this);
-
         fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
+                lastKnownlocation = location;
+                removeMarkers();
                 mMap.setMyLocationEnabled(true);
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), zoom));
                 mMap.getUiSettings().setZoomControlsEnabled(true);
-                settings = new Settings(zoom,dropOff,location);
+                settings = new Settings(zoom,dropOff,location,init);
                 createStationMarker(settings);
-
                 if (location != null) {
                     // Logic to handle location object
                 }
@@ -111,7 +108,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LocationListener locationListener = new LocationListener() {
             @SuppressLint("MissingPermission")
             public void onLocationChanged(Location location) {
-
+                lastKnownlocation = location;
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -131,7 +128,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         checkPermission();
     }
@@ -142,13 +138,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final boolean[] checkedItems = {false, false, false, true, false};
         View switchButtonView = LayoutInflater.from(this).inflate(R.layout.activity_toggle, null);
         Switch switchButton = switchButtonView.findViewById(R.id.switch2);
-
         builder.setTitle(R.string.settings);
         builder.setMultiChoiceItems(perimeter, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                zoom = checkedItems[0] ? 16 : checkedItems[1] ? 17 : checkedItems[2] ? 18 : checkedItems[3] ? 19 : 20;
-
+                zoom = checkedItems[0] ? 14 : checkedItems[1] ? 15 : checkedItems[2] ? 16 : checkedItems[3] ? 17 : 18;
             }
         });
         builder.setView(switchButtonView);
@@ -167,7 +161,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom));
+                lastKnownLocation();
                 Toast.makeText(MapsActivity.this, getString(R.string.appliedSettings), Toast.LENGTH_LONG).show();
             }
         });
@@ -177,17 +171,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void createStationMarker(Settings settings) {
 
+
         extractStation(MapsActivity.this, settings, new Helper.BikeStationListener() {
             @Override
             public void onResult(ArrayList<Station> stations) {
-                for (Station station : stations) {
-                    LatLng newStation = new LatLng(station.getLatitude(), station.getLongitude());
-                    Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)).title(station.getAddress()).snippet(station.getName())));
+                for (int i = 0 ; i < stations.size() ; i++) {
+                    LatLng newStation = new LatLng(stations.get(i).getLatitude(), stations.get(i).getLongitude());
+                    Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)).title(stations.get(i).getAddress()).snippet(stations.get(i).getName())));
+                    stationMarkers.add(marker);
                     marker.showInfoWindow();
                     mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(MapsActivity.this));
                 }
             }
         });
+    }
+
+    private void removeMarkers() {
+        System.out.println(stationMarkers.size());
+        for (Marker marker : stationMarkers) {
+            marker.remove();
+        }
+        stationMarkers.clear();
     }
 
     private void checkPermission() {
@@ -213,6 +217,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // result of the request.
             }
         } else {
+            init = true;
+            zoom = 14;
             lastKnownLocation();
         }
     }
@@ -227,6 +233,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
+                    init = true;
+                    zoom = 14;
                     lastKnownLocation();
                 } else {
                     // permission denied, boo! Disable the

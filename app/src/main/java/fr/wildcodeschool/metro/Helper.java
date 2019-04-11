@@ -16,17 +16,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
-/*Location loc1 = new Location("");
-        loc1.setLatitude(lat1);
-        loc1.setLongitude(lon1);
-
-        Location loc2 = new Location("");
-        loc2.setLatitude(lat2);
-        loc2.setLongitude(lon2);
-
-        float distanceInMeters = loc1.distanceTo(loc2);*/
-
-
 public class Helper {
     private final static String API_KEY = "6dcf293ec6f59ca711dd9d89646478ef2acb872d";
     private static ArrayList<Station> stations = new ArrayList<>();
@@ -41,7 +30,10 @@ public class Helper {
 
                     @Override
                     public void onResponse(JSONArray response) {
+                        Location stationLocation = new Location(LocationManager.GPS_PROVIDER);
+
                         try {
+                            stations.clear();
                             JSONArray listStation = response;
                             for (int i = 0; i < response.length(); i++) {
                                 JSONObject bikeStation = (JSONObject) listStation.get(i);
@@ -55,11 +47,10 @@ public class Helper {
                                 String address = (String) bikeStation.get("address");
                                 int stands = (int) bikeStation.get("bike_stands");
                                 String status = (String) bikeStation.get("status");
-                                Location stationLocation = new Location(LocationManager.GPS_PROVIDER);
                                 stationLocation.setLatitude(latitude);
                                 stationLocation.setLongitude(longitude);
                                 float stationDistance = stationLocation.distanceTo(settings.getLocation());
-                                int askPerimeter = settings.getZoom() == 20 ? 100 : settings.getZoom() == 19 ? 200 : settings.getZoom() == 18 ? 500 : settings.getZoom() == 17 ? 700 : 1000;
+                                float askPerimeter = settings.getZoom() == 18 ? 100f : settings.getZoom() == 17 ? 200f : settings.getZoom() == 16 ? 500f : settings.getZoom() == 15 ? 700f : 1000f;
                                 if (stationDistance <= askPerimeter) {
                                     if ((bikeStation.get("status").equals("OPEN") && availableBike != 0 && settings.isDropOff()) || (bikeStation.get("status").equals("OPEN") && availabeStands != 0 && !settings.isDropOff())) {
                                         Station station = new Station(number, name, address, latitude, longitude, stands, availableBike, availabeStands, status);
@@ -67,6 +58,7 @@ public class Helper {
                                     }
                                 }
                             }
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

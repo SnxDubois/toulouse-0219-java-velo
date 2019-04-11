@@ -23,10 +23,8 @@ public class ListStations extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_stations);
-
         Intent receiveMainActivity = getIntent();
         Settings settings = receiveMainActivity.getParcelableExtra(SETTINGS);
-
         nDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         nToggle = new ActionBarDrawerToggle(this,nDrawerLayout,R.string.open,R.string.close);
         nDrawerLayout.addDrawerListener(nToggle);
