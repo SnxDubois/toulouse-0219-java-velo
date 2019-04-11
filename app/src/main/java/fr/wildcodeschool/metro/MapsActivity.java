@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -31,7 +32,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
-import static android.icu.text.DateTimePatternGenerator.PatternInfo.OK;
 import static fr.wildcodeschool.metro.Helper.extractStation;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -39,6 +39,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static GoogleMap mMap;
     private static boolean dropOff = true;
     private static int zoom = 15;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +52,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
     }
+
 
     private void floatingButton() {
         FloatingActionButton button = findViewById(R.id.buttonSettings);
@@ -83,8 +86,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LocationListener locationListener = new LocationListener() {
             @SuppressLint("MissingPermission")
             public void onLocationChanged(Location location) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), zoom));
-                mMap.getUiSettings().setZoomControlsEnabled(true);
+                //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), zoom));
+                //mMap.getUiSettings().setZoomControlsEnabled(true);
                 mMap.setMyLocationEnabled(true);
             }
 
@@ -106,8 +109,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         createStationMarker();
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         checkPermission();
     }
 
@@ -157,7 +160,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onResult(ArrayList<Station> stations) {
                 for (Station station : stations) {
                     LatLng newStation = new LatLng(station.getLatitude(), station.getLongitude());
-                    Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)).title(station.getAddress()).snippet(station.getName())));
+                    Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).icon(BitmapDescriptorFactory.fromResource(R.drawable.icon)).title(station.getAddress()).snippet(station.getName())));
                     marker.showInfoWindow();
                     mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(MapsActivity.this));
                 }
