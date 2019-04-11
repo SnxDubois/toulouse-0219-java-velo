@@ -13,10 +13,9 @@ import android.widget.Switch;
 import java.util.ArrayList;
 
 import static fr.wildcodeschool.metro.Helper.extractStation;
+import static fr.wildcodeschool.metro.MapsActivity.SETTINGS;
 
 public class ListStations extends AppCompatActivity {
-    private static boolean dropOff = true;
-    private static int zoom = 15;
     private DrawerLayout nDrawerLayout;
     private ActionBarDrawerToggle nToggle;
 
@@ -25,13 +24,16 @@ public class ListStations extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_stations);
 
+        Intent receiveMainActivity = getIntent();
+        Settings settings = receiveMainActivity.getParcelableExtra(SETTINGS);
+
         nDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         nToggle = new ActionBarDrawerToggle(this,nDrawerLayout,R.string.open,R.string.close);
         nDrawerLayout.addDrawerListener(nToggle);
         nToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        extractStation(ListStations.this, dropOff, zoom, new Helper.BikeStationListener() {
+        extractStation(ListStations.this, settings, new Helper.BikeStationListener() {
             @Override
             public void onResult(ArrayList<Station> stations) {
 

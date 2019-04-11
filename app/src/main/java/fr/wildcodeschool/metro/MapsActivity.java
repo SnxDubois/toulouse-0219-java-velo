@@ -10,6 +10,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -20,6 +21,9 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -28,6 +32,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
 
@@ -39,6 +44,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static GoogleMap mMap;
     private static boolean dropOff = true;
     private static int zoom = 15;
+    private static Settings settings;
+    public static final String SETTINGS = "Settings";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +78,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStations.class);
+                goListStationAcitvity.putExtra(SETTINGS, (Parcelable) settings);
                 startActivity(goListStationAcitvity);
+            }
+        });
+    }
+
+    //TODO: add a boolean to avoid to recreat markers
+
+    private void lastKnownLocation(){
+        FusedLocationProviderClient fusedLocationClient =  LocationServices.getFusedLocationProviderClient(this);
+
+        fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                mMap.setMyLocationEnabled(true);
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), zoom));
+                mMap.getUiSettings().setZoomControlsEnabled(true);
+                settings = new Settings(zoom,dropOff,location);
+                createStationMarker(settings);
+
+                if (location != null) {
+                    // Logic to handle location object
+                }
             }
         });
     }
@@ -79,13 +108,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @SuppressLint("MissingPermission")
     private void initLocation() {
         LocationManager mLocationManager;
-
         LocationListener locationListener = new LocationListener() {
             @SuppressLint("MissingPermission")
             public void onLocationChanged(Location location) {
 
-                mMap.setMyLocationEnabled(true);
-                createStationMarker(location);
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -149,9 +175,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         dialog.show();
     }
 
-    private void createStationMarker(Location location) {
+    private void createStationMarker(Settings settings) {
 
-        extractStation(MapsActivity.this, dropOff, zoom, new Helper.BikeStationListener() {
+        extractStation(MapsActivity.this, settings, new Helper.BikeStationListener() {
             @Override
             public void onResult(ArrayList<Station> stations) {
                 for (Station station : stations) {
@@ -187,7 +213,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // result of the request.
             }
         } else {
-            initLocation();
+            lastKnownLocation();
         }
     }
 
@@ -201,7 +227,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-                    initLocation();
+                    lastKnownLocation();
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
