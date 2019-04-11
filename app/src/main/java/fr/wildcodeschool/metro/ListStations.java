@@ -28,7 +28,7 @@ public class ListStations extends AppCompatActivity {
         Intent receiveMainActivity = getIntent();
         final Settings settings = receiveMainActivity.getParcelableExtra(SETTINGS);
         nDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
-        nToggle = new ActionBarDrawerToggle(this,nDrawerLayout,R.string.open,R.string.close);
+        nToggle = new ActionBarDrawerToggle(this, nDrawerLayout, R.string.open, R.string.close);
         nDrawerLayout.addDrawerListener(nToggle);
         nToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -51,6 +51,7 @@ public class ListStations extends AppCompatActivity {
             }
         });
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (nToggle.onOptionsItemSelected(item)) {
