@@ -17,6 +17,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Toggle" />
         <activity android:name=".SplashActivity"
             android:theme="@style/AppThemeNoActionBar">
 
@@ -25,7 +26,6 @@
 
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter> </activity>
-        <activity android:name=".Toggle" />
         <activity android:name=".DisplayStationActivity" />
         <activity android:name=".ListStations" />
         <!--

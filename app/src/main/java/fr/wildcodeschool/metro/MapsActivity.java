@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -43,22 +42,22 @@ import static fr.wildcodeschool.metro.Helper.extractStation;
 import static fr.wildcodeschool.metro.ListStations.SETTINGS_RETURN;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+    public static final String SETTINGS = "Settings";
     private static final int REQUEST_LOCATION = 2000;
+    public static ArrayList<Marker> stationMarkers = new ArrayList<Marker>();
+    public static boolean init = false;
+    public static boolean changeActivity = false;
+    public static boolean theme = false;
     private static GoogleMap mMap;
     private static boolean dropOff = true;
     private static int zoom = 14;
     private static Settings settings;
-    public static final String SETTINGS = "Settings";
     private static Location lastKnownlocation;
-    public static   ArrayList<Marker> stationMarkers = new ArrayList<Marker>();
-    public static boolean init = false;
-    public static boolean changeActivity = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
         if (!init) {
             checkPermission();
         } else {
@@ -96,16 +95,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    //TODO: add a boolean to avoid to recreat markers
-
-    private void lastKnownLocation(){
-        FusedLocationProviderClient fusedLocationClient =  LocationServices.getFusedLocationProviderClient(this);
+    @SuppressLint("MissingPermission")
+    private void lastKnownLocation() {
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
                 if (location != null) {
                     lastKnownlocation = location;
-                    if (!changeActivity) {settings = new Settings(zoom,dropOff,lastKnownlocation,init, changeActivity);}
+                    if (!changeActivity) {
+                        settings = new Settings(zoom, dropOff, lastKnownlocation, init, changeActivity, theme);
+                    }
                     removeMarkers();
                     mMap.setMyLocationEnabled(true);
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), zoom));
@@ -116,32 +116,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    @SuppressLint("MissingPermission")
-    private void initLocation() {
-        LocationManager mLocationManager;
-        LocationListener locationListener = new LocationListener() {
-            @SuppressLint("MissingPermission")
-            public void onLocationChanged(Location location) {
-                lastKnownlocation = location;
-            }
-
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-            }
-
-            public void onProviderEnabled(String provider) {
-            }
-
-            public void onProviderDisabled(String provider) {
-            }
-        };
-
-        mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-    }
-
     @Override
     public void onMapReady(final GoogleMap googleMap) {
+        checkPermission();
+        mMap = googleMap;
+        if (!changeActivity) {
+            settings = new Settings(zoom, dropOff, lastKnownlocation, init, changeActivity, theme);
+        }
+        switchTheme(googleMap);
+        if (settings.isTheme()) {
+            displayDarkTheme(googleMap);
+        } else {
+            displayDefaultTheme(googleMap);
+        }
+    }
 
+    private void switchTheme(final GoogleMap googleMap) {
+        Switch switchDarkMap = findViewById(R.id.switchMap);
+        switchDarkMap.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                settings.setTheme(!settings.isTheme());
+                if (settings.isTheme()) {
+                    displayDarkTheme(googleMap);
+                } else {
+                    displayDefaultTheme(googleMap);
+                }
+            }
+        });
+    }
+
+    private void displayDefaultTheme(final GoogleMap googleMap) {
         try {
             // Customise the styling of the base map using a JSON object defined
             // in a raw resource file.
@@ -155,48 +160,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (Resources.NotFoundException e) {
             Log.e("MapsActivity", "Can't find style. Error: ", e);
         }
-        Switch switchDarkMap = findViewById(R.id.switchDarkMap);
-        switchDarkMap.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                dropOff = isChecked ? true : false;
-                if (dropOff){
-                try {
-                    // Customise the styling of the base map using a JSON object defined
-                    // in a raw resource file.
-                    boolean success = googleMap.setMapStyle(
-                            MapStyleOptions.loadRawResourceStyle(
-                                    MapsActivity.this, R.raw.mapstyledark));
-
-                    if (!success) {
-                        Log.e("MapsActivity", "Style parsing failed.");
-                    }
-                } catch (Resources.NotFoundException e) {
-                    Log.e("MapsActivity", "Can't find style. Error: ", e);
-                }
-                } else {
-                    try {
-                        // Customise the styling of the base map using a JSON object defined
-                        // in a raw resource file.
-                        boolean success = googleMap.setMapStyle(
-                                MapStyleOptions.loadRawResourceStyle(
-                                        MapsActivity.this, R.raw.mapstyle));
-
-                        if (!success) {
-                            Log.e("MapsActivity", "Style parsing failed.");
-                        }
-                    } catch (Resources.NotFoundException e) {
-                        Log.e("MapsActivity", "Can't find style. Error: ", e);
-                    }
-
-                }
-            }
-        });
-        mMap = googleMap;
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        checkPermission();
     }
 
+    private void displayDarkTheme(final GoogleMap googleMap) {
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = googleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            MapsActivity.this, R.raw.mapstyledark));
+            if (!success) {
+                Log.e("MapsActivity", "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e("MapsActivity", "Can't find style. Error: ", e);
+        }
+    }
 
     private void displaySettings() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -238,12 +217,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void createStationMarker(Settings settings) {
-
-
         extractStation(MapsActivity.this, settings, new Helper.BikeStationListener() {
             @Override
             public void onResult(ArrayList<Station> stations) {
-                for (int i = 0 ; i < stations.size() ; i++) {
+                for (int i = 0; i < stations.size(); i++) {
                     LatLng newStation = new LatLng(stations.get(i).getLatitude(), stations.get(i).getLongitude());
                     Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).icon(BitmapDescriptorFactory.fromResource(R.drawable.icon)).title(stations.get(i).getAddress()).snippet(stations.get(i).getName())));
                     stationMarkers.add(marker);

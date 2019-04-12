@@ -4,16 +4,20 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 public class Helper {
@@ -53,11 +57,15 @@ public class Helper {
                                 float askPerimeter = settings.getZoom() == 18 ? 100f : settings.getZoom() == 17 ? 200f : settings.getZoom() == 16 ? 500f : settings.getZoom() == 15 ? 700f : 1000f;
                                 if (stationDistance <= askPerimeter) {
                                     if ((bikeStation.get("status").equals("OPEN") && availableBike != 0 && settings.isDropOff()) || (bikeStation.get("status").equals("OPEN") && availabeStands != 0 && !settings.isDropOff())) {
-                                        Station station = new Station(number, name, address, latitude, longitude, stands, availableBike, availabeStands, status);
+                                        Station station = new Station(number, name, address, latitude, longitude, stands, availableBike, availabeStands, status, stationDistance);
                                         stations.add(station);
                                     }
                                 }
                             }
+
+                            //TODO Sort ListView
+
+                            Collections.sort(stations);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -75,6 +83,7 @@ public class Helper {
         );
         requestQueue.add(jsonArrayRequestRequest);
     }
+
 
     public interface BikeStationListener {
         void onResult(ArrayList<Station> stations);

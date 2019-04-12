@@ -10,21 +10,25 @@ public class Settings implements Parcelable {
     private Location location;
     private boolean init;
     private boolean changeActivity;
+    private boolean theme;
 
-    public Settings(int zoom, boolean dropOff, Location location, boolean init, boolean changeActivity) {
+    public Settings(int zoom, boolean dropOff, Location location, boolean init, boolean changeActivity, boolean theme) {
         this.zoom = zoom;
         this.dropOff = dropOff;
         this.location = location;
         this.init = init;
         this.changeActivity = changeActivity;
+        this.theme = theme;
     }
 
     protected Settings(Parcel in) {
         zoom = in.readInt();
         dropOff = in.readByte() != 0;
         location = in.readParcelable(Location.class.getClassLoader());
+        init = in.readByte() != 0;
+        changeActivity = in.readByte() != 0;
+        theme = in.readByte() != 0;
     }
-
 
     public static final Creator<Settings> CREATOR = new Creator<Settings>() {
         @Override
@@ -79,6 +83,15 @@ public class Settings implements Parcelable {
         this.changeActivity = changeActivity;
     }
 
+
+    public boolean isTheme() {
+        return theme;
+    }
+
+    public void setTheme(boolean theme) {
+        this.theme = theme;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -91,6 +104,7 @@ public class Settings implements Parcelable {
         dest.writeParcelable(location, flags);
         dest.writeByte((byte) (init ? 1 : 0));
         dest.writeByte((byte) (changeActivity ? 1 : 0));
+        dest.writeByte((byte) (theme ? 1 : 0));
     }
 }
 
