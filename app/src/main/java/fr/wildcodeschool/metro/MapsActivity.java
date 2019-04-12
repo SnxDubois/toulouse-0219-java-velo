@@ -52,6 +52,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static   ArrayList<Marker> stationMarkers = new ArrayList<Marker>();
     public static boolean init = false;
     public static boolean changeActivity = false;
+    public  static boolean theme = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +99,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onSuccess(Location location) {
                 if (location != null) {
                     lastKnownlocation = location;
-                    if (!changeActivity) {settings = new Settings(zoom,dropOff,lastKnownlocation,init, changeActivity);}
+                    if (!changeActivity) {settings = new Settings(zoom,dropOff,lastKnownlocation,init, changeActivity, theme);}
                     removeMarkers();
                     mMap.setMyLocationEnabled(true);
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), zoom));
@@ -114,8 +115,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         checkPermission();
         mMap = googleMap;
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (!changeActivity) {settings = new Settings(zoom,dropOff,lastKnownlocation,init, changeActivity, theme);}
+        if (settings.isTheme()) {displayDarkTheme(googleMap);} else {displayDefaultTheme(googleMap);}
+        switchTheme(googleMap);
+    }
 
+    private void switchTheme(final GoogleMap googleMap){
+        Switch switchDarkMap = findViewById(R.id.switchMap);
+        switchDarkMap.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                dropOff = isChecked ? true : false;
+                if (dropOff){
+                    displayDarkTheme(googleMap);
+                } else {
+                    displayDefaultTheme(googleMap);
+                }
+            }
+        });
 
+    }
+
+    private void displayDefaultTheme(final GoogleMap googleMap){
+        settings.setTheme(true);
         try {
             // Customise the styling of the base map using a JSON object defined
             // in a raw resource file.
@@ -129,45 +151,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (Resources.NotFoundException e) {
             Log.e("MapsActivity", "Can't find style. Error: ", e);
         }
-        Switch switchDarkMap = findViewById(R.id.switchMap);
-        switchDarkMap.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                dropOff = isChecked ? true : false;
-                if (dropOff){
-                    try {
-                        // Customise the styling of the base map using a JSON object defined
-                        // in a raw resource file.
-                        boolean success = googleMap.setMapStyle(
-                                MapStyleOptions.loadRawResourceStyle(
-                                        MapsActivity.this, R.raw.mapstyledark));
 
-                        if (!success) {
-                            Log.e("MapsActivity", "Style parsing failed.");
-                        }
-                    } catch (Resources.NotFoundException e) {
-                        Log.e("MapsActivity", "Can't find style. Error: ", e);
-                    }
-                } else {
-                    try {
-                        // Customise the styling of the base map using a JSON object defined
-                        // in a raw resource file.
-                        boolean success = googleMap.setMapStyle(
-                                MapStyleOptions.loadRawResourceStyle(
-                                        MapsActivity.this, R.raw.mapstyle));
 
-                        if (!success) {
-                            Log.e("MapsActivity", "Style parsing failed.");
-                        }
-                    } catch (Resources.NotFoundException e) {
-                        Log.e("MapsActivity", "Can't find style. Error: ", e);
-                    }
-
-                }
-            }
-        });
     }
 
+    private void displayDarkTheme(final GoogleMap googleMap){
+        settings.setTheme(false);
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = googleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            MapsActivity.this, R.raw.mapstyledark));
+            if (!success) {
+                Log.e("MapsActivity", "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e("MapsActivity", "Can't find style. Error: ", e);
+        }
+    }
 
     private void displaySettings() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
