@@ -11,6 +11,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -23,6 +24,8 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -32,36 +35,46 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
 
 import static fr.wildcodeschool.metro.Helper.extractStation;
+import static fr.wildcodeschool.metro.ListStations.SETTINGS_RETURN;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final int REQUEST_LOCATION = 2000;
     private static GoogleMap mMap;
     private static boolean dropOff = true;
-    private static int zoom = 15;
-
+    private static int zoom = 14;
+    private static Settings settings;
+    public static final String SETTINGS = "Settings";
+    private static Location lastKnownlocation;
+    public static   ArrayList<Marker> stationMarkers = new ArrayList<Marker>();
+    public static boolean init = false;
+    public static boolean changeActivity = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        if (!init) {
+            checkPermission();
+        } else {
+            lastKnownLocation();
+        }
+        Intent receiveListActivity = getIntent();
+        settings = receiveListActivity.getParcelableExtra(SETTINGS_RETURN);
         switchButton();
-        checkPermission();
         floatingButton();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
     }
-
 
     private void floatingButton() {
         FloatingActionButton button = findViewById(R.id.buttonSettings);
-
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,12 +85,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void switchButton() {
         Switch switchButton = findViewById(R.id.switch1);
-
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                changeActivity = true;
                 Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStations.class);
+                goListStationAcitvity.putExtra(SETTINGS, (Parcelable) settings);
                 startActivity(goListStationAcitvity);
+            }
+        });
+    }
+
+    //TODO: add a boolean to avoid to recreat markers
+
+    private void lastKnownLocation(){
+        FusedLocationProviderClient fusedLocationClient =  LocationServices.getFusedLocationProviderClient(this);
+        fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    lastKnownlocation = location;
+                    if (!changeActivity) {settings = new Settings(zoom,dropOff,lastKnownlocation,init, changeActivity);}
+                    removeMarkers();
+                    mMap.setMyLocationEnabled(true);
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), zoom));
+                    mMap.getUiSettings().setZoomControlsEnabled(true);
+                    createStationMarker(settings);
+                }
             }
         });
     }
@@ -85,13 +119,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @SuppressLint("MissingPermission")
     private void initLocation() {
         LocationManager mLocationManager;
-
         LocationListener locationListener = new LocationListener() {
             @SuppressLint("MissingPermission")
             public void onLocationChanged(Location location) {
-                //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), zoom));
-                //mMap.getUiSettings().setZoomControlsEnabled(true);
-                mMap.setMyLocationEnabled(true);
+                lastKnownlocation = location;
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -126,8 +157,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         mMap = googleMap;
-        createStationMarker();
-
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         checkPermission();
     }
@@ -135,16 +164,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void displaySettings() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         String[] perimeter = {getString(R.string.perimeter1), getString(R.string.perimeter2), getString(R.string.perimeter3), getString(R.string.perimeter4), getString(R.string.perimeter5)};
-        final boolean[] checkedItems = {false, false, false, true, false};
+        final boolean[] checkedItems = {false, false, false, false, false};
         View switchButtonView = LayoutInflater.from(this).inflate(R.layout.activity_toggle, null);
         Switch switchButton = switchButtonView.findViewById(R.id.switch2);
-
         builder.setTitle(R.string.settings);
         builder.setMultiChoiceItems(perimeter, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                zoom = checkedItems[0] ? 16 : checkedItems[1] ? 17 : checkedItems[2] ? 18 : checkedItems[3] ? 19 : 20;
-
+                zoom = checkedItems[0] ? 14 : checkedItems[1] ? 15 : checkedItems[2] ? 16 : checkedItems[3] ? 17 : 18;
             }
         });
         builder.setView(switchButtonView);
@@ -163,7 +190,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom));
+                settings.setDropOff(dropOff);
+                settings.setZoom(zoom);
+                lastKnownLocation();
                 Toast.makeText(MapsActivity.this, getString(R.string.appliedSettings), Toast.LENGTH_LONG).show();
             }
         });
@@ -171,19 +200,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         dialog.show();
     }
 
-    private void createStationMarker() {
+    private void createStationMarker(Settings settings) {
 
-        extractStation(MapsActivity.this, dropOff, zoom, new Helper.BikeStationListener() {
+
+        extractStation(MapsActivity.this, settings, new Helper.BikeStationListener() {
             @Override
             public void onResult(ArrayList<Station> stations) {
-                for (Station station : stations) {
-                    LatLng newStation = new LatLng(station.getLatitude(), station.getLongitude());
-                    Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).icon(BitmapDescriptorFactory.fromResource(R.drawable.icon)).title(station.getAddress()).snippet(station.getName())));
+                for (int i = 0 ; i < stations.size() ; i++) {
+                    LatLng newStation = new LatLng(stations.get(i).getLatitude(), stations.get(i).getLongitude());
+                    Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).icon(BitmapDescriptorFactory.fromResource(R.drawable.icon)).title(stations.get(i).getAddress()).snippet(stations.get(i).getName())));
+                    stationMarkers.add(marker);
                     marker.showInfoWindow();
                     mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(MapsActivity.this));
                 }
             }
         });
+    }
+
+    private void removeMarkers() {
+        for (Marker marker : stationMarkers) {
+            marker.remove();
+        }
+        stationMarkers.clear();
     }
 
     private void checkPermission() {
@@ -209,7 +247,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // result of the request.
             }
         } else {
-            initLocation();
+
+            lastKnownLocation();
         }
     }
 
@@ -223,7 +262,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-                    initLocation();
+
+                    lastKnownLocation();
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
