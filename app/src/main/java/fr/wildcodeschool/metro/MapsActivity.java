@@ -1,13 +1,11 @@
 package fr.wildcodeschool.metro;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -55,12 +53,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
-        if (!init) {
-            checkPermission();
-        } else {
-            lastKnownLocation();
-        }
+        if (!init) {checkPermission();} else {lastKnownLocation();}
         Intent receiveListActivity = getIntent();
         settings = receiveListActivity.getParcelableExtra(SETTINGS_RETURN);
         switchButton();
@@ -93,8 +86,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    //TODO: add a boolean to avoid to recreat markers
-
     private void lastKnownLocation(){
         FusedLocationProviderClient fusedLocationClient =  LocationServices.getFusedLocationProviderClient(this);
         fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
@@ -113,34 +104,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    @SuppressLint("MissingPermission")
-    private void initLocation() {
-        LocationManager mLocationManager;
-        LocationListener locationListener = new LocationListener() {
-            @SuppressLint("MissingPermission")
-            public void onLocationChanged(Location location) {
-                lastKnownlocation = location;
-            }
-
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-            }
-
-            public void onProviderEnabled(String provider) {
-            }
-
-            public void onProviderDisabled(String provider) {
-            }
-        };
-
-        mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        checkPermission();
         mMap = googleMap;
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        checkPermission();
     }
 
     private void displaySettings() {
@@ -183,8 +151,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void createStationMarker(Settings settings) {
-
-
         extractStation(MapsActivity.this, settings, new Helper.BikeStationListener() {
             @Override
             public void onResult(ArrayList<Station> stations) {

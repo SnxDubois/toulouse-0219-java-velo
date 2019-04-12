@@ -10,9 +10,7 @@ import android.view.MenuItem;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
-
 import java.util.ArrayList;
-
 import static fr.wildcodeschool.metro.Helper.extractStation;
 import static fr.wildcodeschool.metro.MapsActivity.SETTINGS;
 
