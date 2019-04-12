@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -14,6 +16,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -28,6 +32,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -107,9 +112,63 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         checkPermission();
+    public void onMapReady(final GoogleMap googleMap) {
+
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = googleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            MapsActivity.this, R.raw.mapstyle));
+
+            if (!success) {
+                Log.e("MapsActivity", "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e("MapsActivity", "Can't find style. Error: ", e);
+        }
+        Switch switchDarkMap = findViewById(R.id.switchDarkMap);
+        switchDarkMap.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                dropOff = isChecked ? true : false;
+                if (dropOff){
+                try {
+                    // Customise the styling of the base map using a JSON object defined
+                    // in a raw resource file.
+                    boolean success = googleMap.setMapStyle(
+                            MapStyleOptions.loadRawResourceStyle(
+                                    MapsActivity.this, R.raw.mapstyledark));
+
+                    if (!success) {
+                        Log.e("MapsActivity", "Style parsing failed.");
+                    }
+                } catch (Resources.NotFoundException e) {
+                    Log.e("MapsActivity", "Can't find style. Error: ", e);
+                }
+                } else {
+                    try {
+                        // Customise the styling of the base map using a JSON object defined
+                        // in a raw resource file.
+                        boolean success = googleMap.setMapStyle(
+                                MapStyleOptions.loadRawResourceStyle(
+                                        MapsActivity.this, R.raw.mapstyle));
+
+                        if (!success) {
+                            Log.e("MapsActivity", "Style parsing failed.");
+                        }
+                    } catch (Resources.NotFoundException e) {
+                        Log.e("MapsActivity", "Can't find style. Error: ", e);
+                    }
+
+                }
+            }
+        });
+    }
         mMap = googleMap;
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
     }
+
 
     private void displaySettings() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
