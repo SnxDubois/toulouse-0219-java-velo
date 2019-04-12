@@ -1,11 +1,11 @@
 package fr.wildcodeschool.metro;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationManager;
@@ -16,7 +16,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -91,6 +90,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    @SuppressLint("MissingPermission")
     private void lastKnownLocation(){
         FusedLocationProviderClient fusedLocationClient =  LocationServices.getFusedLocationProviderClient(this);
         fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
@@ -110,9 +110,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        checkPermission();
     public void onMapReady(final GoogleMap googleMap) {
+        checkPermission();
+        mMap = googleMap;
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
 
         try {
             // Customise the styling of the base map using a JSON object defined
@@ -127,25 +129,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (Resources.NotFoundException e) {
             Log.e("MapsActivity", "Can't find style. Error: ", e);
         }
-        Switch switchDarkMap = findViewById(R.id.switchDarkMap);
+        Switch switchDarkMap = findViewById(R.id.switchMap);
         switchDarkMap.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 dropOff = isChecked ? true : false;
                 if (dropOff){
-                try {
-                    // Customise the styling of the base map using a JSON object defined
-                    // in a raw resource file.
-                    boolean success = googleMap.setMapStyle(
-                            MapStyleOptions.loadRawResourceStyle(
-                                    MapsActivity.this, R.raw.mapstyledark));
+                    try {
+                        // Customise the styling of the base map using a JSON object defined
+                        // in a raw resource file.
+                        boolean success = googleMap.setMapStyle(
+                                MapStyleOptions.loadRawResourceStyle(
+                                        MapsActivity.this, R.raw.mapstyledark));
 
-                    if (!success) {
-                        Log.e("MapsActivity", "Style parsing failed.");
+                        if (!success) {
+                            Log.e("MapsActivity", "Style parsing failed.");
+                        }
+                    } catch (Resources.NotFoundException e) {
+                        Log.e("MapsActivity", "Can't find style. Error: ", e);
                     }
-                } catch (Resources.NotFoundException e) {
-                    Log.e("MapsActivity", "Can't find style. Error: ", e);
-                }
                 } else {
                     try {
                         // Customise the styling of the base map using a JSON object defined
@@ -164,9 +166,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         });
-    }
-        mMap = googleMap;
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
     }
 
 
