@@ -109,13 +109,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(final GoogleMap googleMap) {
+
         try {
             // Customise the styling of the base map using a JSON object defined
             // in a raw resource file.
             boolean success = googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
-                            this, R.raw.mapstyle));
+                            MapsActivity.this, R.raw.mapstyle));
 
             if (!success) {
                 Log.e("MapsActivity", "Style parsing failed.");
@@ -123,14 +124,50 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (Resources.NotFoundException e) {
             Log.e("MapsActivity", "Can't find style. Error: ", e);
         }
+        Switch switchDarkMap = findViewById(R.id.switchDarkMap);
+        switchDarkMap.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                dropOff = isChecked ? true : false;
+                if (dropOff){
+                try {
+                    // Customise the styling of the base map using a JSON object defined
+                    // in a raw resource file.
+                    boolean success = googleMap.setMapStyle(
+                            MapStyleOptions.loadRawResourceStyle(
+                                    MapsActivity.this, R.raw.mapstyledark));
 
+                    if (!success) {
+                        Log.e("MapsActivity", "Style parsing failed.");
+                    }
+                } catch (Resources.NotFoundException e) {
+                    Log.e("MapsActivity", "Can't find style. Error: ", e);
+                }
+                } else {
+                    try {
+                        // Customise the styling of the base map using a JSON object defined
+                        // in a raw resource file.
+                        boolean success = googleMap.setMapStyle(
+                                MapStyleOptions.loadRawResourceStyle(
+                                        MapsActivity.this, R.raw.mapstyle));
 
+                        if (!success) {
+                            Log.e("MapsActivity", "Style parsing failed.");
+                        }
+                    } catch (Resources.NotFoundException e) {
+                        Log.e("MapsActivity", "Can't find style. Error: ", e);
+                    }
+
+                }
+            }
+        });
         mMap = googleMap;
         createStationMarker();
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         checkPermission();
     }
+
 
     private void displaySettings() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
