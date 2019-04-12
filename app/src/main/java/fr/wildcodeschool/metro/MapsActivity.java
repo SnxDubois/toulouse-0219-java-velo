@@ -42,23 +42,27 @@ import static fr.wildcodeschool.metro.Helper.extractStation;
 import static fr.wildcodeschool.metro.ListStations.SETTINGS_RETURN;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+    public static final String SETTINGS = "Settings";
     private static final int REQUEST_LOCATION = 2000;
+    public static ArrayList<Marker> stationMarkers = new ArrayList<Marker>();
+    public static boolean init = false;
+    public static boolean changeActivity = false;
+    public static boolean theme = false;
     private static GoogleMap mMap;
     private static boolean dropOff = true;
     private static int zoom = 14;
     private static Settings settings;
-    public static final String SETTINGS = "Settings";
     private static Location lastKnownlocation;
-    public static   ArrayList<Marker> stationMarkers = new ArrayList<Marker>();
-    public static boolean init = false;
-    public static boolean changeActivity = false;
-    public  static boolean theme = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        if (!init) {checkPermission();} else {lastKnownLocation();}
+        if (!init) {
+            checkPermission();
+        } else {
+            lastKnownLocation();
+        }
         Intent receiveListActivity = getIntent();
         settings = receiveListActivity.getParcelableExtra(SETTINGS_RETURN);
         switchButton();
@@ -92,14 +96,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @SuppressLint("MissingPermission")
-    private void lastKnownLocation(){
-        FusedLocationProviderClient fusedLocationClient =  LocationServices.getFusedLocationProviderClient(this);
+    private void lastKnownLocation() {
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
                 if (location != null) {
                     lastKnownlocation = location;
-                    if (!changeActivity) {settings = new Settings(zoom,dropOff,lastKnownlocation,init, changeActivity, theme);}
+                    if (!changeActivity) {
+                        settings = new Settings(zoom, dropOff, lastKnownlocation, init, changeActivity, theme);
+                    }
                     removeMarkers();
                     mMap.setMyLocationEnabled(true);
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), zoom));
@@ -114,30 +120,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(final GoogleMap googleMap) {
         checkPermission();
         mMap = googleMap;
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (!changeActivity) {settings = new Settings(zoom,dropOff,lastKnownlocation,init, changeActivity, theme);}
-        if (settings.isTheme()) {displayDarkTheme(googleMap);} else {displayDefaultTheme(googleMap);}
+        if (!changeActivity) {
+            settings = new Settings(zoom, dropOff, lastKnownlocation, init, changeActivity, theme);
+        }
         switchTheme(googleMap);
+        if (settings.isTheme()) {
+            displayDarkTheme(googleMap);
+        } else {
+            displayDefaultTheme(googleMap);
+        }
     }
 
-    private void switchTheme(final GoogleMap googleMap){
+    private void switchTheme(final GoogleMap googleMap) {
         Switch switchDarkMap = findViewById(R.id.switchMap);
         switchDarkMap.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                dropOff = isChecked ? true : false;
-                if (dropOff){
+                settings.setTheme(!settings.isTheme());
+                if (settings.isTheme()) {
                     displayDarkTheme(googleMap);
                 } else {
                     displayDefaultTheme(googleMap);
                 }
             }
         });
-
     }
 
-    private void displayDefaultTheme(final GoogleMap googleMap){
-        settings.setTheme(true);
+    private void displayDefaultTheme(final GoogleMap googleMap) {
         try {
             // Customise the styling of the base map using a JSON object defined
             // in a raw resource file.
@@ -151,12 +160,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (Resources.NotFoundException e) {
             Log.e("MapsActivity", "Can't find style. Error: ", e);
         }
-
-
     }
 
-    private void displayDarkTheme(final GoogleMap googleMap){
-        settings.setTheme(false);
+    private void displayDarkTheme(final GoogleMap googleMap) {
         try {
             // Customise the styling of the base map using a JSON object defined
             // in a raw resource file.
@@ -214,7 +220,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         extractStation(MapsActivity.this, settings, new Helper.BikeStationListener() {
             @Override
             public void onResult(ArrayList<Station> stations) {
-                for (int i = 0 ; i < stations.size() ; i++) {
+                for (int i = 0; i < stations.size(); i++) {
                     LatLng newStation = new LatLng(stations.get(i).getLatitude(), stations.get(i).getLongitude());
                     Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).icon(BitmapDescriptorFactory.fromResource(R.drawable.icon)).title(stations.get(i).getAddress()).snippet(stations.get(i).getName())));
                     stationMarkers.add(marker);

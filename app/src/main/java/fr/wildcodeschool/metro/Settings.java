@@ -25,8 +25,10 @@ public class Settings implements Parcelable {
         zoom = in.readInt();
         dropOff = in.readByte() != 0;
         location = in.readParcelable(Location.class.getClassLoader());
+        init = in.readByte() != 0;
+        changeActivity = in.readByte() != 0;
+        theme = in.readByte() != 0;
     }
-
 
     public static final Creator<Settings> CREATOR = new Creator<Settings>() {
         @Override
