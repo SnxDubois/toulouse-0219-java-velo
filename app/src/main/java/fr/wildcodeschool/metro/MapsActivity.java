@@ -7,19 +7,26 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -36,7 +43,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import static fr.wildcodeschool.metro.Helper.extractStation;
 import static fr.wildcodeschool.metro.ListStations.SETTINGS_RETURN;
@@ -44,6 +55,7 @@ import static fr.wildcodeschool.metro.ListStations.SETTINGS_RETURN;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     public static final String SETTINGS = "Settings";
     private static final int REQUEST_LOCATION = 2000;
+    public static final int REQUEST_IMAGE_CAPTURE = 1234;
     public static ArrayList<Marker> stationMarkers = new ArrayList<Marker>();
     public static boolean init = false;
     public static boolean changeActivity = false;
@@ -67,9 +79,67 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         settings = receiveListActivity.getParcelableExtra(SETTINGS_RETURN);
         switchButton();
         floatingButton();
+        takePicIssues();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+    }
+
+    private void takePicIssues() {
+        ImageButton takePic = findViewById(R.id.ibTakePicOfIssue);
+        takePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dispatchTakePictureIntent();
+
+            }
+        });
+
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imgFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(imgFileName, ".jpg", storageDir);
+        return image;
+    }
+
+
+    private Uri mFileUri = null;
+    private void dispatchTakePictureIntent() {
+        // ouvrir l'application de prise de photo
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        // lors de la validation de la photo
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // créer le fichier contenant la photo
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException e) {
+                // TODO : gérer l'erreur
+            }
+
+            if (photoFile != null) {
+                // récupèrer le chemin de la photo
+                mFileUri = FileProvider.getUriForFile(this,
+                        "fr.wildcodeschool.metro.fileprovider",
+                        photoFile);
+                // déclenche l'appel de onActivityResult
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+
+
+        }
     }
 
     private void floatingButton() {
