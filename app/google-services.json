@@ -21,6 +21,10 @@
             "package_name": "fr.wildcodeschool.metro",
             "certificate_hash": "5903aea6f2497c1f327e9e8703d4f8126d580acf"
           }
+        },
+        {
+          "client_id": "89051023672-7quvn3iijsmg82dtfqojdg29q3jqhlae.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [
@@ -32,7 +36,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "89051023672-3ci0c27vqqihnr734bvch0e03dbklqtd.apps.googleusercontent.com",
+              "client_id": "89051023672-7quvn3iijsmg82dtfqojdg29q3jqhlae.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
