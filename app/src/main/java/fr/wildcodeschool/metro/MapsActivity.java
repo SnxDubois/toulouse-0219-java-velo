@@ -54,6 +54,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static boolean init = false;
     public static boolean changeActivity = false;
     public  static boolean theme = false;
+    private Intent receiveListActivity;
+    private FloatingActionButton button;
+    private Switch switchButton;
+    private FusedLocationProviderClient fusedLocationClient;
+    private LocationManager locationManager;
+    private Switch switchDarkMap;
+    private AlertDialog.Builder builder;
+    private LatLng newStation;
+    private Marker marker;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +71,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         if (!init) {checkPermission();} else {
             currentLocation();}
-        Intent receiveListActivity = getIntent();
+        receiveListActivity = getIntent();
         settings = receiveListActivity.getParcelableExtra(SETTINGS_RETURN);
         switchButton();
         floatingButton();
@@ -71,7 +81,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void floatingButton() {
-        FloatingActionButton button = findViewById(R.id.buttonSettings);
+        button = findViewById(R.id.buttonSettings);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,7 +91,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void switchButton() {
-        Switch switchButton = findViewById(R.id.switch1);
+        switchButton = findViewById(R.id.switch1);
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -95,8 +105,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @SuppressLint("MissingPermission")
     private void currentLocation(){
-        FusedLocationProviderClient fusedLocationClient =  LocationServices.getFusedLocationProviderClient(this);
-        LocationManager locationManager = (LocationManager) this.getSystemService(MapsActivity.LOCATION_SERVICE);
+        fusedLocationClient =  LocationServices.getFusedLocationProviderClient(this);
+        locationManager = (LocationManager) this.getSystemService(MapsActivity.LOCATION_SERVICE);
         fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
@@ -143,7 +153,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void switchTheme(final GoogleMap googleMap){
-        Switch switchDarkMap = findViewById(R.id.switchMap);
+        switchDarkMap = findViewById(R.id.switchMap);
         switchDarkMap.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -161,8 +171,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void displayDefaultTheme(final GoogleMap googleMap){
         settings.setTheme(true);
         try {
-            // Customise the styling of the base map using a JSON object defined
-            // in a raw resource file.
             boolean success = googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
                             MapsActivity.this, R.raw.mapstyle));
@@ -180,8 +188,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void displayDarkTheme(final GoogleMap googleMap){
         settings.setTheme(false);
         try {
-            // Customise the styling of the base map using a JSON object defined
-            // in a raw resource file.
             boolean success = googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
                             MapsActivity.this, R.raw.mapstyledark));
@@ -194,7 +200,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void displaySettings() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder = new AlertDialog.Builder(this);
         String[] perimeter = {getString(R.string.perimeter1), getString(R.string.perimeter2), getString(R.string.perimeter3), getString(R.string.perimeter4), getString(R.string.perimeter5)};
         final boolean[] checkedItems = {false, false, false, false, false};
         View switchButtonView = LayoutInflater.from(this).inflate(R.layout.activity_toggle, null);
@@ -237,8 +243,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onResult(ArrayList<Station> stations) {
                 for (int i = 0 ; i < stations.size() ; i++) {
-                    LatLng newStation = new LatLng(stations.get(i).getLatitude(), stations.get(i).getLongitude());
-                    Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).icon(BitmapDescriptorFactory.fromResource(R.drawable.icon)).title(stations.get(i).getAddress()).snippet(stations.get(i).getName())));
+                    newStation = new LatLng(stations.get(i).getLatitude(), stations.get(i).getLongitude());
+                    marker = mMap.addMarker((new MarkerOptions().position(newStation).icon(BitmapDescriptorFactory.fromResource(R.drawable.icon)).title(stations.get(i).getAddress()).snippet(stations.get(i).getName())));
                     stationMarkers.add(marker);
                     marker.showInfoWindow();
                     mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(MapsActivity.this));
@@ -258,26 +264,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (ContextCompat.checkSelfPermission(MapsActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-
-            // Permission is not granted
-            // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(MapsActivity.this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
             } else {
-                // No explanation needed; request the permission
                 ActivityCompat.requestPermissions(MapsActivity.this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         REQUEST_LOCATION);
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
             }
         } else {
-
             currentLocation();
         }
     }
@@ -287,22 +281,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                            String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case REQUEST_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-
                     currentLocation();
                 } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
                 }
                 return;
             }
-
-            // other 'case' lines to check for other
-            // permissions this app might request.
         }
     }
 }
