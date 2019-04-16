@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -58,7 +59,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        if (!init) {checkPermission();} else {lastKnownLocation();}
+        if (!init) {checkPermission();} else {
+            currentLocation();}
         Intent receiveListActivity = getIntent();
         settings = receiveListActivity.getParcelableExtra(SETTINGS_RETURN);
         switchButton();
@@ -92,8 +94,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @SuppressLint("MissingPermission")
-    private void lastKnownLocation(){
+    private void currentLocation(){
         FusedLocationProviderClient fusedLocationClient =  LocationServices.getFusedLocationProviderClient(this);
+        LocationManager locationManager = (LocationManager) this.getSystemService(MapsActivity.LOCATION_SERVICE);
         fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
@@ -108,6 +111,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         });
+
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                lastKnownlocation = location;
+                if (!changeActivity) {settings = new Settings(zoom,dropOff,lastKnownlocation,init, changeActivity, theme);}
+                mMap.setMyLocationEnabled(true);
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), zoom));
+                mMap.getUiSettings().setZoomControlsEnabled(true);
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            public void onProviderEnabled(String provider) {}
+
+            public void onProviderDisabled(String provider) {}
+        };
+
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
     }
 
     @Override
@@ -202,7 +224,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(DialogInterface dialog, int which) {
                 settings.setDropOff(dropOff);
                 settings.setZoom(zoom);
-                lastKnownLocation();
+                currentLocation();
                 Toast.makeText(MapsActivity.this, getString(R.string.appliedSettings), Toast.LENGTH_LONG).show();
             }
         });
@@ -256,7 +278,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         } else {
 
-            lastKnownLocation();
+            currentLocation();
         }
     }
 
@@ -271,7 +293,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
 
-                    lastKnownLocation();
+                    currentLocation();
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
