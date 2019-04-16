@@ -18,5 +18,6 @@
     <string name="open">open</string>
     <string name="close">close</string>
     <string name="nom_pr_nom">Nom Prénom</string>
+    <string name="sign_out">Sign OUT</string>
 
 </resources>

@@ -21,6 +21,18 @@
             "package_name": "fr.wildcodeschool.metro",
             "certificate_hash": "5903aea6f2497c1f327e9e8703d4f8126d580acf"
           }
+        },
+        {
+          "client_id": "89051023672-7qsdt86vfrir9a7r9ccs6njkkj2rcfrr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fr.wildcodeschool.metro",
+            "certificate_hash": "22008293a67abbfe31931af6a0e8919ab6a7a378"
+          }
+        },
+        {
+          "client_id": "89051023672-3ci0c27vqqihnr734bvch0e03dbklqtd.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [
