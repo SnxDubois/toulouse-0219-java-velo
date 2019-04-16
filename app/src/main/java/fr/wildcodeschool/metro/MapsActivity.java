@@ -92,19 +92,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 dispatchTakePictureIntent();
 
+
             }
         });
 
     }
-
-    private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imgFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(imgFileName, ".jpg", storageDir);
-        return image;
-    }
-
 
     private Uri mFileUri = null;
     private void dispatchTakePictureIntent() {
@@ -123,7 +115,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             if (photoFile != null) {
                 // récupèrer le chemin de la photo
-                mFileUri = FileProvider.getUriForFile(this,
+                 mFileUri = FileProvider.getUriForFile(this,
                         "fr.wildcodeschool.metro.fileprovider",
                         photoFile);
                 // déclenche l'appel de onActivityResult
@@ -135,11 +127,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+        ImageView ivRecupPic = findViewById(R.id.ivRecupPic);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-
+            ivRecupPic.setImageURI(mFileUri);
 
         }
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imgFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(imgFileName, ".jpg", storageDir);
+        return image;
     }
 
     private void floatingButton() {
