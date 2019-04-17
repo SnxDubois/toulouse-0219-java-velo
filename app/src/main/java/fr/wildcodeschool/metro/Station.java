@@ -27,7 +27,6 @@ public class Station implements Comparable<Station> {
         this.distance = distance;
     }
 
-
     public int getNumber() {
         return number;
     }
@@ -60,11 +59,9 @@ public class Station implements Comparable<Station> {
         longitude = longitude;
     }
 
-
     public String getAddress() {
         return address;
     }
-
 
     public void setAddress(String address) {
         address = address;
@@ -85,7 +82,6 @@ public class Station implements Comparable<Station> {
     public void setAvailableBikes(int availableBike) {
         this.availableBikes = availableBike;
     }
-
 
     public String getStatus() {
         return status;
@@ -110,7 +106,6 @@ public class Station implements Comparable<Station> {
     public void setDistance(float distance) {
         this.distance = distance;
     }
-
 
     @Override
     public int compareTo(Station station) {

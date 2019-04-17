@@ -5,17 +5,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Settings implements Parcelable {
-    public static final Creator<Settings> CREATOR = new Creator<Settings>() {
-        @Override
-        public Settings createFromParcel(Parcel in) {
-            return new Settings(in);
-        }
-
-        @Override
-        public Settings[] newArray(int size) {
-            return new Settings[size];
-        }
-    };
     private int zoom;
     private boolean dropOff;
     private Location location;
@@ -32,12 +21,41 @@ public class Settings implements Parcelable {
         this.theme = theme;
     }
 
-
     protected Settings(Parcel in) {
         zoom = in.readInt();
         dropOff = in.readByte() != 0;
         location = in.readParcelable(Location.class.getClassLoader());
+        init = in.readByte() != 0;
+        changeActivity = in.readByte() != 0;
+        theme = in.readByte() != 0;
     }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(zoom);
+        dest.writeByte((byte) (dropOff ? 1 : 0));
+        dest.writeParcelable(location, flags);
+        dest.writeByte((byte) (init ? 1 : 0));
+        dest.writeByte((byte) (changeActivity ? 1 : 0));
+        dest.writeByte((byte) (theme ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Settings> CREATOR = new Creator<Settings>() {
+        @Override
+        public Settings createFromParcel(Parcel in) {
+            return new Settings(in);
+        }
+
+        @Override
+        public Settings[] newArray(int size) {
+            return new Settings[size];
+        }
+    };
 
     public int getZoom() {
         return zoom;
@@ -89,20 +107,6 @@ public class Settings implements Parcelable {
         this.theme = theme;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(zoom);
-        dest.writeByte((byte) (dropOff ? 1 : 0));
-        dest.writeParcelable(location, flags);
-        dest.writeByte((byte) (init ? 1 : 0));
-        dest.writeByte((byte) (changeActivity ? 1 : 0));
-        dest.writeByte((byte) (theme ? 1 : 0));
-    }
 }
 
 

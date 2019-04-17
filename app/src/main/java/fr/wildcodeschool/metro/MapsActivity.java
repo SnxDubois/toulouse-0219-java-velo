@@ -2,7 +2,6 @@ package fr.wildcodeschool.metro;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,17 +9,23 @@ import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -37,54 +42,106 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import static fr.wildcodeschool.metro.Helper.extractStation;
 import static fr.wildcodeschool.metro.ListStations.SETTINGS_RETURN;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     public static final String SETTINGS = "Settings";
+    public static final int REQUEST_IMAGE_CAPTURE = 1234;
     private static final int REQUEST_LOCATION = 2000;
-    public static ArrayList<Marker> stationMarkers = new ArrayList<Marker>();
-    public static boolean init = false;
-    public static boolean changeActivity = false;
-    public static boolean theme = false;
-    private static GoogleMap mMap;
-    private static boolean dropOff = true;
-    private static int zoom = 14;
-    private static Settings settings;
-    private static Location lastKnownlocation;
-    private Intent receiveListActivity;
-    private FloatingActionButton button;
-    private Switch switchButton;
-    private FusedLocationProviderClient fusedLocationClient;
-    private LocationManager locationManager;
-    private Switch switchDarkMap;
-    private AlertDialog.Builder builder;
-    private LatLng newStation;
-    private Marker marker;
-
+    public ArrayList<Marker> mStationMarkers = new ArrayList<>();
+    public boolean mInit = false;
+    public boolean mChangeActivity = false;
+    public boolean mTheme = false;
+    private GoogleMap mMap;
+    private boolean mDropOff = true;
+    private int mZoom = 14;
+    private Settings mSettings;
+    private Location mLastKnownLocation;
+    private Uri mFileUri = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        if (!init) {
+        if (!mInit) {
             checkPermission();
         } else {
             currentLocation();
         }
-        receiveListActivity = getIntent();
-        settings = receiveListActivity.getParcelableExtra(SETTINGS_RETURN);
+        Intent receiveListActivity = getIntent();
+        mSettings = receiveListActivity.getParcelableExtra(SETTINGS_RETURN);
         switchButton();
         floatingButton();
+        takePicIssues();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
+    private void takePicIssues() {
+        ImageButton takePic = findViewById(R.id.ibTakePicOfIssue);
+        takePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dispatchTakePictureIntent();
+
+
+            }
+        });
+    }
+
+    private void dispatchTakePictureIntent() {
+        // ouvrir l'application de prise de photo
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        // lors de la validation de la photo
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // créer le fichier contenant la photo
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException e) {
+                // TODO : gérer l'erreur
+            }
+
+            if (photoFile != null) {
+                // récupèrer le chemin de la photo
+                mFileUri = FileProvider.getUriForFile(this,
+                        "fr.wildcodeschool.metro.fileprovider",
+                        photoFile);
+                // déclenche l'appel de onActivityResult
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        ImageView ivRecupPic = findViewById(R.id.ivRecupPic);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            ivRecupPic.setImageURI(mFileUri);
+
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imgFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(imgFileName, ".jpg", storageDir);
+        return image;
+    }
+
     private void floatingButton() {
-        button = findViewById(R.id.buttonSettings);
+        FloatingActionButton button = findViewById(R.id.buttonSettings);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -94,13 +151,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void switchButton() {
-        switchButton = findViewById(R.id.switch1);
+        Switch switchButton = findViewById(R.id.switch1);
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                changeActivity = true;
+                mChangeActivity = true;
                 Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStations.class);
-                goListStationAcitvity.putExtra(SETTINGS, (Parcelable) settings);
+                goListStationAcitvity.putExtra(SETTINGS, (Parcelable) mSettings);
                 startActivity(goListStationAcitvity);
             }
         });
@@ -108,33 +165,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @SuppressLint("MissingPermission")
     private void currentLocation() {
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        locationManager = (LocationManager) this.getSystemService(MapsActivity.LOCATION_SERVICE);
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        LocationManager locationManager = (LocationManager) this.getSystemService(MapsActivity.LOCATION_SERVICE);
         fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
                 if (location != null) {
-                    lastKnownlocation = location;
-                    if (!changeActivity) {
-                        settings = new Settings(zoom, dropOff, lastKnownlocation, init, changeActivity, theme);
+                    mLastKnownLocation = location;
+                    if (!mChangeActivity) {
+                        mSettings = new Settings(mZoom, mDropOff, mLastKnownLocation, mInit, mChangeActivity, mTheme);
                     }
                     removeMarkers();
                     mMap.setMyLocationEnabled(true);
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), zoom));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), mZoom));
                     mMap.getUiSettings().setZoomControlsEnabled(true);
-                    createStationMarker(settings);
+                    createStationMarker(mSettings);
                 }
             }
         });
 
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                lastKnownlocation = location;
-                if (!changeActivity) {
-                    settings = new Settings(zoom, dropOff, lastKnownlocation, init, changeActivity, theme);
+                mLastKnownLocation = location;
+                if (!mChangeActivity) {
+                    mSettings = new Settings(mZoom, mDropOff, mLastKnownLocation, mInit, mChangeActivity, mTheme);
                 }
                 mMap.setMyLocationEnabled(true);
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), zoom));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), mZoom));
                 mMap.getUiSettings().setZoomControlsEnabled(true);
             }
 
@@ -156,36 +213,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(final GoogleMap googleMap) {
         checkPermission();
         mMap = googleMap;
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (!changeActivity) {
-            settings = new Settings(zoom, dropOff, lastKnownlocation, init, changeActivity, theme);
+        if (!mChangeActivity) {
+            mSettings = new Settings(mZoom, mDropOff, mLastKnownLocation, mInit, mChangeActivity, mTheme);
         }
-        if (settings.isTheme()) {
+        switchTheme(googleMap);
+        if (mSettings.isTheme()) {
             displayDarkTheme(googleMap);
         } else {
             displayDefaultTheme(googleMap);
         }
-        switchTheme(googleMap);
     }
 
     private void switchTheme(final GoogleMap googleMap) {
-        switchDarkMap = findViewById(R.id.switchMap);
+        Switch switchDarkMap = findViewById(R.id.switchMap);
         switchDarkMap.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                dropOff = isChecked ? true : false;
-                if (dropOff) {
+                mSettings.setTheme(!mSettings.isTheme());
+                if (mSettings.isTheme()) {
                     displayDarkTheme(googleMap);
                 } else {
                     displayDefaultTheme(googleMap);
                 }
             }
         });
-
     }
 
     private void displayDefaultTheme(final GoogleMap googleMap) {
-        settings.setTheme(true);
         try {
             boolean success = googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
@@ -197,12 +251,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (Resources.NotFoundException e) {
             Log.e("MapsActivity", "Can't find style. Error: ", e);
         }
-
-
     }
 
     private void displayDarkTheme(final GoogleMap googleMap) {
-        settings.setTheme(false);
         try {
             boolean success = googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
@@ -216,7 +267,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void displaySettings() {
-        builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         String[] perimeter = {getString(R.string.perimeter1), getString(R.string.perimeter2), getString(R.string.perimeter3), getString(R.string.perimeter4), getString(R.string.perimeter5)};
         final boolean[] checkedItems = {false, false, false, false, false};
         View switchButtonView = LayoutInflater.from(this).inflate(R.layout.activity_toggle, null);
@@ -225,15 +276,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         builder.setMultiChoiceItems(perimeter, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                zoom = checkedItems[0] ? 14 : checkedItems[1] ? 15 : checkedItems[2] ? 16 : checkedItems[3] ? 17 : 18;
+                mZoom = checkedItems[0] ? 14 : checkedItems[1] ? 15 : checkedItems[2] ? 16 : checkedItems[3] ? 17 : 18;
             }
         });
         builder.setView(switchButtonView);
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                dropOff = isChecked ? true : false;
-                if (dropOff) {
+                mDropOff = isChecked ? true : false;
+                if (mDropOff) {
                     Toast.makeText(MapsActivity.this, getString(R.string.takeBike), Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(MapsActivity.this, getString(R.string.dropBike), Toast.LENGTH_SHORT).show();
@@ -244,8 +295,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                settings.setDropOff(dropOff);
-                settings.setZoom(zoom);
+                mSettings.setDropOff(mDropOff);
+                mSettings.setZoom(mZoom);
                 currentLocation();
                 Toast.makeText(MapsActivity.this, getString(R.string.appliedSettings), Toast.LENGTH_LONG).show();
             }
@@ -259,9 +310,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onResult(ArrayList<Station> stations) {
                 for (int i = 0; i < stations.size(); i++) {
-                    newStation = new LatLng(stations.get(i).getLatitude(), stations.get(i).getLongitude());
-                    marker = mMap.addMarker((new MarkerOptions().position(newStation).icon(BitmapDescriptorFactory.fromResource(R.drawable.icon)).title(stations.get(i).getAddress()).snippet(stations.get(i).getName())));
-                    stationMarkers.add(marker);
+                    LatLng newStation = new LatLng(stations.get(i).getLatitude(), stations.get(i).getLongitude());
+                    Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).icon(BitmapDescriptorFactory.fromResource(R.drawable.icon)).title(stations.get(i).getAddress()).snippet(stations.get(i).getName())));
+                    mStationMarkers.add(marker);
                     marker.showInfoWindow();
                     mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(MapsActivity.this));
                 }
@@ -270,10 +321,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void removeMarkers() {
-        for (Marker marker : stationMarkers) {
+        for (Marker marker : mStationMarkers) {
             marker.remove();
         }
-        stationMarkers.clear();
+        mStationMarkers.clear();
     }
 
     private void checkPermission() {
