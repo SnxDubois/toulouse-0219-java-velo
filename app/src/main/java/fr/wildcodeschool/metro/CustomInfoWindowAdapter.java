@@ -20,7 +20,7 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     }
 
     private void rendowWindowText(Marker marker, View view) {
-
+        Station recupMarker = (Station) marker.getTag();
         String title = marker.getTitle();
         TextView tvTitle = (TextView) view.findViewById(R.id.tvTitle);
 
