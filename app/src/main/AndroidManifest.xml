@@ -50,6 +50,7 @@
 
         <activity
             android:name=".MapsActivity"
+            android:label="LibertyBike"></activity>
             android:label="LibertyBike" />
 
         <provider

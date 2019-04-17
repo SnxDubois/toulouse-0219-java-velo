@@ -33,7 +33,7 @@ public class StationAdapter extends ArrayAdapter<Station> {
         stationAddress.setText(stationItem.getAddress());
         stationAvailableStands.setText(Integer.toString(stationItem.getAvailableStands()));
         stationAvailableBikes.setText(Integer.toString(stationItem.getAvailableBikes()));
-        stationDistance.setText(Integer.toString((int)stationItem.getDistance()) + " meters");
+        stationDistance.setText(Integer.toString((int) stationItem.getDistance()) + " meters");
 
         return convertView;
     }

@@ -30,6 +30,21 @@ public class Settings implements Parcelable {
         theme = in.readByte() != 0;
     }
 
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(zoom);
+        dest.writeByte((byte) (dropOff ? 1 : 0));
+        dest.writeParcelable(location, flags);
+        dest.writeByte((byte) (init ? 1 : 0));
+        dest.writeByte((byte) (changeActivity ? 1 : 0));
+        dest.writeByte((byte) (theme ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
     public static final Creator<Settings> CREATOR = new Creator<Settings>() {
         @Override
         public Settings createFromParcel(Parcel in) {
@@ -46,20 +61,20 @@ public class Settings implements Parcelable {
         return zoom;
     }
 
-    public boolean isDropOff() {
-        return dropOff;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
     public void setZoom(int zoom) {
         this.zoom = zoom;
     }
 
+    public boolean isDropOff() {
+        return dropOff;
+    }
+
     public void setDropOff(boolean dropOff) {
         this.dropOff = dropOff;
+    }
+
+    public Location getLocation() {
+        return location;
     }
 
     public void setLocation(Location location) {
@@ -92,20 +107,6 @@ public class Settings implements Parcelable {
         this.theme = theme;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(zoom);
-        dest.writeByte((byte) (dropOff ? 1 : 0));
-        dest.writeParcelable(location, flags);
-        dest.writeByte((byte) (init ? 1 : 0));
-        dest.writeByte((byte) (changeActivity ? 1 : 0));
-        dest.writeByte((byte) (theme ? 1 : 0));
-    }
 }
 
 
