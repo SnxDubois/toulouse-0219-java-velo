@@ -37,7 +37,7 @@ public class SplashActivity extends AppCompatActivity {
         createThread();
     }
 
-    private void googleSignIn(){
+    private void googleSignIn() {
         mAuth = FirebaseAuth.getInstance();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -46,7 +46,7 @@ public class SplashActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
-    private void signInButton(){
+    private void signInButton() {
         signInButton = findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,7 +56,7 @@ public class SplashActivity extends AppCompatActivity {
         });
     }
 
-    private void createThread(){
+    private void createThread() {
         Thread myThread = new Thread() {
 
             public void run() {
@@ -74,7 +74,7 @@ public class SplashActivity extends AppCompatActivity {
         myThread.start();
     }
 
-    private void signIn(){
+    private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -91,7 +91,7 @@ public class SplashActivity extends AppCompatActivity {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
-                Toast.makeText(SplashActivity.this,"Connexion failed, please retry", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SplashActivity.this, "Connexion failed, please retry", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -106,7 +106,7 @@ public class SplashActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
                         } else {
-                            Toast.makeText(SplashActivity.this,"signInWithCredential:failure", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SplashActivity.this, "signInWithCredential:failure", Toast.LENGTH_SHORT).show();
                             updateUI(null);
                         }
                     }
@@ -122,7 +122,7 @@ public class SplashActivity extends AppCompatActivity {
             String personEmail = acct.getEmail();
             String personId = acct.getId();
             Uri personPhoto = acct.getPhotoUrl();
-            Toast.makeText(SplashActivity.this,"Welcome ! " + personName + " " , Toast.LENGTH_SHORT).show();
+            Toast.makeText(SplashActivity.this, "Welcome ! " + personName + " ", Toast.LENGTH_SHORT).show();
         }
 
     }

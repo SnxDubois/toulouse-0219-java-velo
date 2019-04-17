@@ -17,10 +17,10 @@ import static fr.wildcodeschool.metro.Helper.extractStation;
 import static fr.wildcodeschool.metro.MapsActivity.SETTINGS;
 
 public class ListStations extends AppCompatActivity {
-    private DrawerLayout nDrawerLayout;
-    private ActionBarDrawerToggle nToggle;
     public static final String SETTINGS_RETURN = "SETTINGS_RETURN";
     public static Settings settings;
+    private DrawerLayout nDrawerLayout;
+    private ActionBarDrawerToggle nToggle;
     private ListView listView;
     private StationAdapter stationAdapter;
     private Switch switchButton;
@@ -30,7 +30,6 @@ public class ListStations extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_stations);
         receiveIntent();
-        navigationDrawer();
         navigationDrawer();
         extractStationList();
     }
@@ -43,12 +42,12 @@ public class ListStations extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void receiveIntent(){
+    private void receiveIntent() {
         Intent receiveMainActivity = getIntent();
         settings = receiveMainActivity.getParcelableExtra(SETTINGS);
     }
 
-    private void navigationDrawer(){
+    private void navigationDrawer() {
         nDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         nToggle = new ActionBarDrawerToggle(this, nDrawerLayout, R.string.open, R.string.close);
         nDrawerLayout.addDrawerListener(nToggle);
@@ -56,7 +55,7 @@ public class ListStations extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    private void extractStationList(){
+    private void extractStationList() {
         extractStation(ListStations.this, settings, new Helper.BikeStationListener() {
 
             @Override

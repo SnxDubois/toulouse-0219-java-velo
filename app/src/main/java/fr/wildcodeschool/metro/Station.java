@@ -14,7 +14,7 @@ public class Station implements Comparable<Station> {
 
     private String status;
 
-    public Station(int number, String name, String address, double latitude, double longitude, int stands, int availableBike, int availableStands, String  status, float distance) {
+    public Station(int number, String name, String address, double latitude, double longitude, int stands, int availableBike, int availableStands, String status, float distance) {
         this.number = number;
         this.name = name;
         this.address = address;
@@ -74,14 +74,12 @@ public class Station implements Comparable<Station> {
         return stands;
     }
 
-    public int getAvailableBikes() {
-        return availableBikes;
-    }
-
-
-
     public void setAvailableStands(int availableStands) {
         this.stands = availableStands;
+    }
+
+    public int getAvailableBikes() {
+        return availableBikes;
     }
 
     public void setAvailableBikes(int availableBike) {
