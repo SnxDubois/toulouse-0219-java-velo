@@ -32,6 +32,7 @@ public class ListStations extends AppCompatActivity {
         receiveIntent();
         navigationDrawer();
         extractStationList();
+        sendIntent();
     }
 
     @Override
@@ -63,16 +64,21 @@ public class ListStations extends AppCompatActivity {
                 listView = findViewById(R.id.listView);
                 stationAdapter = new StationAdapter(ListStations.this, stations);
                 listView.setAdapter(stationAdapter);
-                switchButton = findViewById(R.id.switch1);
-                switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        Intent goMapsActivity = new Intent(ListStations.this, MapsActivity.class);
-                        goMapsActivity.putExtra(SETTINGS_RETURN, (Parcelable) settings);
-                        startActivity(goMapsActivity);
-                    }
-                });
+
             }
         });
+    }
+
+    private void sendIntent(){
+        switchButton = findViewById(R.id.switch1);
+        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Intent goMapsActivity = new Intent(ListStations.this, MapsActivity.class);
+                goMapsActivity.putExtra(SETTINGS_RETURN, (Parcelable) settings);
+                startActivity(goMapsActivity);
+            }
+        });
+
     }
 }
