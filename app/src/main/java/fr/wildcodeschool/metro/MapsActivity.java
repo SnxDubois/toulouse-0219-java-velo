@@ -54,26 +54,22 @@ import static fr.wildcodeschool.metro.ListStations.SETTINGS_RETURN;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     public static final String SETTINGS = "Settings";
     public static final int REQUEST_IMAGE_CAPTURE = 1234;
-    private static final int REQUEST_LOCATION = 2000;
     public ArrayList<Marker> mStationMarkers = new ArrayList<>();
     public boolean mInit = false;
     public boolean mTheme = false;
-    private GoogleMap mMap;
-    private boolean mDropOff = true;
-    private int mZoom = 14;
-    private Settings mSettings;
-    private Location mLastKnownLocation;
-    private Uri mFileUri = null;
+    public GoogleMap mMap;
+    public boolean mDropOff = true;
+    public int mZoom = 14;
+    public Settings mSettings;
+    public Location mLastKnownLocation;
+    public Uri mFileUri = null;
+    private static final int REQUEST_LOCATION = 2000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        if (!mInit) {
-            checkPermission();
-        } else {
-            currentLocation();
-        }
+        checkPermission();
         Intent receiveListActivity = getIntent();
         mSettings = receiveListActivity.getParcelableExtra(SETTINGS_RETURN);
         if (mSettings == null) {
@@ -169,7 +165,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                if (location != null) {
+                if (location != null && mMap != null) {
                     mLastKnownLocation = location;
                     removeMarkers();
                     mMap.setMyLocationEnabled(true);
