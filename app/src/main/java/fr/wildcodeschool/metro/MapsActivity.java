@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -64,6 +65,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public Location mLastKnownLocation;
     public Uri mFileUri = null;
     private static final int REQUEST_LOCATION = 2000;
+    private SeekBar seekbar;
+    private int mProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,9 +81,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         switchButton();
         floatingButton();
         takePicIssues();
+        seekBar();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+    }
+
+    private void seekBar() {
+        seekbar = findViewById(R.id.seekBar);
+        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if (mProgress > 0 && mProgress < 20) {
+                    seekBar.setProgress(0);
+                    mZoom = 14;
+                } else if (mProgress > 20 && mProgress < 40) {
+                    seekBar.setProgress(25);
+                    mZoom = 15;
+                } else if (mProgress > 40 && mProgress < 60) {
+                    seekBar.setProgress(50);
+                    mZoom = 16;
+                }else if (mProgress > 60 && mProgress < 80) {
+                    seekBar.setProgress(75);
+                    mZoom = 17;
+                } else if (mProgress > 80 && mProgress < 100) {
+                    seekBar.setProgress(100);
+                    mZoom = 18;
+                }
+                currentLocation();
+            }
+        });
     }
 
     private void takePicIssues() {
