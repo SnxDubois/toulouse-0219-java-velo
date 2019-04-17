@@ -2,7 +2,6 @@ package fr.wildcodeschool.metro;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -14,21 +13,17 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -79,7 +74,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mSettings = new Settings(mZoom, mDropOff, mLastKnownLocation, mInit, false, mTheme);
         }
         switchButton();
-        floatingButton();
         takePicIssues();
         seekBar();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -98,10 +92,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
 
+
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+                mProgress = seekBar.getProgress();
                 if (mProgress > 0 && mProgress < 20) {
                     seekBar.setProgress(0);
                     mZoom = 14;
@@ -174,16 +170,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(imgFileName, ".jpg", storageDir);
         return image;
-    }
-
-    private void floatingButton() {
-        FloatingActionButton button = findViewById(R.id.buttonSettings);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                displaySettings();
-            }
-        });
     }
 
     private void switchButton() {
@@ -293,44 +279,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void displaySettings() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        String[] perimeter = {getString(R.string.perimeter1), getString(R.string.perimeter2), getString(R.string.perimeter3), getString(R.string.perimeter4), getString(R.string.perimeter5)};
-        final boolean[] checkedItems = {false, false, false, false, false};
-        View switchButtonView = LayoutInflater.from(this).inflate(R.layout.activity_toggle, null);
-        Switch switchButton = switchButtonView.findViewById(R.id.switch2);
-        builder.setTitle(R.string.settings);
-        builder.setMultiChoiceItems(perimeter, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                mZoom = checkedItems[0] ? 14 : checkedItems[1] ? 15 : checkedItems[2] ? 16 : checkedItems[3] ? 17 : 18;
-            }
-        });
-        builder.setView(switchButtonView);
-        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mDropOff = isChecked;
-                if (mDropOff) {
-                    Toast.makeText(MapsActivity.this, getString(R.string.takeBike), Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MapsActivity.this, getString(R.string.dropBike), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        builder.setNegativeButton(R.string.cancel, null);
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mSettings.setDropOff(mDropOff);
-                mSettings.setZoom(mZoom);
-                currentLocation();
-                Toast.makeText(MapsActivity.this, getString(R.string.appliedSettings), Toast.LENGTH_LONG).show();
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
 
     private void createStationMarker(Settings settings) {
         extractStation(MapsActivity.this, settings, new Helper.BikeStationListener() {
