@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
@@ -21,6 +22,9 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
     private void rendowWindowText(Marker marker, View view) {
 
+        //récupération de l'objet marker
+        Station recupMarker = (Station) marker.getTag();
+
         String title = marker.getTitle();
         TextView tvTitle = (TextView) view.findViewById(R.id.tvTitle);
 
@@ -28,11 +32,18 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
             tvTitle.setText(title);
         }
 
-        String snippet = marker.getSnippet();
-        TextView tvSnippet = (TextView) view.findViewById(R.id.tvSnippet);
+        int bikeAvailable = recupMarker.getAvailableBikes();
+        TextView tvBikeAvailable = (TextView) view.findViewById(R.id.tvAvailableBike);
 
-        if (!snippet.equals("")) {
-            tvSnippet.setText(snippet);
+        if (bikeAvailable != 0) {
+            tvBikeAvailable.setText(String.valueOf(bikeAvailable) + " " + mContext.getString(R.string.velos_disponibles));
+        }
+
+        int standsAvailable = recupMarker.getAvailableStands();
+        TextView tvStandsAvailable = (TextView) view.findViewById(R.id.tvAvailableStands);
+
+        if (standsAvailable != 0) {
+            tvStandsAvailable.setText(String.valueOf(standsAvailable) + " " + mContext.getString(R.string.places_disponibles));
         }
     }
 

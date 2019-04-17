@@ -23,7 +23,10 @@ import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.RadioButton;
 import android.widget.Switch;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -40,6 +43,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.cert.Extension;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -171,7 +175,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         File image = File.createTempFile(imgFileName, ".jpg", storageDir);
         return image;
     }
+    private void floatingButtonChoose(){
+        final ToggleButton btChooseYourCase = findViewById(R.id.tbChooseYourCase);
+        btChooseYourCase.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                dropOff = isChecked ? true : false;
+                if (dropOff) {
+                    Toast.makeText(MapsActivity.this, getString(R.string.takeBike), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MapsActivity.this, getString(R.string.dropBike), Toast.LENGTH_SHORT).show();
+                }
 
+            }
+        });
+
+    }
     private void switchButton() {
         Switch switchButton = findViewById(R.id.switch1);
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -285,6 +304,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onResult(ArrayList<Station> stations) {
                 for (int i = 0; i < stations.size(); i++) {
+                    Station station = stations.get(i);
+                    LatLng newStation = new LatLng(station.getLatitude(), station.getLongitude());
+                    Marker marker = mMap.addMarker((new MarkerOptions().position(newStation)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon))
+                            .title(station.getAddress()).snippet(station.getName())));
+                    stationMarkers.add(marker);
+                    marker.setTag(station);
+
+                }
+                mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(MapsActivity.this));
                     LatLng newStation = new LatLng(stations.get(i).getLatitude(), stations.get(i).getLongitude());
                     Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).icon(BitmapDescriptorFactory.fromResource(R.drawable.icon)).title(stations.get(i).getAddress()).snippet(stations.get(i).getName())));
                     mStationMarkers.add(marker);
