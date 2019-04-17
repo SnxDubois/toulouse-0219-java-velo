@@ -23,7 +23,6 @@ import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
-import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -43,7 +42,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.cert.Extension;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -53,7 +51,7 @@ import static fr.wildcodeschool.metro.ListStations.SETTINGS_RETURN;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     public static final String SETTINGS = "Settings";
-    public static final int REQUEST_IMAGE_CAPTURE = 1234;
+    public final int REQUEST_IMAGE_CAPTURE = 1234;
     public ArrayList<Marker> mStationMarkers = new ArrayList<>();
     public boolean mInit = false;
     public boolean mTheme = false;
@@ -63,7 +61,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public Settings mSettings;
     public Location mLastKnownLocation;
     public Uri mFileUri = null;
-    private static final int REQUEST_LOCATION = 2000;
+    public final int REQUEST_LOCATION = 2000;
     private SeekBar seekbar;
     private int mProgress;
 
@@ -176,12 +174,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return image;
     }
     private void floatingButtonChoose(){
-        final ToggleButton btChooseYourCase = findViewById(R.id.tbChooseYourCase);
+        final ToggleButton btChooseYourCase = findViewById(R.id.toggleButton);
         btChooseYourCase.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                dropOff = isChecked ? true : false;
-                if (dropOff) {
+                mDropOff = isChecked ? true : false;
+                if (mDropOff) {
                     Toast.makeText(MapsActivity.this, getString(R.string.takeBike), Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(MapsActivity.this, getString(R.string.dropBike), Toast.LENGTH_SHORT).show();
@@ -309,17 +307,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Marker marker = mMap.addMarker((new MarkerOptions().position(newStation)
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon))
                             .title(station.getAddress()).snippet(station.getName())));
-                    stationMarkers.add(marker);
+                    mStationMarkers.add(marker);
                     marker.setTag(station);
 
                 }
                 mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(MapsActivity.this));
-                    LatLng newStation = new LatLng(stations.get(i).getLatitude(), stations.get(i).getLongitude());
-                    Marker marker = mMap.addMarker((new MarkerOptions().position(newStation).icon(BitmapDescriptorFactory.fromResource(R.drawable.icon)).title(stations.get(i).getAddress()).snippet(stations.get(i).getName())));
-                    mStationMarkers.add(marker);
-                    marker.showInfoWindow();
-                    mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(MapsActivity.this));
-                }
             }
         });
     }
