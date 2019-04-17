@@ -18,5 +18,7 @@
     <string name="open">open</string>
     <string name="close">close</string>
     <string name="nom_pr_nom">Nom Prénom</string>
+    <string name="places_disponibles">place(s) disponible(s)</string>
+    <string name="velos_disponibles">vélo(s) disponible(s)</string>
 
 </resources>
