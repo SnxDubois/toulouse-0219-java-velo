@@ -2,15 +2,12 @@ package fr.wildcodeschool.metro;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
-
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -26,23 +23,49 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 public class SplashActivity extends AppCompatActivity {
-
-    private SignInButton signIn;
-    private int RC_SIGN_IN=1;
-    private String TAG = "SplashActivity";
+    private SignInButton signInButton;
+    private GoogleSignInClient mGoogleSignInClient;
+    private int RC_SIGN_IN = 1023;
+    private String TAG = "TAG";
     private FirebaseAuth mAuth;
-    GoogleSignInClient mGoogleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        googleSignIn();
+        signInButton();
+        //createThread();
+    }
 
+    private void googleSignIn(){
+        mAuth = FirebaseAuth.getInstance();
+        // Configure Google Sign In
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+    }
+
+
+
+    private void signInButton(){
+        signInButton = findViewById(R.id.sign_in_button);
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signIn();
+            }
+        });
+    }
+
+    private void createThread(){
         Thread myThread = new Thread() {
 
             public void run() {
                 try {
-                    sleep(10000);
+                    sleep(5000);
                     Intent intent = new Intent(SplashActivity.this, MapsActivity.class);
                     startActivity(intent);
                     finish();
@@ -53,31 +76,9 @@ public class SplashActivity extends AppCompatActivity {
             }
         };
         myThread.start();
-
-        signIn = (SignInButton)findViewById(R.id.sign_in_button);
-        mAuth = FirebaseAuth.getInstance();
-
-        // Configure sign-in to request the user's ID, email address, and basic
-// profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        // Configure Google Sign In
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("89051023672-l62ct47flok6qc8rjidc5297phm3j5p8.apps.googleusercontent.com")
-                .requestEmail()
-                .build();
-
-        // Build a GoogleSignInClient with the options specified by gso.
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        signIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signIn();
-            }
-        });
-
     }
 
-    private void signIn() {
+    private void signIn(){
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -94,9 +95,7 @@ public class SplashActivity extends AppCompatActivity {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
-                // Google Sign In failed, update UI appropriately
-                Log.w(TAG, "Google sign in failed", e);
-                // ...
+                Toast.makeText(SplashActivity.this,"Connexion failed, please retry", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -115,19 +114,14 @@ public class SplashActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
                         } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(SplashActivity.this,"you are no able to log in to google",Toast.LENGTH_LONG).show();
+                            Toast.makeText(SplashActivity.this,"signInWithCredential:failure", Toast.LENGTH_SHORT).show();
                             updateUI(null);
                         }
-
-                        // ...
                     }
                 });
     }
 
     private void updateUI(FirebaseUser user) {
-
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
         if (acct != null) {
             String personName = acct.getDisplayName();
@@ -136,12 +130,9 @@ public class SplashActivity extends AppCompatActivity {
             String personEmail = acct.getEmail();
             String personId = acct.getId();
             Uri personPhoto = acct.getPhotoUrl();
-
-            Toast.makeText(this, "Name of the user :" + personName + "user id in :" + personId, Toast.LENGTH_SHORT).show();
+            Toast.makeText(SplashActivity.this,"Welcome ! " + personName + " " , Toast.LENGTH_SHORT).show();
         }
 
     }
-
-
 }
 
