@@ -18,5 +18,8 @@
     <string name="open">open</string>
     <string name="close">close</string>
     <string name="nom_pr_nom">Nom Prénom</string>
+    <string name="kid">kid</string>
+    <string name="adult">adult</string>
+    <string name="senior">senior</string>
 
 </resources>
