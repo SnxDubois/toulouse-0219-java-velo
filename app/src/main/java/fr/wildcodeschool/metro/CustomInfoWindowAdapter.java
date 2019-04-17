@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
@@ -20,6 +21,7 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     }
 
     private void rendowWindowText(Marker marker, View view) {
+
         //récupération de l'objet marker
         Station recupMarker = (Station) marker.getTag();
 
@@ -28,13 +30,6 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
         if (!title.equals("")) {
             tvTitle.setText(title);
-        }
-
-        String snippet = marker.getSnippet();
-        TextView tvSnippet = (TextView) view.findViewById(R.id.tvSnippet);
-
-        if (!snippet.equals("")) {
-            tvSnippet.setText(snippet);
         }
 
         int bikeAvailable = recupMarker.getAvailableBikes();
