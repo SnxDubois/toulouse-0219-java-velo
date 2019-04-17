@@ -57,7 +57,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int REQUEST_LOCATION = 2000;
     public ArrayList<Marker> mStationMarkers = new ArrayList<>();
     public boolean mInit = false;
-    public boolean mChangeActivity = false;
     public boolean mTheme = false;
     private GoogleMap mMap;
     private boolean mDropOff = true;
@@ -77,6 +76,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         Intent receiveListActivity = getIntent();
         mSettings = receiveListActivity.getParcelableExtra(SETTINGS_RETURN);
+        if (mSettings == null) {
+            mSettings = new Settings(mZoom, mDropOff, mLastKnownLocation, mInit, false, mTheme);
+        }
         switchButton();
         floatingButton();
         takePicIssues();
@@ -91,8 +93,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 dispatchTakePictureIntent();
-
-
             }
         });
     }
@@ -155,7 +155,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mChangeActivity = true;
                 Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStations.class);
                 goListStationAcitvity.putExtra(SETTINGS, (Parcelable) mSettings);
                 startActivity(goListStationAcitvity);
@@ -172,13 +171,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onSuccess(Location location) {
                 if (location != null) {
                     mLastKnownLocation = location;
-                    if (!mChangeActivity) {
-                        mSettings = new Settings(mZoom, mDropOff, mLastKnownLocation, mInit, mChangeActivity, mTheme);
-                    }
                     removeMarkers();
                     mMap.setMyLocationEnabled(true);
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), mZoom));
                     mMap.getUiSettings().setZoomControlsEnabled(true);
+                    mSettings = new Settings(mZoom, mDropOff, mLastKnownLocation, mInit, false, mTheme);
                     createStationMarker(mSettings);
                 }
             }
@@ -187,9 +184,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 mLastKnownLocation = location;
-                if (!mChangeActivity) {
-                    mSettings = new Settings(mZoom, mDropOff, mLastKnownLocation, mInit, mChangeActivity, mTheme);
-                }
                 mMap.setMyLocationEnabled(true);
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), mZoom));
                 mMap.getUiSettings().setZoomControlsEnabled(true);
@@ -213,9 +207,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(final GoogleMap googleMap) {
         checkPermission();
         mMap = googleMap;
-        if (!mChangeActivity) {
-            mSettings = new Settings(mZoom, mDropOff, mLastKnownLocation, mInit, mChangeActivity, mTheme);
-        }
         switchTheme(googleMap);
         if (mSettings.isTheme()) {
             displayDarkTheme(googleMap);
@@ -283,7 +274,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mDropOff = isChecked ? true : false;
+                mDropOff = isChecked;
                 if (mDropOff) {
                     Toast.makeText(MapsActivity.this, getString(R.string.takeBike), Toast.LENGTH_SHORT).show();
                 } else {
