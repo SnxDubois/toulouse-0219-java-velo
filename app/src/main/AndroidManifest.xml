@@ -51,7 +51,6 @@
         <activity
             android:name=".MapsActivity"
             android:label="LibertyBike"></activity>
-            android:label="LibertyBike" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
