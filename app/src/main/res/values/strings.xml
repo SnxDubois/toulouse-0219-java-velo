@@ -20,5 +20,6 @@
     <string name="nom_pr_nom">Nom Prénom</string>
     <string name="places_disponibles">place(s) disponible(s)</string>
     <string name="velos_disponibles">vélo(s) disponible(s)</string>
+    <string name="Bike">ToggleButton</string>
 
 </resources>

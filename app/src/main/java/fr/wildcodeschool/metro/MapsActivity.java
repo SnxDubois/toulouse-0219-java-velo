@@ -78,6 +78,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         switchButton();
         takePicIssues();
         seekBar();
+        toggleButton();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -116,6 +117,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     seekBar.setProgress(100);
                     mZoom = 18;
                 }
+                mSettings.setZoom(mZoom);
                 currentLocation();
             }
         });
@@ -132,21 +134,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void dispatchTakePictureIntent() {
-        // ouvrir l'application de prise de photo
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        // lors de la validation de la photo
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // créer le fichier contenant la photo
             File photoFile = null;
             try {
                 photoFile = createImageFile();
             } catch (IOException e) {
-                // TODO : gérer l'erreur
             }
-
             if (photoFile != null) {
-                // récupèrer le chemin de la photo
                 mFileUri = FileProvider.getUriForFile(this,
                         "fr.wildcodeschool.metro.fileprovider",
                         photoFile);
@@ -173,7 +168,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         File image = File.createTempFile(imgFileName, ".jpg", storageDir);
         return image;
     }
-    private void floatingButtonChoose(){
+    private void toggleButton(){
         final ToggleButton btChooseYourCase = findViewById(R.id.toggleButton);
         btChooseYourCase.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
