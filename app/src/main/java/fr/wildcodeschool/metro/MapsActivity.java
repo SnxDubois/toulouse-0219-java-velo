@@ -47,7 +47,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import static fr.wildcodeschool.metro.Helper.extractStation;
-import static fr.wildcodeschool.metro.ListStations.SETTINGS_RETURN;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     public static final String SETTINGS = "Settings";
@@ -70,10 +69,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         checkPermission();
-        Intent receiveListActivity = getIntent();
-        mSettings = receiveListActivity.getParcelableExtra(SETTINGS_RETURN);
+        Singleton settings = Singleton.getInstance();
+        //Intent receiveListActivity = getIntent();
+        //mSettings = receiveListActivity.getParcelableExtra(SETTINGS_RETURN);
         if (mSettings == null) {
-            mSettings = new Settings(mZoom, mDropOff, mLastKnownLocation, mInit, false, mTheme);
+            //mSettings = new Settings(mZoom, mDropOff, mLastKnownLocation, mInit, false, mTheme);
+            settings.initiateSettings(mZoom, mDropOff, mLastKnownLocation, mInit, false, mTheme);
         }
         switchButton();
         takePicIssues();
