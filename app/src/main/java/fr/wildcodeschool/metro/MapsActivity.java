@@ -11,7 +11,6 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -49,7 +48,6 @@ import java.util.Date;
 import static fr.wildcodeschool.metro.Helper.extractStation;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-    public static final String SETTINGS = "Settings";
     public final int REQUEST_IMAGE_CAPTURE = 1234;
     public ArrayList<Marker> mStationMarkers = new ArrayList<>();
     public boolean mInit = false;
@@ -63,19 +61,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public final int REQUEST_LOCATION = 2000;
     private SeekBar seekbar;
     private int mProgress;
+    private Singleton settings;
+    private boolean changeActivity = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         checkPermission();
-        Singleton settings = Singleton.getInstance();
-        //Intent receiveListActivity = getIntent();
-        //mSettings = receiveListActivity.getParcelableExtra(SETTINGS_RETURN);
-        if (mSettings == null) {
-            //mSettings = new Settings(mZoom, mDropOff, mLastKnownLocation, mInit, false, mTheme);
-            settings.initiateSettings(mZoom, mDropOff, mLastKnownLocation, mInit, false, mTheme);
-        }
+        getSettings();
         switchButton();
         takePicIssues();
         seekBar();
@@ -83,6 +77,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+    }
+
+    private void getSettings() {
+        settings = Singleton.getInstance();
+        mSettings = settings.getSettings();
+        if (mSettings==null) {
+            settings.initiateSettings(mZoom, mDropOff, mLastKnownLocation, mInit, changeActivity, mTheme);
+            mSettings = settings.getSettings();
+        }
+        currentLocation();
+        setButtons();
+    }
+
+    private void setButtons(){
+
+
     }
 
     private void seekBar() {
@@ -118,7 +128,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     seekBar.setProgress(100);
                     mZoom = 18;
                 }
-                mSettings.setZoom(mZoom);
+                settings.setZoom(mZoom);
                 currentLocation();
             }
         });
@@ -175,6 +185,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mDropOff = isChecked ? true : false;
+                settings.setDropOff(mDropOff);
                 if (mDropOff) {
                     Toast.makeText(MapsActivity.this, getString(R.string.takeBike), Toast.LENGTH_SHORT).show();
                 } else {
@@ -191,7 +202,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStations.class);
-                goListStationAcitvity.putExtra(SETTINGS, (Parcelable) mSettings);
                 startActivity(goListStationAcitvity);
             }
         });
@@ -208,9 +218,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mLastKnownLocation = location;
                     removeMarkers();
                     mMap.setMyLocationEnabled(true);
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), mZoom));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), mSettings.getZoom()));
                     mMap.getUiSettings().setZoomControlsEnabled(true);
-                    mSettings = new Settings(mZoom, mDropOff, mLastKnownLocation, mInit, false, mTheme);
+                    settings.setLocation(location);
                     createStationMarker(mSettings);
                 }
             }
@@ -220,7 +230,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onLocationChanged(Location location) {
                 mLastKnownLocation = location;
                 mMap.setMyLocationEnabled(true);
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), mZoom));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), mSettings.getZoom()));
                 mMap.getUiSettings().setZoomControlsEnabled(true);
             }
 
@@ -255,7 +265,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         switchDarkMap.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mSettings.setTheme(!mSettings.isTheme());
+                settings.setTheme(isChecked);
                 if (mSettings.isTheme()) {
                     displayDarkTheme(googleMap);
                 } else {

@@ -23,4 +23,26 @@ public class Singleton {
     public Settings getSettings() {
         return settings;
     }
+
+    public void setZoom(int zoom) {
+        settings.setZoom(zoom);
+    }
+
+
+    public void setTheme(boolean theme) {
+        settings.setTheme(theme);
+    }
+
+    public void setDropOff(boolean dropOff){
+        settings.setDropOff(dropOff);
+    }
+
+    public void setLocation(Location location) {
+        settings.setLocation(location);
+    }
+
+    public void setInit(boolean init) {
+        settings.setInit(init);
+    }
+
 }
