@@ -203,7 +203,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStations.class);
+                Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStationDrawer.class);
                 startActivity(goListStationAcitvity);
             }
         });
