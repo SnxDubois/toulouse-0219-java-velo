@@ -62,9 +62,6 @@ public class Helper {
                                     }
                                 }
                             }
-
-                            //TODO Sort ListView
-
                             Collections.sort(stations);
 
                         } catch (JSONException e) {
