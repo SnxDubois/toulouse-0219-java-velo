@@ -82,7 +82,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void getSettings() {
         settings = Singleton.getInstance();
         mSettings = settings.getSettings();
-        if (mSettings==null) {
+        if (mSettings == null) {
             settings.initiateSettings(mZoom, mDropOff, mLastKnownLocation, mInit, changeActivity, mTheme);
             mSettings = settings.getSettings();
         }
@@ -90,7 +90,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setButtons();
     }
 
-    private void setButtons(){
+    private void setButtons() {
 
 
     }
@@ -121,7 +121,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else if (mProgress > 40 && mProgress < 60) {
                     seekBar.setProgress(50);
                     mZoom = 16;
-                }else if (mProgress > 60 && mProgress < 80) {
+                } else if (mProgress > 60 && mProgress < 80) {
                     seekBar.setProgress(75);
                     mZoom = 17;
                 } else if (mProgress > 80 && mProgress < 100) {
@@ -179,7 +179,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         File image = File.createTempFile(imgFileName, ".jpg", storageDir);
         return image;
     }
-    private void toggleButton(){
+
+    private void toggleButton() {
         final ToggleButton btChooseYourCase = findViewById(R.id.toggleButton);
         btChooseYourCase.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -196,6 +197,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
     }
+
     private void switchButton() {
         Switch switchButton = findViewById(R.id.switch1);
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
