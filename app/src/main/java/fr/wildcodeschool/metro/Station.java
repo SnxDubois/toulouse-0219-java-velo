@@ -11,7 +11,7 @@ public class Station implements Comparable<Station> {
     private int availableBikes;
     private int availableStands;
     private float distance;
-
+    private boolean favorite;
     private String status;
 
     public Station(int number, String name, String address, double latitude, double longitude, int stands, int availableBike, int availableStands, String status, float distance) {
@@ -25,6 +25,15 @@ public class Station implements Comparable<Station> {
         this.availableStands = availableStands;
         this.status = status;
         this.distance = distance;
+        this.favorite = false;
+    }
+
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
     }
 
     public int getNumber() {
