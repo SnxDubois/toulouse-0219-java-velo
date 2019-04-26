@@ -141,16 +141,16 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_home) {
             fragment = new HomeFragment();
             importFragment();
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_account) {
             fragment = new HomeFragment();
             importFragment();
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_settings) {
             fragment = new HomeFragment();
             importFragment();
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_favorite) {
             fragment = new HomeFragment();
             importFragment();
         } else if (id == R.id.nav_share) {
