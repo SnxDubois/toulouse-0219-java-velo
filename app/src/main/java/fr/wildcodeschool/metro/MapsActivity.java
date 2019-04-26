@@ -12,17 +12,21 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -63,11 +67,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private int mProgress;
     private Singleton settings;
     private boolean changeActivity = false;
+    private TextView mTextMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        mTextMessage = (TextView) findViewById(R.id.message);
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         checkPermission();
         getSettings();
         switchButton();
@@ -348,5 +356,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    mTextMessage.setText(R.string.ic_home);
+                    return true;
+                case R.id.navigation_list:
+                    mTextMessage.setText(R.string.ic_list);
+                    return true;
+            }
+            return false;
+        }
+    };
+
+
 }
 
