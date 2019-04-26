@@ -19,22 +19,8 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     }
 
     private void rendowWindowText(Marker marker, View view) {
-        Station recupMarker = (Station) marker.getTag();
-        String title = marker.getTitle();
-        TextView tvTitle = (TextView) view.findViewById(R.id.tvTitle);
-        if (!title.equals("")) {
-            tvTitle.setText(title);
-        }
-        int bikeAvailable = recupMarker.getAvailableBikes();
-        TextView tvBikeAvailable = (TextView) view.findViewById(R.id.tvAvailableBike);
-        if (bikeAvailable != 0) {
-            tvBikeAvailable.setText(String.valueOf(bikeAvailable) + " " + mContext.getString(R.string.velos_disponibles));
-        }
-        int standsAvailable = recupMarker.getAvailableStands();
-        TextView tvStandsAvailable = (TextView) view.findViewById(R.id.tvAvailableStands);
-        if (standsAvailable != 0) {
-            tvStandsAvailable.setText(String.valueOf(standsAvailable) + " " + mContext.getString(R.string.places_disponibles));
-        }
+
+
     }
 
     @Override
