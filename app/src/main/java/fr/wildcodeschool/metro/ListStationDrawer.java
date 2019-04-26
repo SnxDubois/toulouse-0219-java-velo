@@ -48,9 +48,10 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
     }
 
     private void switchActivity(){
-        mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation =findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        navigation.getMenu().setGroupCheckable(0,true, true);
+        navigation.setSelectedItemId(R.id.navigation_list);
     }
 
     private void getSettings() {

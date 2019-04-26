@@ -104,7 +104,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-
     private void getSettings() {
         settings = Singleton.getInstance();
         mSettings = settings.getSettings();
@@ -119,6 +118,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void switchActivity(){
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation =findViewById(R.id.navigation);
+        navigation.getMenu().setGroupCheckable(0,true, true);
+        navigation.setSelectedItemId(R.id.navigation_home);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
@@ -390,7 +391,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return false;
         }
     };
-
-
 }
 
