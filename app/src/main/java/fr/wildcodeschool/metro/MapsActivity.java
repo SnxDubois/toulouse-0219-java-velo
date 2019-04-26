@@ -53,6 +53,7 @@ import static fr.wildcodeschool.metro.Helper.extractStation;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     public final int REQUEST_IMAGE_CAPTURE = 1234;
     public ArrayList<Marker> mStationMarkers = new ArrayList<>();
+    public ArrayList<Station> currentStation = new ArrayList<>();
     public boolean mInit = false;
     public boolean mTheme = false;
     public GoogleMap mMap;
@@ -67,6 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Singleton settings;
     private boolean changeActivity = false;
     private TextView mTextMessage;
+    private int selectiveIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +84,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
+
+    private void selectMarker(GoogleMap googleMap){
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                Station selectedStation = (Station) marker.getTag();
+
+                for (int i=0; i<currentStation.size(); i++){
+                    if (currentStation.get(i).getNumber() == selectedStation.getNumber()){
+                        selectiveIndex = i;
+                    }
+                }
+                Toast.makeText(MapsActivity.this, Integer.toString(currentStation.get(selectiveIndex).getNumber()), Toast.LENGTH_SHORT).show();
+
+            }
+
+        });
+
+    }
+
 
     private void getSettings() {
         settings = Singleton.getInstance();
@@ -259,6 +281,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else {
             displayDefaultTheme(googleMap);
         }
+        selectMarker(googleMap);
     }
 
 
@@ -295,14 +318,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         extractStation(MapsActivity.this, settings, new Helper.BikeStationListener() {
             @Override
             public void onResult(ArrayList<Station> stations) {
+                currentStation = stations;
+
                 for (int i = 0; i < stations.size(); i++) {
                     Station station = stations.get(i);
                     LatLng newStation = new LatLng(station.getLatitude(), station.getLongitude());
                     Marker marker = mMap.addMarker((new MarkerOptions().position(newStation)
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon))
                             .title(station.getAddress()).snippet(station.getName())));
-                    mStationMarkers.add(marker);
                     marker.setTag(station);
+                    mStationMarkers.add(marker);
+
 
                 }
                 mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(MapsActivity.this));
