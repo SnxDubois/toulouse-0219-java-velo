@@ -38,20 +38,6 @@
         map:layout_constraintTop_toBottomOf="@+id/map"
         map:layout_constraintVertical_bias="0.529"/>
 
-    <Switch
-        android:id="@+id/switchMap"
-        android:layout_width="81dp"
-        android:layout_height="23dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="16dp"
-        map:layout_constraintBottom_toBottomOf="parent"
-        map:layout_constraintEnd_toStartOf="@+id/switch1"
-        map:layout_constraintStart_toStartOf="parent"
-        tools:text="Switch Dark Mode" />
-
     <ImageButton
         android:id="@+id/ibTakePicOfIssue"
         android:layout_width="41dp"
@@ -104,6 +90,18 @@
         map:layout_constraintStart_toStartOf="parent"
         map:layout_constraintTop_toTopOf="parent"
         map:layout_constraintVertical_bias="0.844" />
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/navigation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/windowBackground"
+        map:layout_constraintBottom_toBottomOf="parent"
+        map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintHorizontal_bias="1.0"
+        map:layout_constraintStart_toStartOf="parent"
+        map:menu="@menu/navigation"/>
+
 
 </android.support.constraint.ConstraintLayout>
 

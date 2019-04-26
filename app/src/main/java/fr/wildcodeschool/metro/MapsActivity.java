@@ -12,17 +12,20 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
-import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -50,6 +53,7 @@ import static fr.wildcodeschool.metro.Helper.extractStation;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     public final int REQUEST_IMAGE_CAPTURE = 1234;
     public ArrayList<Marker> mStationMarkers = new ArrayList<>();
+    public ArrayList<Station> currentStation = new ArrayList<>();
     public boolean mInit = false;
     public boolean mTheme = false;
     public GoogleMap mMap;
@@ -63,14 +67,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private int mProgress;
     private Singleton settings;
     private boolean changeActivity = false;
+    private TextView mTextMessage;
+    private int selectiveIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        switchActivity();
         checkPermission();
         getSettings();
-        switchButton();
         takePicIssues();
         seekBar();
         toggleButton();
@@ -78,6 +84,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
+
+    private void selectMarker(GoogleMap googleMap){
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                Station selectedStation = (Station) marker.getTag();
+
+                for (int i=0; i<currentStation.size(); i++){
+                    if (currentStation.get(i).getNumber() == selectedStation.getNumber()){
+                        selectiveIndex = i;
+                    }
+                }
+                Toast.makeText(MapsActivity.this, Integer.toString(currentStation.get(selectiveIndex).getNumber()), Toast.LENGTH_SHORT).show();
+            }
+
+        });
+
+    }
+
 
     private void getSettings() {
         settings = Singleton.getInstance();
@@ -88,6 +113,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         currentLocation();
         setButtons();
+    }
+
+    private void switchActivity(){
+        mTextMessage = (TextView) findViewById(R.id.message);
+        BottomNavigationView navigation =findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
     private void setButtons() {
@@ -198,17 +229,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private void switchButton() {
-        Switch switchButton = findViewById(R.id.switch1);
-        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStations.class);
-                startActivity(goListStationAcitvity);
-            }
-        });
-    }
-
     @SuppressLint("MissingPermission")
     private void currentLocation() {
         FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -254,28 +274,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(final GoogleMap googleMap) {
         checkPermission();
         mMap = googleMap;
-        switchTheme(googleMap);
+
         if (mSettings.isTheme()) {
             displayDarkTheme(googleMap);
         } else {
             displayDefaultTheme(googleMap);
         }
+        selectMarker(googleMap);
     }
 
-    private void switchTheme(final GoogleMap googleMap) {
-        Switch switchDarkMap = findViewById(R.id.switchMap);
-        switchDarkMap.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                settings.setTheme(isChecked);
-                if (mSettings.isTheme()) {
-                    displayDarkTheme(googleMap);
-                } else {
-                    displayDefaultTheme(googleMap);
-                }
-            }
-        });
-    }
+
 
     private void displayDefaultTheme(final GoogleMap googleMap) {
         try {
@@ -309,14 +317,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         extractStation(MapsActivity.this, settings, new Helper.BikeStationListener() {
             @Override
             public void onResult(ArrayList<Station> stations) {
+                currentStation = stations;
+
                 for (int i = 0; i < stations.size(); i++) {
                     Station station = stations.get(i);
                     LatLng newStation = new LatLng(station.getLatitude(), station.getLongitude());
                     Marker marker = mMap.addMarker((new MarkerOptions().position(newStation)
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon))
                             .title(station.getAddress()).snippet(station.getName())));
-                    mStationMarkers.add(marker);
                     marker.setTag(station);
+                    mStationMarkers.add(marker);
+
 
                 }
                 mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(MapsActivity.this));
@@ -361,5 +372,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    return true;
+                case R.id.navigation_list:
+                    Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStationDrawer.class);
+                    startActivity(goListStationAcitvity);
+                    return true;
+            }
+            return false;
+        }
+    };
+
+
 }
 
