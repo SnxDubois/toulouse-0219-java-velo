@@ -142,26 +142,26 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.nav_home) {
-            fragment = new HomeFragment();
+
             importFragment();
         } else if (id == R.id.nav_account) {
-            fragment = new HomeFragment();
+            fragment = new AccountFragment();
             importFragment();
         } else if (id == R.id.nav_settings) {
-            fragment = new HomeFragment();
+            fragment = new SettingsFragment();
             importFragment();
         } else if (id == R.id.nav_favorite) {
-            fragment = new HomeFragment();
+            fragment = new FavoriteFragment();
             importFragment();
         } else if (id == R.id.nav_share) {
-            fragment = new HomeFragment();
+            fragment = new ShareFragment();
             importFragment();
         } else if (id == R.id.nav_send) {
-            fragment = new HomeFragment();
+            fragment = new SendFragment();
             importFragment();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
