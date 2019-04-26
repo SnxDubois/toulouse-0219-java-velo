@@ -97,7 +97,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
                 Toast.makeText(MapsActivity.this, Integer.toString(currentStation.get(selectiveIndex).getNumber()), Toast.LENGTH_SHORT).show();
-
             }
 
         });

@@ -47,9 +47,9 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
         sendIntent();
     }
 
-    private void switchActivity(){
+    private void switchActivity() {
         mTextMessage = (TextView) findViewById(R.id.message);
-        BottomNavigationView navigation =findViewById(R.id.navigation);
+        BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
@@ -58,7 +58,7 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
         mSettings = settings.getSettings();
     }
 
-    private void importFragment(){
+    private void importFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.drawer_layout, fragment);
@@ -69,15 +69,11 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
     private void navigationDrawer() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
@@ -90,12 +86,11 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
                 listView = findViewById(R.id.listView);
                 stationAdapter = new StationAdapter(ListStationDrawer.this, stations);
                 listView.setAdapter(stationAdapter);
-
             }
         });
     }
 
-    private void sendIntent(){
+    private void sendIntent() {
         switchButton = findViewById(R.id.switch1);
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -144,7 +139,6 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.nav_home) {
-
             importFragment();
         } else if (id == R.id.nav_account) {
             fragment = new AccountFragment();
