@@ -323,16 +323,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 final CustomInfoWindowAdapter adapter = new CustomInfoWindowAdapter(MapsActivity.this);
                 mMap.setInfoWindowAdapter(adapter);
 
-                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                    @Override
-                    public void onInfoWindowClick(Marker marker) {
-
-                        Station station = (Station) marker.getTag();
-                        station.setFavorite(!                                     station.isFavorite());
 
 
-                    }
-                });
             }
         });
     }
@@ -361,8 +353,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case REQUEST_LOCATION: {
                 if (grantResults.length > 0
