@@ -37,10 +37,6 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         if (standsAvailable != 0) {
             tvStandsAvailable.setText(String.valueOf(standsAvailable) + " " + mContext.getString(R.string.places_disponibles));
         }
-        if (recupMarker.isFavorite()){
-            ToggleButton favorite = view.findViewById(R.id.button_favorite);
-            favorite.setChecked(true);
-        }
     }
 
     @Override

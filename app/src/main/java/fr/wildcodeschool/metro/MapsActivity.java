@@ -2,6 +2,7 @@ package fr.wildcodeschool.metro;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -62,6 +63,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private SeekBar seekbar;
     private int mProgress;
     private Singleton settings;
+    private boolean favorite;
     private boolean changeActivity = false;
 
     @Override
@@ -74,9 +76,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         takePicIssues();
         seekBar();
         toggleButton();
+        selectMarker();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+    }
+
+    private void selectMarker(){
+        window.google.maps.event.addListener(selectMarker, 'click', fonction)
+        ToggleButton favorites = findViewById(R.id.button_favorite);
+        if (favorite = true){
+            favorites.setChecked(true);
+        }
     }
 
     private void getSettings() {
