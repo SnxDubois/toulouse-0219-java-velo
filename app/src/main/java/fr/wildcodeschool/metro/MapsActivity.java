@@ -25,7 +25,6 @@ import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -73,12 +72,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        mTextMessage = (TextView) findViewById(R.id.message);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        switchActivity();
         checkPermission();
         getSettings();
-        switchButton();
         takePicIssues();
         seekBar();
         toggleButton();
@@ -96,6 +92,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         currentLocation();
         setButtons();
+    }
+
+    private void switchActivity(){
+        mTextMessage = (TextView) findViewById(R.id.message);
+        BottomNavigationView navigation =findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
     private void setButtons() {
@@ -204,17 +206,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-    }
-
-    private void switchButton() {
-        Switch switchButton = findViewById(R.id.switch1);
-        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStationDrawer.class);
-                startActivity(goListStationAcitvity);
-            }
-        });
     }
 
     @SuppressLint("MissingPermission")
@@ -364,10 +355,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    mTextMessage.setText(R.string.ic_home);
                     return true;
                 case R.id.navigation_list:
-                    mTextMessage.setText(R.string.ic_list);
+                    Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStationDrawer.class);
+                    startActivity(goListStationAcitvity);
                     return true;
             }
             return false;
