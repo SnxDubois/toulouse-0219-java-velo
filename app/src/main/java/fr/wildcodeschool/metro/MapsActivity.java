@@ -254,7 +254,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(final GoogleMap googleMap) {
         checkPermission();
         mMap = googleMap;
-        switchTheme(googleMap);
+
         if (mSettings.isTheme()) {
             displayDarkTheme(googleMap);
         } else {
@@ -262,20 +262,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void switchTheme(final GoogleMap googleMap) {
-        Switch switchDarkMap = findViewById(R.id.switchMap);
-        switchDarkMap.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                settings.setTheme(isChecked);
-                if (mSettings.isTheme()) {
-                    displayDarkTheme(googleMap);
-                } else {
-                    displayDefaultTheme(googleMap);
-                }
-            }
-        });
-    }
+
 
     private void displayDefaultTheme(final GoogleMap googleMap) {
         try {
