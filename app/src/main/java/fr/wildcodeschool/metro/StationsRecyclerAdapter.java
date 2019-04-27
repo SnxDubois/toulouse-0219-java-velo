@@ -42,8 +42,8 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         holder.stationNameView.setText(station.getName());
         holder.stationAddressView.setText(station.getAddress());
         holder.distanceView.setText((Integer.toString((int)station.getDistance())));
-        holder.bikesView.setText(station.getAvailableBikes());
-        holder.standsView.setText(station.getAvailableStands());
+        holder.bikesView.setText((Integer.toString(station.getAvailableBikes())));
+        holder.standsView.setText((Integer.toString(station.getAvailableStands())));
     }
 
     @Override
