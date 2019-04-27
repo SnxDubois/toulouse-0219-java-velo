@@ -361,7 +361,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         REQUEST_LOCATION);
             }
         } else {
-            currentLocation();
+           currentLocation();
         }
     }
 

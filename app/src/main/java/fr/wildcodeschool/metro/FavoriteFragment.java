@@ -53,7 +53,7 @@ public class FavoriteFragment extends Fragment {
                                 }
                             }
                         }
-                        RecyclerView recycleListStations = favoriteView.findViewById(R.id.list_recycle_station);
+                        RecyclerView recycleListStations = favoriteView.findViewById(R.id.fragment_list_recycle_station);
                         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
                         recycleListStations.setLayoutManager(layoutManager);
                         StationsRecyclerAdapter adapter = new StationsRecyclerAdapter(stations);
