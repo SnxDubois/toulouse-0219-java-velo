@@ -20,12 +20,12 @@ import static fr.wildcodeschool.metro.Helper.extractStation;
 
 
 public class FavoriteFragment extends Fragment {
-    private ArrayList<Integer> favoriteStationNumbers = new ArrayList<>();
-    private int favoriteStationNumber;
+    private ArrayList<Integer> mFavoriteStationNumbers = new ArrayList<>();
+    private int mFavoriteStationNumber;
     private Settings mSettings;
-    private ListView listView;
-    private StationAdapter stationAdapter;
-    private ArrayList<Station> favoriteStation = new ArrayList<>();
+    private ListView mListView;
+    private StationAdapter mStationAdapter;
+    private ArrayList<Station> mFavoriteStation = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -36,9 +36,10 @@ public class FavoriteFragment extends Fragment {
         favoriteStationReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot favoriteStationNumberData : dataSnapshot.getChildren()){
-                    favoriteStationNumber = Integer.parseInt(favoriteStationNumberData.getKey());
-                    favoriteStationNumbers.add(favoriteStationNumber);                }
+                for (DataSnapshot favoriteStationNumberData : dataSnapshot.getChildren()) {
+                    mFavoriteStationNumber = Integer.parseInt(favoriteStationNumberData.getKey());
+                    mFavoriteStationNumbers.add(mFavoriteStationNumber);
+                }
             }
 
             @Override
@@ -51,22 +52,19 @@ public class FavoriteFragment extends Fragment {
 
             @Override
             public void onResult(ArrayList<Station> stations) {
-                for (int index = 0 ; index < favoriteStationNumbers.size(); index++) {
+                for (int index = 0; index < mFavoriteStationNumbers.size(); index++) {
                     for (Station searchFavoriteStation : stations) {
-                        if (searchFavoriteStation.getNumber() == favoriteStationNumbers.get(index)) {
-                            favoriteStation.add(searchFavoriteStation);
+                        if (searchFavoriteStation.getNumber() == mFavoriteStationNumbers.get(index)) {
+                            mFavoriteStation.add(searchFavoriteStation);
                         }
                     }
                 }
-                listView = favoriteView.findViewById(R.id.list_favorite_station);
-                stationAdapter = new StationAdapter(getContext(), favoriteStation);
-                listView.setAdapter(stationAdapter);
+                mListView = favoriteView.findViewById(R.id.list_favorite_station);
+                mStationAdapter = new StationAdapter(getContext(), mFavoriteStation);
+                mListView.setAdapter(mStationAdapter);
 
             }
         });
-
-
-
         return favoriteView;
     }
 }

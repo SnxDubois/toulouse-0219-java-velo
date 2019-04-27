@@ -65,12 +65,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public Location mLastKnownLocation;
     public Uri mFileUri = null;
     public final int REQUEST_LOCATION = 2000;
-    private SeekBar seekbar;
+    private SeekBar mSeekbar;
     private int mProgress;
     private Singleton settings;
-    private boolean changeActivity = false;
+    private boolean mChangeActivity = false;
     private TextView mTextMessage;
-    private int favoriteStationNumber;
+    private int mFvoriteStationNumber;
 
 
     @Override
@@ -88,19 +88,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
-    private void saveToFireBase(){
+    private void saveToFireBase() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference favoriteStationBase = database.getReference("favoriteStationBase");
-        String key = Integer.toString(favoriteStationNumber);
-        favoriteStationBase.child(key).setValue(favoriteStationNumber);
+        String key = Integer.toString(mFvoriteStationNumber);
+        favoriteStationBase.child(key).setValue(mFvoriteStationNumber);
     }
 
-    private void selectMarker(GoogleMap googleMap){
+    private void selectMarker(GoogleMap googleMap) {
         googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 Station selectedStation = (Station) marker.getTag();
-                favoriteStationNumber = selectedStation.getNumber();
+                mFvoriteStationNumber = selectedStation.getNumber();
                 saveToFireBase();
             }
         });
@@ -110,17 +110,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         settings = Singleton.getInstance();
         mSettings = settings.getSettings();
         if (mSettings == null) {
-            settings.initiateSettings(mZoom, mDropOff, mLastKnownLocation, mInit, changeActivity, mTheme);
+            settings.initiateSettings(mZoom, mDropOff, mLastKnownLocation, mInit, mChangeActivity, mTheme);
             mSettings = settings.getSettings();
         }
         currentLocation();
         setButtons();
     }
 
-    private void switchActivity(){
+    private void switchActivity() {
         mTextMessage = (TextView) findViewById(R.id.message);
-        BottomNavigationView navigation =findViewById(R.id.navigation);
-        navigation.getMenu().setGroupCheckable(0,true, true);
+        BottomNavigationView navigation = findViewById(R.id.navigation);
+        navigation.getMenu().setGroupCheckable(0, true, true);
         navigation.setSelectedItemId(R.id.navigation_home);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
@@ -131,8 +131,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void seekBar() {
-        seekbar = findViewById(R.id.seekBar);
-        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        mSeekbar = findViewById(R.id.seekBar);
+        mSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
@@ -282,7 +282,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         selectMarker(googleMap);
     }
 
-    private void setTheme(GoogleMap googleMap){
+    private void setTheme(GoogleMap googleMap) {
         if (mSettings.isTheme()) {
             displayDarkTheme(googleMap);
         } else {
