@@ -7,15 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
-
 import static fr.wildcodeschool.metro.Helper.extractStation;
 
 
@@ -26,19 +23,40 @@ public class FavoriteFragment extends Fragment {
     private ListView listView;
     private StationAdapter stationAdapter;
     private ArrayList<Station> favoriteStation = new ArrayList<>();
+    private Singleton settings;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View favoriteView = inflater.inflate(R.layout.fragment_favorite, container, false);
-        final FirebaseDatabase favoriteStationBase = FirebaseDatabase.getInstance();
+        FirebaseDatabase favoriteStationBase = FirebaseDatabase.getInstance();
         DatabaseReference favoriteStationReference = favoriteStationBase.getReference("favoriteStationBase");
-
+        settings = Singleton.getInstance();
+        mSettings = settings.getSettings();
         favoriteStationReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot favoriteStationNumberData : dataSnapshot.getChildren()){
                     favoriteStationNumber = Integer.parseInt(favoriteStationNumberData.getKey());
-                    favoriteStationNumbers.add(favoriteStationNumber);                }
+                    favoriteStationNumbers.add(favoriteStationNumber);
+                }
+
+                extractStation(getContext(), mSettings, new Helper.BikeStationListener() {
+
+                    @Override
+                    public void onResult(ArrayList<Station> stations) {
+                        for (int index = 0 ; index < favoriteStationNumbers.size(); index++) {
+                            for (Station searchFavoriteStation : stations) {
+                                if (searchFavoriteStation.getNumber() == favoriteStationNumbers.get(index)) {
+                                    favoriteStation.add(searchFavoriteStation);
+                                }
+                            }
+                        }
+                        listView = favoriteView.findViewById(R.id.list_favorite_station);
+                        stationAdapter = new StationAdapter(getContext(), favoriteStation);
+                        listView.setAdapter(stationAdapter);
+                    }
+                });
             }
 
             @Override
@@ -47,23 +65,8 @@ public class FavoriteFragment extends Fragment {
                 Toast.makeText(getContext(), "Failed to read value.", Toast.LENGTH_LONG).show();
             }
         });
-        extractStation(getContext(), mSettings, new Helper.BikeStationListener() {
 
-            @Override
-            public void onResult(ArrayList<Station> stations) {
-                for (int index = 0 ; index < favoriteStationNumbers.size(); index++) {
-                    for (Station searchFavoriteStation : stations) {
-                        if (searchFavoriteStation.getNumber() == favoriteStationNumbers.get(index)) {
-                            favoriteStation.add(searchFavoriteStation);
-                        }
-                    }
-                }
-                listView = favoriteView.findViewById(R.id.list_favorite_station);
-                stationAdapter = new StationAdapter(getContext(), favoriteStation);
-                listView.setAdapter(stationAdapter);
 
-            }
-        });
 
 
 
