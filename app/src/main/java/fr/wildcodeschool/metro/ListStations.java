@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
 import android.widget.ListView;
@@ -23,6 +25,7 @@ public class ListStations extends AppCompatActivity {
     private StationAdapter stationAdapter;
     private Switch switchButton;
     private Singleton settings;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,10 +63,12 @@ public class ListStations extends AppCompatActivity {
 
             @Override
             public void onResult(ArrayList<Station> stations) {
-                listView = findViewById(R.id.listView);
-                stationAdapter = new StationAdapter(ListStations.this, stations);
-                listView.setAdapter(stationAdapter);
-
+                //listView = findViewById(R.id.listView);
+                //stationAdapter = new StationAdapter(ListStations.this, stations);
+                //listView.setAdapter(stationAdapter);
+                RecyclerView recycleListStations = findViewById(R.id.stations_recycle_list);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(ListStations.this, LinearLayoutManager.VERTICAL, false);
+                recycleListStations.setLayoutManager(layoutManager);
             }
         });
     }

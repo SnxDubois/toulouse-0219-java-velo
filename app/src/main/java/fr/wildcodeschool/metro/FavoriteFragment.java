@@ -2,6 +2,8 @@ package fr.wildcodeschool.metro;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,9 +54,12 @@ public class FavoriteFragment extends Fragment {
                                 }
                             }
                         }
-                        listView = favoriteView.findViewById(R.id.list_favorite_station);
-                        stationAdapter = new StationAdapter(getContext(), favoriteStation);
-                        listView.setAdapter(stationAdapter);
+                       // listView = favoriteView.findViewById(R.id.list_favorite_station);
+                       // stationAdapter = new StationAdapter(getContext(), favoriteStation);
+                       // listView.setAdapter(stationAdapter);
+                        RecyclerView recycleListStations = favoriteView.findViewById(R.id.stations_recycle_list);
+                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+                        recycleListStations.setLayoutManager(layoutManager);
                     }
                 });
             }
@@ -65,11 +70,6 @@ public class FavoriteFragment extends Fragment {
                 Toast.makeText(getContext(), "Failed to read value.", Toast.LENGTH_LONG).show();
             }
         });
-
-
-
-
-
         return favoriteView;
     }
 }
