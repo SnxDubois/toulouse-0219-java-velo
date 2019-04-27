@@ -55,7 +55,7 @@ import static fr.wildcodeschool.metro.Helper.extractStation;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     public final int REQUEST_IMAGE_CAPTURE = 1234;
     public ArrayList<Marker> mStationMarkers = new ArrayList<>();
-    public ArrayList<Station> currentStation = new ArrayList<>();
+    public ArrayList<Station> mCurrentStation = new ArrayList<>();
     public boolean mInit = false;
     public boolean mTheme = false;
     public GoogleMap mMap;
@@ -65,12 +65,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public Location mLastKnownLocation;
     public Uri mFileUri = null;
     public final int REQUEST_LOCATION = 2000;
-    private SeekBar seekbar;
+    private SeekBar mSeekbar;
     private int mProgress;
     private Singleton settings;
     private boolean changeActivity = false;
     private TextView mTextMessage;
-    private int favoriteStationNumber;
+    private int mFavoriteStationNumber;
 
 
     @Override
@@ -88,20 +88,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
-    private void saveToFireBase(){
+    private void saveToFireBase() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference favoriteStationBase = database.getReference("favoriteStationBase");
-        String key = Integer.toString(favoriteStationNumber);
-        favoriteStationBase.child(key).setValue(favoriteStationNumber);
+        String key = Integer.toString(mFavoriteStationNumber);
+        favoriteStationBase.child(key).setValue(mFavoriteStationNumber);
     }
 
-    private void selectMarker(GoogleMap googleMap){
+    private void selectMarker(GoogleMap googleMap) {
         googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 Station selectedStation = (Station) marker.getTag();
-                favoriteStationNumber = selectedStation.getNumber();
-                Toast.makeText(MapsActivity.this , "Stations " + selectedStation.getName() + " aded to favorites", Toast.LENGTH_SHORT).show();
+                mFavoriteStationNumber = selectedStation.getNumber();
+                Toast.makeText(MapsActivity.this, "Stations " + selectedStation.getName() + " aded to favorites", Toast.LENGTH_SHORT).show();
                 saveToFireBase();
             }
         });
@@ -118,10 +118,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setButtons();
     }
 
-    private void switchActivity(){
+    private void switchActivity() {
         mTextMessage = (TextView) findViewById(R.id.message);
-        BottomNavigationView navigation =findViewById(R.id.navigation);
-        navigation.getMenu().setGroupCheckable(0,true, true);
+        BottomNavigationView navigation = findViewById(R.id.navigation);
+        navigation.getMenu().setGroupCheckable(0, true, true);
         navigation.setSelectedItemId(R.id.navigation_home);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
@@ -132,8 +132,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void seekBar() {
-        seekbar = findViewById(R.id.seekBar);
-        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        mSeekbar = findViewById(R.id.seekBar);
+        mSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
@@ -283,7 +283,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         selectMarker(googleMap);
     }
 
-    private void setTheme(GoogleMap googleMap){
+    private void setTheme(GoogleMap googleMap) {
         if (mSettings.isTheme()) {
             displayDarkTheme(googleMap);
         } else {
@@ -324,7 +324,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         extractStation(MapsActivity.this, settings, new Helper.BikeStationListener() {
             @Override
             public void onResult(ArrayList<Station> stations) {
-                currentStation = stations;
+                mCurrentStation = stations;
 
                 for (int i = 0; i < stations.size(); i++) {
                     Station station = stations.get(i);
@@ -361,7 +361,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         REQUEST_LOCATION);
             }
         } else {
-           currentLocation();
+            currentLocation();
         }
     }
 

@@ -18,7 +18,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Switch;
 
 import java.util.ArrayList;
 
@@ -26,9 +25,8 @@ import static fr.wildcodeschool.metro.Helper.extractStation;
 
 public class ListStation extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static Settings mSettings;
-    private Switch switchButton;
     private Singleton settings;
-    private Fragment fragment;
+    private Fragment mFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +41,11 @@ public class ListStation extends AppCompatActivity implements NavigationView.OnN
         settings = Singleton.getInstance();
         mSettings = settings.getSettings();
     }
-    private void importFragment(){
+
+    private void importFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.drawer_layout, fragment);
+        fragmentTransaction.add(R.id.drawer_layout, mFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
@@ -54,13 +53,11 @@ public class ListStation extends AppCompatActivity implements NavigationView.OnN
     private void navigationDrawer() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
@@ -80,7 +77,6 @@ public class ListStation extends AppCompatActivity implements NavigationView.OnN
     }
 
 
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -93,23 +89,16 @@ public class ListStation extends AppCompatActivity implements NavigationView.OnN
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.list_station_drawer, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -121,22 +110,21 @@ public class ListStation extends AppCompatActivity implements NavigationView.OnN
 
             importFragment();
         } else if (id == R.id.nav_account) {
-            fragment = new AccountFragment();
+            mFragment = new AccountFragment();
             importFragment();
         } else if (id == R.id.nav_settings) {
-            fragment = new SettingsFragment();
+            mFragment = new SettingsFragment();
             importFragment();
         } else if (id == R.id.nav_favorite) {
-            fragment = new FavoriteFragment();
+            mFragment = new FavoriteFragment();
             importFragment();
         } else if (id == R.id.nav_share) {
-            fragment = new ShareFragment();
+            mFragment = new ShareFragment();
             importFragment();
         } else if (id == R.id.nav_send) {
-            fragment = new SendFragment();
+            mFragment = new SendFragment();
             importFragment();
         }
-
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
