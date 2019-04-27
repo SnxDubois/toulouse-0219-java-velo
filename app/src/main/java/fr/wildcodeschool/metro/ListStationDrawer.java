@@ -17,24 +17,16 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
-import android.widget.Switch;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import static fr.wildcodeschool.metro.Helper.extractStation;
 
 public class ListStationDrawer extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    public static final String SETTINGS_RETURN = "SETTINGS_RETURN";
     public static Settings mSettings;
-    private DrawerLayout nDrawerLayout;
-    private ActionBarDrawerToggle nToggle;
-    private ListView listView;
-    private Switch switchButton;
     private Singleton settings;
     private Fragment fragment;
-    private TextView mTextMessage;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,15 +76,11 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
 
             @Override
             public void onResult(ArrayList<Station> stations) {
-                //listView = findViewById(R.id.listView);
-                //stationAdapter = new StationAdapter(ListStationDrawer.this, stations);
-                //listView.setAdapter(stationAdapter);
                 RecyclerView recycleListStations = findViewById(R.id.list_recycle_station);
                 RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(ListStationDrawer.this, LinearLayoutManager.VERTICAL, false);
                 recycleListStations.setLayoutManager(layoutManager);
                 StationsRecyclerAdapter adapter = new StationsRecyclerAdapter(stations);
                 recycleListStations.setAdapter(adapter);
-
             }
         });
     }
