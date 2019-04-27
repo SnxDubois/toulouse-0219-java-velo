@@ -41,6 +41,8 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.File;
 import java.io.IOException;
@@ -68,7 +70,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Singleton settings;
     private boolean changeActivity = false;
     private TextView mTextMessage;
-    private int selectiveIndex;
+    private int favoriteStationNumber;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,21 +88,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
+    private void saveToFireBase(){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference favoriteStationBase = database.getReference("favoriteStationBase");
+        String key = Integer.toString(favoriteStationNumber);
+        favoriteStationBase.child(key).setValue(favoriteStationNumber);
+    }
+
     private void selectMarker(GoogleMap googleMap){
         googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 Station selectedStation = (Station) marker.getTag();
-
-                for (int i=0; i<currentStation.size(); i++){
-                    if (currentStation.get(i).getNumber() == selectedStation.getNumber()){
-                        selectiveIndex = i;
-                    }
-                }
+                favoriteStationNumber = selectedStation.getNumber();
+                saveToFireBase();
             }
-
         });
-
     }
 
     private void getSettings() {
@@ -272,17 +276,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
-        checkPermission();
         mMap = googleMap;
+        checkPermission();
+        setTheme(googleMap);
+        selectMarker(googleMap);
+    }
 
+    private void setTheme(GoogleMap googleMap){
         if (mSettings.isTheme()) {
             displayDarkTheme(googleMap);
         } else {
             displayDefaultTheme(googleMap);
         }
-        selectMarker(googleMap);
     }
-
 
 
     private void displayDefaultTheme(final GoogleMap googleMap) {

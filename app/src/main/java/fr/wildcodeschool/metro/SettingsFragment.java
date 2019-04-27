@@ -19,8 +19,8 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         settings = Singleton.getInstance();
         mSettings = settings.getSettings();
-        View view = inflater.inflate(R.layout.fragment_settings, container, false);
-        Switch switchTheme = view.findViewById(R.id.switch1);
+        View settingsView = inflater.inflate(R.layout.fragment_settings, container, false);
+        Switch switchTheme = settingsView.findViewById(R.id.switch1);
         switchTheme.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -33,7 +33,7 @@ public class SettingsFragment extends Fragment {
                 }
             }
         });
-        return view;
+        return settingsView;
 
     }
 }
