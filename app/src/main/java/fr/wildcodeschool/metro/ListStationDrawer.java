@@ -17,7 +17,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -45,7 +44,6 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
         getSettings();
         navigationDrawer();
         extractStationList();
-        sendIntent();
     }
 
     private void switchActivity(){
@@ -99,17 +97,6 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
         });
     }
 
-    private void sendIntent(){
-        switchButton = findViewById(R.id.switch1);
-        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Intent goMapsActivity = new Intent(ListStationDrawer.this, MapsActivity.class);
-                startActivity(goMapsActivity);
-            }
-        });
-
-    }
 
     @Override
     public void onBackPressed() {
