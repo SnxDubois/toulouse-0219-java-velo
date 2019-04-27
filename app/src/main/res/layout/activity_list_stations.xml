@@ -38,6 +38,18 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/activity_display_station" />
 
+
+        <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/stations_recycle_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context="fr.wildcodeschool.blablawild2.ItineraryListActivity"
+            android:scrollbars="vertical"
+            tools:listitem="@layout/activity_display_recycle_station">
+
+        </android.support.v7.widget.RecyclerView>
+
         <Switch
             android:id="@+id/switch1"
             android:layout_width="wrap_content"
