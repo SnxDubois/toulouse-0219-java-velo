@@ -12,6 +12,8 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     private final View mWindow;
     private Context mContext;
     private int bikeAvailable;
+    private Station selectedMarker;
+    private TextView stationTitle;
 
     public CustomInfoWindowAdapter(Context context) {
         mContext = context;
@@ -19,6 +21,12 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     }
 
     private void rendowWindowText(Marker marker, View view) {
+
+        selectedMarker = (Station) marker.getTag();
+        String title = marker.getTitle();
+        stationTitle = view.findViewById(R.id.tvTitle);
+        if (!title.equals("")) {stationTitle.setText(title);
+        }
 
 
     }
