@@ -93,7 +93,7 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
                 RecyclerView recycleListStations = findViewById(R.id.stations_recycle_list);
                 RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(ListStationDrawer.this, LinearLayoutManager.VERTICAL, false);
                 recycleListStations.setLayoutManager(layoutManager);
-                final StationsRecyclerAdapter adapter = new StationsRecyclerAdapter(stations);
+                StationsRecyclerAdapter adapter = new StationsRecyclerAdapter(stations);
                 recycleListStations.setAdapter(adapter);
 
             }
