@@ -389,7 +389,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 case R.id.navigation_home:
                     return true;
                 case R.id.navigation_list:
-                    Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStationDrawer.class);
+                    Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStation.class);
                     startActivity(goListStationAcitvity);
                     return true;
             }

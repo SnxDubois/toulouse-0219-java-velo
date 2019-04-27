@@ -1,7 +1,10 @@
 
 package fr.wildcodeschool.metro;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,7 +24,7 @@ import java.util.ArrayList;
 
 import static fr.wildcodeschool.metro.Helper.extractStation;
 
-public class ListStationDrawer extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class ListStation extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static Settings mSettings;
     private Switch switchButton;
     private Singleton settings;
@@ -30,7 +33,7 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list_station_drawer);
+        setContentView(R.layout.activity_list_station);
         getSettings();
         navigationDrawer();
         extractStationList();
@@ -63,12 +66,12 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
     }
 
     private void extractStationList() {
-        extractStation(ListStationDrawer.this, mSettings, new Helper.BikeStationListener() {
+        extractStation(ListStation.this, mSettings, new Helper.BikeStationListener() {
 
             @Override
             public void onResult(ArrayList<Station> stations) {
                 RecyclerView recycleListStations = findViewById(R.id.list_recycle_station);
-                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(ListStationDrawer.this, LinearLayoutManager.VERTICAL, false);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(ListStation.this, LinearLayoutManager.VERTICAL, false);
                 recycleListStations.setLayoutManager(layoutManager);
                 StationsRecyclerAdapter adapter = new StationsRecyclerAdapter(stations);
                 recycleListStations.setAdapter(adapter);
@@ -138,4 +141,22 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    Intent goMapsAcitvity = new Intent(ListStation.this, MapsActivity.class);
+                    startActivity(goMapsAcitvity);
+                    return true;
+                case R.id.navigation_list:
+                    return true;
+            }
+            return false;
+        }
+    };
+
 }
