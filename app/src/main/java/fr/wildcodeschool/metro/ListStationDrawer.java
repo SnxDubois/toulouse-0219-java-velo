@@ -1,9 +1,7 @@
+
 package fr.wildcodeschool.metro;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -17,6 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Switch;
 
 import java.util.ArrayList;
 
@@ -24,32 +23,23 @@ import static fr.wildcodeschool.metro.Helper.extractStation;
 
 public class ListStationDrawer extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static Settings mSettings;
+    private Switch switchButton;
     private Singleton settings;
     private Fragment fragment;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_station_drawer);
-        switchActivity();
         getSettings();
         navigationDrawer();
         extractStationList();
-    }
-
-    private void switchActivity(){
-        BottomNavigationView navigation =findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        navigation.getMenu().setGroupCheckable(0,true, true);
-        navigation.setSelectedItemId(R.id.navigation_list);
     }
 
     private void getSettings() {
         settings = Singleton.getInstance();
         mSettings = settings.getSettings();
     }
-
     private void importFragment(){
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -61,13 +51,14 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
     private void navigationDrawer() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -84,6 +75,7 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
             }
         });
     }
+
 
 
     @Override
@@ -146,23 +138,4 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    Intent goMapsAcitvity = new Intent(ListStationDrawer.this, MapsActivity.class);
-                    startActivity(goMapsAcitvity);
-                    return true;
-                case R.id.navigation_list:
-                    return true;
-            }
-            return false;
-        }
-    };
-
-
 }
