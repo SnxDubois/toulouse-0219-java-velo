@@ -12,6 +12,8 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -85,9 +87,14 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
 
             @Override
             public void onResult(ArrayList<Station> stations) {
-                listView = findViewById(R.id.listView);
-                stationAdapter = new StationAdapter(ListStationDrawer.this, stations);
-                listView.setAdapter(stationAdapter);
+                //listView = findViewById(R.id.listView);
+                //stationAdapter = new StationAdapter(ListStationDrawer.this, stations);
+                //listView.setAdapter(stationAdapter);
+                RecyclerView recycleListStations = findViewById(R.id.stations_recycle_list);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(ListStationDrawer.this, LinearLayoutManager.VERTICAL, false);
+                recycleListStations.setLayoutManager(layoutManager);
+                final StationsRecyclerAdapter adapter = new StationsRecyclerAdapter(stations);
+                recycleListStations.setAdapter(adapter);
 
             }
         });
