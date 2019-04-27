@@ -48,6 +48,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
 
     @Override
     public int getItemCount() {
+
         return mStations.size();
     }
 

@@ -32,7 +32,6 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
     private DrawerLayout nDrawerLayout;
     private ActionBarDrawerToggle nToggle;
     private ListView listView;
-    private StationAdapter stationAdapter;
     private Switch switchButton;
     private Singleton settings;
     private Fragment fragment;
@@ -78,7 +77,7 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -90,7 +89,7 @@ public class ListStationDrawer extends AppCompatActivity implements NavigationVi
                 //listView = findViewById(R.id.listView);
                 //stationAdapter = new StationAdapter(ListStationDrawer.this, stations);
                 //listView.setAdapter(stationAdapter);
-                RecyclerView recycleListStations = findViewById(R.id.stations_recycle_list);
+                RecyclerView recycleListStations = findViewById(R.id.list_recycle_station);
                 RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(ListStationDrawer.this, LinearLayoutManager.VERTICAL, false);
                 recycleListStations.setLayoutManager(layoutManager);
                 StationsRecyclerAdapter adapter = new StationsRecyclerAdapter(stations);

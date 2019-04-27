@@ -23,7 +23,6 @@ public class FavoriteFragment extends Fragment {
     private int favoriteStationNumber;
     private Settings mSettings;
     private ListView listView;
-    private StationAdapter stationAdapter;
     private ArrayList<Station> favoriteStation = new ArrayList<>();
     private Singleton settings;
 
@@ -57,7 +56,7 @@ public class FavoriteFragment extends Fragment {
                        // listView = favoriteView.findViewById(R.id.list_favorite_station);
                        // stationAdapter = new StationAdapter(getContext(), favoriteStation);
                        // listView.setAdapter(stationAdapter);
-                        RecyclerView recycleListStations = favoriteView.findViewById(R.id.stations_recycle_list);
+                        RecyclerView recycleListStations = favoriteView.findViewById(R.id.list_recycle_station);
                         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
                         recycleListStations.setLayoutManager(layoutManager);
                         StationsRecyclerAdapter adapter = new StationsRecyclerAdapter(stations);
