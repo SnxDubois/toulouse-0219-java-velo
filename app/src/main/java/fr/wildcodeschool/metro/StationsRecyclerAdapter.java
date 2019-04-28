@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView stationNameView, stationAddressView, distanceView, bikesView, standsView;
+        ImageView favoriteView, makeWayView;
 
         public ViewHolder(View v) {
             super(v);
@@ -26,6 +28,8 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
             this.distanceView = v.findViewById(R.id.tvDistance);
             this.bikesView = v.findViewById(R.id.tvBikes);
             this.standsView = v.findViewById(R.id.tvStands);
+            this.favoriteView = v.findViewById(R.id.ibFavorite);
+            this.makeWayView = v.findViewById(R.id.ibMakeWay);
         }
     }
 
@@ -44,6 +48,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         holder.distanceView.setText((Integer.toString((int)station.getDistance())));
         holder.bikesView.setText((Integer.toString(station.getAvailableBikes())));
         holder.standsView.setText((Integer.toString(station.getAvailableStands())));
+
     }
 
     @Override

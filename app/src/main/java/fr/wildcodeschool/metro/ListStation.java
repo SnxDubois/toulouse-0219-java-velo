@@ -18,6 +18,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -27,6 +30,8 @@ public class ListStation extends AppCompatActivity implements NavigationView.OnN
     public static Settings mSettings;
     private Singleton settings;
     private Fragment mFragment;
+    private RecyclerView recycleListStations;
+    private ArrayList<Station> mStations = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +41,19 @@ public class ListStation extends AppCompatActivity implements NavigationView.OnN
         navigationDrawer();
         extractStationList();
         switchActivity();
+        selectFavorite();
     }
+
+    private void selectFavorite(){
+        ImageButton favoriteButton = recycleListStations.findViewById(R.id.ibFavorite);
+        favoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(ListStation.this, " olllll", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
     private void switchActivity() {
         BottomNavigationView navigation = findViewById(R.id.navigation_list_station);
@@ -75,11 +92,13 @@ public class ListStation extends AppCompatActivity implements NavigationView.OnN
 
             @Override
             public void onResult(ArrayList<Station> stations) {
-                RecyclerView recycleListStations = findViewById(R.id.list_recycle_station);
+                mStations = stations;
+                recycleListStations = findViewById(R.id.list_recycle_station);
                 RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(ListStation.this, LinearLayoutManager.VERTICAL, false);
                 recycleListStations.setLayoutManager(layoutManager);
                 StationsRecyclerAdapter adapter = new StationsRecyclerAdapter(stations);
                 recycleListStations.setAdapter(adapter);
+
             }
         });
     }
