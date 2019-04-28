@@ -35,6 +35,14 @@ public class ListStation extends AppCompatActivity implements NavigationView.OnN
         getSettings();
         navigationDrawer();
         extractStationList();
+        switchActivity();
+    }
+
+    private void switchActivity() {
+        BottomNavigationView navigation = findViewById(R.id.navigation_list_station);
+        navigation.getMenu().setGroupCheckable(0, true, true);
+        navigation.setSelectedItemId(R.id.navigation_list);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
     private void getSettings() {
