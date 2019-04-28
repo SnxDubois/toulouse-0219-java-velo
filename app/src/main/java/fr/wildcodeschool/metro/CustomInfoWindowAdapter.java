@@ -27,8 +27,6 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         stationTitle = view.findViewById(R.id.tvTitle);
         if (!title.equals("")) {stationTitle.setText(title);
         }
-
-
     }
 
     @Override

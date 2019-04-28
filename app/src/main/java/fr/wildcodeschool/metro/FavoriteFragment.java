@@ -1,6 +1,8 @@
 package fr.wildcodeschool.metro;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,7 +30,7 @@ public class FavoriteFragment extends Fragment {
     private ListView mListView;
     private ArrayList<Station> mFavoriteStation = new ArrayList<>();
     private Singleton settings;
-
+    private FloatingActionButton returnFloat;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -69,6 +71,15 @@ public class FavoriteFragment extends Fragment {
             public void onCancelled(DatabaseError error) {
 
                 Toast.makeText(getContext(), "Failed to read value.", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        returnFloat = favoriteView.findViewById(R.id.fbReturn);
+        returnFloat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent goListStationActivity = new Intent(getActivity(), ListStation.class);
+                startActivity(goListStationActivity);
             }
         });
         return favoriteView;

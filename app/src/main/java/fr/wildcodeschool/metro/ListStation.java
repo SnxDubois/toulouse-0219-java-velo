@@ -119,8 +119,8 @@ public class ListStation extends AppCompatActivity implements NavigationView.OnN
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.nav_home) {
-
-            importFragment();
+            Intent goMapsAcitvity = new Intent(ListStation.this, MapsActivity.class);
+            startActivity(goMapsAcitvity);
         } else if (id == R.id.nav_account) {
             mFragment = new AccountFragment();
             importFragment();
