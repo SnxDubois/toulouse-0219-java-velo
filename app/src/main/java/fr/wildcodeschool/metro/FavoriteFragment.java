@@ -2,12 +2,23 @@ package fr.wildcodeschool.metro;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+
+import static fr.wildcodeschool.metro.Helper.extractStation;
 
 
 public class FavoriteFragment extends Fragment {
@@ -22,7 +33,7 @@ public class FavoriteFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View favoriteView = inflater.inflate(R.layout.fragment_favorite, container, false);
-        /*FirebaseDatabase favoriteStationBase = FirebaseDatabase.getInstance();
+        FirebaseDatabase favoriteStationBase = FirebaseDatabase.getInstance();
         DatabaseReference favoriteStationReference = favoriteStationBase.getReference("favoriteStationBase");
         settings = Singleton.getInstance();
         mSettings = settings.getSettings();
@@ -59,7 +70,7 @@ public class FavoriteFragment extends Fragment {
 
                 Toast.makeText(getContext(), "Failed to read value.", Toast.LENGTH_LONG).show();
             }
-        });*/
+        });
         return favoriteView;
     }
 }
