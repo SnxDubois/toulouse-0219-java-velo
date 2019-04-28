@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="116dp"
     android:padding="8dp">
@@ -20,15 +21,11 @@
 
             <TextView
                 android:id="@+id/tvStationName"
-                android:layout_width="0dp"
-                android:layout_height="20dp"
+                android:layout_width="314dp"
+                android:layout_height="0dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -59,15 +56,12 @@
             <TextView
                 android:id="@+id/tvBikes"
                 android:layout_width="100dp"
+                android:layout_height="20dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                app:layout_constraintEnd_toStartOf="@+id/tvDistance"
                 app:layout_constraintStart_toEndOf="@+id/tvStands"
-                app:layout_constraintTop_toBottomOf="@+id/tvStationAddress"
-                android:layout_height="20dp" />
+                app:layout_constraintTop_toBottomOf="@+id/tvStationAddress" />
 
             <TextView
                 android:id="@+id/tvDistance"
@@ -75,11 +69,39 @@
                 android:layout_height="0dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toEndOf="@+id/tvBikes"
+                app:layout_constraintTop_toBottomOf="@+id/tvStationAddress" />
+
+            <ImageButton
+                android:id="@+id/imageButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvStationAddress" />
+                app:layout_constraintStart_toEndOf="@+id/tvStationName"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/imageButton3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tvDistance"
+                app:layout_constraintTop_toBottomOf="@+id/tvStationAddress"
+                card_view:srcCompat="@drawable/supress" />
+
 
         </android.support.constraint.ConstraintLayout>
 

@@ -34,5 +34,6 @@
     <string name="ic_home">Home</string>
     <string name="ic_list">Stations List</string>
     <string name="title_activity_list_station">ListStation</string>
+    <string name="favorite">TODO</string>
 
 </resources>
