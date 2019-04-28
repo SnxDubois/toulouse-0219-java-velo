@@ -35,13 +35,15 @@ public class FavoriteFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View favoriteView = inflater.inflate(R.layout.fragment_favorite, container, false);
-        FirebaseDatabase favoriteStationBase = FirebaseDatabase.getInstance();
-        DatabaseReference favoriteStationReference = favoriteStationBase.getReference("favoriteStationBase");
         settings = Singleton.getInstance();
         mSettings = settings.getSettings();
+        FirebaseDatabase favoriteStationBase = FirebaseDatabase.getInstance();
+        DatabaseReference favoriteStationReference = favoriteStationBase.getReference("favoriteStationBase");
         favoriteStationReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
+                Toast.makeText(getContext(),"dzfzargreg",Toast.LENGTH_SHORT).show();
                 for (DataSnapshot favoriteStationNumberData : dataSnapshot.getChildren()) {
                     mFavoriteStationNumber = Integer.parseInt(favoriteStationNumberData.getKey());
                     mFavoriteStationNumbers.add(mFavoriteStationNumber);
@@ -61,7 +63,7 @@ public class FavoriteFragment extends Fragment {
                         RecyclerView recycleListStations = favoriteView.findViewById(R.id.fragment_recycle_station);
                         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
                         recycleListStations.setLayoutManager(layoutManager);
-                        StationsRecyclerAdapter adapter = new StationsRecyclerAdapter(stations);
+                        StationsRecyclerAdapter adapter = new StationsRecyclerAdapter(mFavoriteStation);
                         recycleListStations.setAdapter(adapter);
                     }
                 });
@@ -73,7 +75,6 @@ public class FavoriteFragment extends Fragment {
                 Toast.makeText(getContext(), "Failed to read value.", Toast.LENGTH_LONG).show();
             }
         });
-
         returnFloat = favoriteView.findViewById(R.id.fbReturn);
         returnFloat.setOnClickListener(new View.OnClickListener() {
             @Override

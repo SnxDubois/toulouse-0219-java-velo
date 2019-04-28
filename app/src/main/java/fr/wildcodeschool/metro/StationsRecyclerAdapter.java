@@ -1,6 +1,5 @@
 package fr.wildcodeschool.metro;
 
-import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,34 +56,39 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         holder.bikesView.setText((Integer.toString(station.getAvailableBikes())));
         holder.standsView.setText((Integer.toString(station.getAvailableStands())));
         holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference favoriteStationBase = database.getReference("favoriteStationBase");
+
         holder.favoriteView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 Toast.makeText(v.getContext(), "Added to favorite !", Toast.LENGTH_SHORT).show();
                 if(holder.favoriteView.getTag().equals(R.drawable.ic_favorite_checked)) {
                     holder.favoriteView.setImageResource(R.drawable.ic_favorite_unchecked);
                     holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
-
-                    favoriteStationBase.orderByKey().equalTo(mStations.get(position).getNumber()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    final DatabaseReference favoriteStationBase = database.getReference("favoriteStationBase");
+                    favoriteStationBase.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            for (DataSnapshot postsnapshot :dataSnapshot.getChildren()) {
-                                String key = postsnapshot.getKey();
-                                dataSnapshot.getRef().removeValue();
+                            for (DataSnapshot favoriteStationNumberData : dataSnapshot.getChildren()) {
+                                if (Integer.parseInt(favoriteStationNumberData.getKey()) == mStations.get(position).getNumber() ){
+                                    favoriteStationNumberData.getRef().removeValue();
+                                }
                             }
-
-                }
+                        }
 
                         @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        public void onCancelled(DatabaseError error) {
 
+                            Toast.makeText(v.getContext(), "Failed to read value.", Toast.LENGTH_LONG).show();
                         }
+                    });
+
+                }
                 else {
                     holder.favoriteView.setImageResource(R.drawable.ic_favorite_checked);
                     holder.favoriteView.setTag(R.drawable.ic_favorite_checked);
-
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference favoriteStationBase = database.getReference("favoriteStationBase");
                     String key = Integer.toString(mStations.get(position).getNumber());
                     favoriteStationBase.child(key).setValue(mStations.get(position).getNumber());
                 }
