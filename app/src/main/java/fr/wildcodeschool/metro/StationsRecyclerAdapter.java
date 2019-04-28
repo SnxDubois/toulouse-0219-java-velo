@@ -1,5 +1,6 @@
 package fr.wildcodeschool.metro;
 
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +9,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
+
+import static fr.wildcodeschool.metro.Helper.extractStation;
 
 public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecyclerAdapter.ViewHolder> {
 
@@ -42,7 +50,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
     }
 
     @Override
-    public void onBindViewHolder(final StationsRecyclerAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final StationsRecyclerAdapter.ViewHolder holder, final int position) {
         Station station = mStations.get(position);
         holder.stationNameView.setText(station.getName());
         holder.stationAddressView.setText(station.getAddress());
@@ -50,6 +58,8 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         holder.bikesView.setText((Integer.toString(station.getAvailableBikes())));
         holder.standsView.setText((Integer.toString(station.getAvailableStands())));
         holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference favoriteStationBase = database.getReference("favoriteStationBase");
         holder.favoriteView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,10 +67,33 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
                 if(holder.favoriteView.getTag().equals(R.drawable.ic_favorite_checked)) {
                     holder.favoriteView.setImageResource(R.drawable.ic_favorite_unchecked);
                     holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
+
+
+
+
+
+                    favoriteStationBase.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                }
+                            });
+                        }
+
+
+
+
+
+
+
+
+
                 }
                 else {
                     holder.favoriteView.setImageResource(R.drawable.ic_favorite_checked);
                     holder.favoriteView.setTag(R.drawable.ic_favorite_checked);
+                    String key = Integer.toString(mStations.get(position).getNumber());
+                    favoriteStationBase.child(key).setValue(mStations.get(position).getNumber());
                 }
             }
         });

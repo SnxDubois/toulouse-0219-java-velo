@@ -23,6 +23,7 @@ public class SettingsFragment extends Fragment {
         settings = Singleton.getInstance();
         mSettings = settings.getSettings();
         View settingsView = inflater.inflate(R.layout.fragment_settings, container, false);
+
         Switch switchTheme = settingsView.findViewById(R.id.switchTheme);
         switchTheme.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -37,7 +38,6 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        settingsView = inflater.inflate(R.layout.fragment_send, container, false);
         returnFloat = settingsView.findViewById(R.id.fbReturn);
         returnFloat.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -16,15 +16,15 @@
             android:layout_height="wrap_content"
             android:id="@+id/tvTitle"/>
 
-        <ToggleButton
-            android:id="@+id/button_favorite"
+        <ImageButton
+            android:id="@+id/ibFavorite"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
             android:layout_height="60dp"
             android:layout_width="60dp"
-            android:background="@drawable/ic_favorite_checked"
-            android:checked="false"
-            android:textOff=""
-            android:backgroundTint="@color/colorAccent"
-            android:layout_gravity="center_horizontal"/>
-    </LinearLayout>
+            android:layout_marginTop="8dp"
+            android:background="@drawable/ic_favorite_checked" />
 
+    </LinearLayout>
 </LinearLayout>
