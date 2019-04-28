@@ -18,9 +18,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -41,19 +38,7 @@ public class ListStation extends AppCompatActivity implements NavigationView.OnN
         navigationDrawer();
         extractStationList();
         switchActivity();
-        selectFavorite();
     }
-
-    private void selectFavorite(){
-        ImageButton favoriteButton = recycleListStations.findViewById(R.id.ibFavorite);
-        favoriteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(ListStation.this, " olllll", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
 
     private void switchActivity() {
         BottomNavigationView navigation = findViewById(R.id.navigation_list_station);

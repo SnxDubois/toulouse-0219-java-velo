@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -41,14 +42,34 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
     }
 
     @Override
-    public void onBindViewHolder(StationsRecyclerAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final StationsRecyclerAdapter.ViewHolder holder, int position) {
         Station station = mStations.get(position);
         holder.stationNameView.setText(station.getName());
         holder.stationAddressView.setText(station.getAddress());
         holder.distanceView.setText((Integer.toString((int)station.getDistance())));
         holder.bikesView.setText((Integer.toString(station.getAvailableBikes())));
         holder.standsView.setText((Integer.toString(station.getAvailableStands())));
-
+        holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
+        holder.favoriteView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(v.getContext(), "Added to favorite !", Toast.LENGTH_SHORT).show();
+                if(holder.favoriteView.getTag().equals(R.drawable.ic_favorite_checked)) {
+                    holder.favoriteView.setImageResource(R.drawable.ic_favorite_unchecked);
+                    holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
+                }
+                else {
+                    holder.favoriteView.setImageResource(R.drawable.ic_favorite_checked);
+                    holder.favoriteView.setTag(R.drawable.ic_favorite_checked);
+                }
+            }
+        });
+        holder.makeWayView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(v.getContext(), "The way is computing !", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
