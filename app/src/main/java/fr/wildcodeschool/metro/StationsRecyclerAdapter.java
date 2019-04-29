@@ -1,5 +1,8 @@
 package fr.wildcodeschool.metro;
 
+import android.content.Context;
+import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +30,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
     private FirebaseUser currentUser;
     private Settings mSettings;
     private Singleton settings;
+    private Context context;
 
     public StationsRecyclerAdapter(ArrayList<Station> stations) {
         mStations = stations;
@@ -50,6 +54,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
 
     @Override
     public StationsRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        context = parent.getContext();
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.activity_display_recycle_station, parent, false);
         return new ViewHolder(itemView);
@@ -80,7 +85,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
                         favoriteStationBase.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                stockToDatabe(dataSnapshot, position);
+                                eraseFromDataBase(dataSnapshot, position);
                             }
 
                             @Override
@@ -92,7 +97,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
 
                     } else {
                         initiateDatabase();
-                        eraseFromDatabase(position);
+                        saveDatabase(position);
                         holder.favoriteView.setImageResource(R.drawable.ic_favorite_checked);
                         holder.favoriteView.setTag(R.drawable.ic_favorite_checked);
                     }
@@ -107,13 +112,34 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
 
         } else {
             holder.favoriteView.setImageResource(R.drawable.ic_clear);
+            initiateDatabase();
+            holder.favoriteView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    final DatabaseReference favoriteStationBase = database.getReference(userID);
+                    favoriteStationBase.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            eraseFromDataBase(dataSnapshot, position);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError error) {
+
+                            Toast.makeText(v.getContext(), "Failed to read value.", Toast.LENGTH_LONG).show();
+                        }
+                    });
+
+                }
+            });
+
         }
     }
 
     @Override
     public int getItemCount() {
-
         return mStations.size();
+
     }
 
     private void initiateDatabase(){
@@ -123,7 +149,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         if (currentUser != null) {userID = currentUser.getUid();}
     }
 
-    private void stockToDatabe(DataSnapshot dataSnapshot, int position){
+    private void eraseFromDataBase(DataSnapshot dataSnapshot, int position){
         for (DataSnapshot favoriteStationNumberData : dataSnapshot.getChildren()) {
             if (Integer.parseInt(favoriteStationNumberData.getKey()) == mStations.get(position).getNumber() ){
                 favoriteStationNumberData.getRef().removeValue();
@@ -131,10 +157,15 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         }
     }
 
-    private void eraseFromDatabase(int position){
+    private void saveDatabase(int position){
         final DatabaseReference favoriteStationBase = database.getReference(userID);
         String key = Integer.toString(mStations.get(position).getNumber());
         favoriteStationBase.child(key).setValue(mStations.get(position).getNumber());
+    }
+
+    public void delete() {
+        Intent intent = new Intent(context, FragmentActivity.class);
+        context.startActivity(intent);
     }
 }
 
