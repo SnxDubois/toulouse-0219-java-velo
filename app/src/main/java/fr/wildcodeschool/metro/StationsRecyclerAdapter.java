@@ -8,6 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -19,6 +21,10 @@ import java.util.ArrayList;
 public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecyclerAdapter.ViewHolder> {
 
     private ArrayList<Station> mStations;
+    private String userID;
+    private FirebaseDatabase database;
+    private FirebaseAuth userAuth;
+    private FirebaseUser currentUser;
 
     public StationsRecyclerAdapter(ArrayList<Station> stations) {
         mStations = stations;
@@ -56,7 +62,6 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         holder.bikesView.setText((Integer.toString(station.getAvailableBikes())));
         holder.standsView.setText((Integer.toString(station.getAvailableStands())));
         holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
-
         holder.favoriteView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -64,16 +69,12 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
                 if(holder.favoriteView.getTag().equals(R.drawable.ic_favorite_checked)) {
                     holder.favoriteView.setImageResource(R.drawable.ic_favorite_unchecked);
                     holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
-                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    final DatabaseReference favoriteStationBase = database.getReference("favoriteStationBase");
+                    initiateDatabase();
+                    final DatabaseReference favoriteStationBase = database.getReference(userID);
                     favoriteStationBase.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            for (DataSnapshot favoriteStationNumberData : dataSnapshot.getChildren()) {
-                                if (Integer.parseInt(favoriteStationNumberData.getKey()) == mStations.get(position).getNumber() ){
-                                    favoriteStationNumberData.getRef().removeValue();
-                                }
-                            }
+                            stockToDatabe(dataSnapshot,position);
                         }
 
                         @Override
@@ -85,12 +86,10 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
 
                 }
                 else {
+                    initiateDatabase();
+                    eraseFromDatabase(position);
                     holder.favoriteView.setImageResource(R.drawable.ic_favorite_checked);
                     holder.favoriteView.setTag(R.drawable.ic_favorite_checked);
-                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference favoriteStationBase = database.getReference("favoriteStationBase");
-                    String key = Integer.toString(mStations.get(position).getNumber());
-                    favoriteStationBase.child(key).setValue(mStations.get(position).getNumber());
                 }
             }
         });
@@ -108,6 +107,26 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         return mStations.size();
     }
 
+    private void initiateDatabase(){
+        database = FirebaseDatabase.getInstance();
+        userAuth = FirebaseAuth.getInstance();
+        currentUser = userAuth.getCurrentUser();
+        if (currentUser != null) {userID = currentUser.getUid();}
+    }
+
+    private void stockToDatabe(DataSnapshot dataSnapshot, int position){
+        for (DataSnapshot favoriteStationNumberData : dataSnapshot.getChildren()) {
+            if (Integer.parseInt(favoriteStationNumberData.getKey()) == mStations.get(position).getNumber() ){
+                favoriteStationNumberData.getRef().removeValue();
+            }
+        }
+    }
+
+    private void eraseFromDatabase(int position){
+        final DatabaseReference favoriteStationBase = database.getReference(userID);
+        String key = Integer.toString(mStations.get(position).getNumber());
+        favoriteStationBase.child(key).setValue(mStations.get(position).getNumber());
+    }
 }
 
 

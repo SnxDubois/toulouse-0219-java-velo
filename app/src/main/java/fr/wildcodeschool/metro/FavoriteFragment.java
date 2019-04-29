@@ -9,9 +9,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,10 +28,10 @@ public class FavoriteFragment extends Fragment {
     private ArrayList<Integer> mFavoriteStationNumbers = new ArrayList<>();
     private int mFavoriteStationNumber;
     private Settings mSettings;
-    private ListView mListView;
     private ArrayList<Station> mFavoriteStation = new ArrayList<>();
     private Singleton settings;
     private FloatingActionButton returnFloat;
+    private String userID;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -38,19 +39,19 @@ public class FavoriteFragment extends Fragment {
         settings = Singleton.getInstance();
         mSettings = settings.getSettings();
         FirebaseDatabase favoriteStationBase = FirebaseDatabase.getInstance();
-        DatabaseReference favoriteStationReference = favoriteStationBase.getReference("favoriteStationBase");
+        FirebaseAuth userAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = userAuth.getCurrentUser();
+        if (currentUser != null) {userID = currentUser.getUid();}
+        DatabaseReference favoriteStationReference = favoriteStationBase.getReference(userID);
         favoriteStationReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 Toast.makeText(getContext(),"dzfzargreg",Toast.LENGTH_SHORT).show();
                 for (DataSnapshot favoriteStationNumberData : dataSnapshot.getChildren()) {
                     mFavoriteStationNumber = Integer.parseInt(favoriteStationNumberData.getKey());
                     mFavoriteStationNumbers.add(mFavoriteStationNumber);
                 }
-
                 extractStation(getContext(), mSettings, new Helper.BikeStationListener() {
-
                     @Override
                     public void onResult(ArrayList<Station> stations) {
                         for (int index = 0; index < mFavoriteStationNumbers.size(); index++) {
