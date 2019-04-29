@@ -1,6 +1,5 @@
 package fr.wildcodeschool.metro;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +27,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
     private FirebaseUser currentUser;
     private Settings mSettings;
     private Singleton settings;
-    private Context context;
+    private ArrayList<Integer> favoriteStations;
 
     public StationsRecyclerAdapter(ArrayList<Station> stations) {
         mStations = stations;
@@ -67,9 +66,12 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         holder.distanceView.setText((Integer.toString((int)station.getDistance())));
         holder.bikesView.setText((Integer.toString(station.getAvailableBikes())));
         holder.standsView.setText((Integer.toString(station.getAvailableStands())));
+        initiateDatabase();
+        extractFavoriteStation(holder);
+        setFavoriteStation(station, holder);
         if (!mSettings.isFragmentActivity()) {
             initiateDatabase();
-            stationsOnListStation( holder,position);
+            stationsOnListStation( holder,position, station);
             clickOnBikeWay(holder);
         } else {
             stationsOnFavoriteFragment(holder,position);
@@ -117,20 +119,23 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         });
     }
 
-    private void stationsOnListStation(final StationsRecyclerAdapter.ViewHolder holder, final int position){
+    private void setFavoriteStation(Station station,StationsRecyclerAdapter.ViewHolder holder){
+        for (Integer favoriteStation : favoriteStations) {
+            if (station.getNumber() == favoriteStation){
+                holder.favoriteView.setImageResource(R.drawable.ic_favorite_checked);
+                holder.favoriteView.setTag(R.drawable.ic_favorite_checked);
+            }
+        }
+    }
 
+
+    private void extractFavoriteStation(final StationsRecyclerAdapter.ViewHolder holder){
         final DatabaseReference favoriteStationBase = database.getReference(userID);
         favoriteStationBase.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot favoriteStationNumberData : dataSnapshot.getChildren()) {
-                    if (Integer.parseInt(favoriteStationNumberData.getKey()) == mStations.get(position).getNumber()) {
-                        holder.favoriteView.setImageResource(R.drawable.ic_favorite_checked);
-                        holder.favoriteView.setTag(R.drawable.ic_favorite_checked);
-                    } else {
-                        holder.favoriteView.setImageResource(R.drawable.ic_favorite_unchecked);
-                        holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
-                    }
+                    favoriteStations.add(Integer.parseInt(favoriteStationNumberData.getKey()));
                 }
             }
 
@@ -139,6 +144,10 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
 
             }
         });
+    }
+
+    private void stationsOnListStation(final StationsRecyclerAdapter.ViewHolder holder, final int position, final Station station){
+
 
         holder.favoriteView.setOnClickListener(new View.OnClickListener() {
             @Override
