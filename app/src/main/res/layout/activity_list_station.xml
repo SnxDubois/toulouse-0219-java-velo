@@ -21,9 +21,6 @@
         android:fitsSystemWindows="true"
         android:background="?android:attr/windowBackground"
         app:headerLayout="@layout/nav_header_list_station"
-        app:menu="@menu/list_station_menu"
-        android:backgroundTint="@color/colorActionbar"
-        app:itemTextColor="@color/bottom_nav_color"
-        app:itemIconTint="@color/bottom_nav_color"/>
+        app:menu="@menu/list_station_menu"/>
 
 </android.support.v4.widget.DrawerLayout>
