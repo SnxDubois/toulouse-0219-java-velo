@@ -1,8 +1,6 @@
 package fr.wildcodeschool.metro;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,7 +52,6 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
 
     @Override
     public StationsRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        context = parent.getContext();
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.activity_display_recycle_station, parent, false);
         return new ViewHolder(itemView);
@@ -71,51 +68,66 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         holder.bikesView.setText((Integer.toString(station.getAvailableBikes())));
         holder.standsView.setText((Integer.toString(station.getAvailableStands())));
         if (!mSettings.isFragmentActivity()) {
+            initiateDatabase();//setfavorite();
             holder.favoriteView.setImageResource(R.drawable.ic_favorite_unchecked);
             holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
-            holder.favoriteView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View v) {
-                    Toast.makeText(v.getContext(), "Added to favorite !", Toast.LENGTH_SHORT).show();
-                    if (holder.favoriteView.getTag().equals(R.drawable.ic_favorite_checked)) {
-                        holder.favoriteView.setImageResource(R.drawable.ic_favorite_unchecked);
-                        holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
-                        initiateDatabase();
-                        final DatabaseReference favoriteStationBase = database.getReference(userID);
-                        favoriteStationBase.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                eraseFromDataBase(dataSnapshot, position);
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError error) {
-
-                                Toast.makeText(v.getContext(), "Failed to read value.", Toast.LENGTH_LONG).show();
-                            }
-                        });
-
-                    } else {
-                        initiateDatabase();
-                        saveDatabase(position);
-                        holder.favoriteView.setImageResource(R.drawable.ic_favorite_checked);
-                        holder.favoriteView.setTag(R.drawable.ic_favorite_checked);
-                    }
-                }
-            });
-            holder.makeWayView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(v.getContext(), "The way is computing !", Toast.LENGTH_SHORT).show();
-                }
-            });
-
+            clickOnListStation( holder,position);
+            clickOnBikeWay(holder);
         } else {
-            holder.favoriteView.setImageResource(R.drawable.ic_clear);
-            initiateDatabase();
-            holder.favoriteView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View v) {
+            clickOnFavoriteFragment(holder,position);
+            clickOnBikeWay(holder);
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return mStations.size();
+
+    }
+
+    public void clickOnBikeWay(final StationsRecyclerAdapter.ViewHolder holder){
+        holder.makeWayView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(v.getContext(), "The way is computing !", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void clickOnFavoriteFragment(final StationsRecyclerAdapter.ViewHolder holder,final int position){
+        holder.favoriteView.setImageResource(R.drawable.ic_clear);
+        initiateDatabase();
+        holder.favoriteView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                final DatabaseReference favoriteStationBase = database.getReference(userID);
+                favoriteStationBase.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        eraseFromDataBase(dataSnapshot, position);
+                        deleteFromAdapter(holder);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+
+                        Toast.makeText(v.getContext(), "Failed to read value.", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+            }
+        });
+    }
+
+    private void clickOnListStation(final StationsRecyclerAdapter.ViewHolder holder, final int position){
+        holder.favoriteView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                Toast.makeText(v.getContext(), "Added to favorite !", Toast.LENGTH_SHORT).show();
+                if (holder.favoriteView.getTag().equals(R.drawable.ic_favorite_checked)) {
+                    holder.favoriteView.setImageResource(R.drawable.ic_favorite_unchecked);
+                    holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
+
                     final DatabaseReference favoriteStationBase = database.getReference(userID);
                     favoriteStationBase.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -130,15 +142,14 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
                         }
                     });
 
+                } else {
+                    initiateDatabase();
+                    saveDatabase(position);
+                    holder.favoriteView.setImageResource(R.drawable.ic_favorite_checked);
+                    holder.favoriteView.setTag(R.drawable.ic_favorite_checked);
                 }
-            });
-
-        }
-    }
-
-    @Override
-    public int getItemCount() {
-        return mStations.size();
+            }
+        });
 
     }
 
@@ -163,10 +174,12 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         favoriteStationBase.child(key).setValue(mStations.get(position).getNumber());
     }
 
-    public void delete() {
-        Intent intent = new Intent(context, FragmentActivity.class);
-        context.startActivity(intent);
+    public void deleteFromAdapter(StationsRecyclerAdapter.ViewHolder holder) {
+        mStations.remove(holder.getAdapterPosition());
+        notifyItemRemoved(holder.getAdapterPosition());
+        notifyItemRangeChanged(holder.getAdapterPosition(), mStations.size());
     }
+
 }
 
 
