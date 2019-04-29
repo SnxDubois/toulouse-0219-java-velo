@@ -67,9 +67,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         holder.distanceView.setText((Integer.toString((int)station.getDistance())));
         holder.bikesView.setText((Integer.toString(station.getAvailableBikes())));
         holder.standsView.setText((Integer.toString(station.getAvailableStands())));
-        initiateDatabase();
-        //extractFavoriteStation(holder);
-        //setFavoriteStation(station, holder);
+        setFavoriteStation(station, holder);
         if (!mSettings.isFragmentActivity()) {
             initiateDatabase();
             stationsOnListStation( holder,position, station);
@@ -120,13 +118,24 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         });
     }
 
-    private void setFavoriteStation(Station station,StationsRecyclerAdapter.ViewHolder holder){
-        for (Integer favoriteStation : favoriteStations) {
-            if (station.getNumber() == favoriteStation){
-                holder.favoriteView.setImageResource(R.drawable.ic_favorite_checked);
-                holder.favoriteView.setTag(R.drawable.ic_favorite_checked);
+    private void setFavoriteStation(Station station,final StationsRecyclerAdapter.ViewHolder holder){
+        holder.favoriteView.setImageResource(R.drawable.ic_favorite_unchecked);
+        holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
+        initiateDatabase();
+        favoriteStationBase.child(Integer.toString(station.getNumber())).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null){
+                    holder.favoriteView.setImageResource(R.drawable.ic_favorite_checked);
+                    holder.favoriteView.setTag(R.drawable.ic_favorite_checked);
+                }
             }
-        }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+
+            }
+        });
     }
 
 
