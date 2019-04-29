@@ -68,13 +68,11 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         holder.bikesView.setText((Integer.toString(station.getAvailableBikes())));
         holder.standsView.setText((Integer.toString(station.getAvailableStands())));
         if (!mSettings.isFragmentActivity()) {
-            initiateDatabase();//setfavorite();
-            holder.favoriteView.setImageResource(R.drawable.ic_favorite_unchecked);
-            holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
-            clickOnListStation( holder,position);
+            initiateDatabase();
+            stationsOnListStation( holder,position);
             clickOnBikeWay(holder);
         } else {
-            clickOnFavoriteFragment(holder,position);
+            stationsOnFavoriteFragment(holder,position);
             clickOnBikeWay(holder);
         }
     }
@@ -94,7 +92,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         });
     }
 
-    private void clickOnFavoriteFragment(final StationsRecyclerAdapter.ViewHolder holder,final int position){
+    private void stationsOnFavoriteFragment(final StationsRecyclerAdapter.ViewHolder holder, final int position){
         holder.favoriteView.setImageResource(R.drawable.ic_clear);
         initiateDatabase();
         holder.favoriteView.setOnClickListener(new View.OnClickListener() {
@@ -119,7 +117,29 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         });
     }
 
-    private void clickOnListStation(final StationsRecyclerAdapter.ViewHolder holder, final int position){
+    private void stationsOnListStation(final StationsRecyclerAdapter.ViewHolder holder, final int position){
+
+        final DatabaseReference favoriteStationBase = database.getReference(userID);
+        favoriteStationBase.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot favoriteStationNumberData : dataSnapshot.getChildren()) {
+                    if (Integer.parseInt(favoriteStationNumberData.getKey()) == mStations.get(position).getNumber()) {
+                        holder.favoriteView.setImageResource(R.drawable.ic_favorite_checked);
+                        holder.favoriteView.setTag(R.drawable.ic_favorite_checked);
+                    } else {
+                        holder.favoriteView.setImageResource(R.drawable.ic_favorite_unchecked);
+                        holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+
+            }
+        });
+
         holder.favoriteView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
