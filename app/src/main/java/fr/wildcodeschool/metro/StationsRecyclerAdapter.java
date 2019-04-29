@@ -68,12 +68,15 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         holder.bikesView.setText((Integer.toString(station.getAvailableBikes())));
         holder.standsView.setText((Integer.toString(station.getAvailableStands())));
         setFavoriteStation(station, holder);
-        if (!mSettings.isFragmentActivity()) {
+        if (mSettings.isFragmentActivity()) {
+            stationsOnFavoriteFragment(holder,position);
+            clickOnBikeWay(holder);
+
+        } else {
+            holder.favoriteView.setImageResource(R.drawable.ic_favorite_unchecked);
+            holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
             initiateDatabase();
             stationsOnListStation( holder,position, station);
-            clickOnBikeWay(holder);
-        } else {
-            stationsOnFavoriteFragment(holder,position);
             clickOnBikeWay(holder);
         }
     }
@@ -95,7 +98,6 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
 
     private void stationsOnFavoriteFragment(final StationsRecyclerAdapter.ViewHolder holder, final int position){
         holder.favoriteView.setImageResource(R.drawable.ic_clear);
-        initiateDatabase();
         holder.favoriteView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -119,8 +121,6 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
     }
 
     private void setFavoriteStation(Station station,final StationsRecyclerAdapter.ViewHolder holder){
-        holder.favoriteView.setImageResource(R.drawable.ic_favorite_unchecked);
-        holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
         initiateDatabase();
         favoriteStationBase.child(Integer.toString(station.getNumber())).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
