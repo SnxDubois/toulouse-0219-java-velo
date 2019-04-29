@@ -28,6 +28,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
     private Settings mSettings;
     private Singleton settings;
     private ArrayList<Integer> favoriteStations;
+    private DatabaseReference favoriteStationBase;
 
     public StationsRecyclerAdapter(ArrayList<Station> stations) {
         mStations = stations;
@@ -67,8 +68,8 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         holder.bikesView.setText((Integer.toString(station.getAvailableBikes())));
         holder.standsView.setText((Integer.toString(station.getAvailableStands())));
         initiateDatabase();
-        extractFavoriteStation(holder);
-        setFavoriteStation(station, holder);
+        //extractFavoriteStation(holder);
+        //setFavoriteStation(station, holder);
         if (!mSettings.isFragmentActivity()) {
             initiateDatabase();
             stationsOnListStation( holder,position, station);
@@ -100,8 +101,8 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         holder.favoriteView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                final DatabaseReference favoriteStationBase = database.getReference(userID);
-                favoriteStationBase.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+
+                favoriteStationBase.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         eraseFromDataBase(dataSnapshot, position);
@@ -130,8 +131,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
 
 
     private void extractFavoriteStation(final StationsRecyclerAdapter.ViewHolder holder){
-        final DatabaseReference favoriteStationBase = database.getReference(userID);
-        favoriteStationBase.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+        favoriteStationBase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot favoriteStationNumberData : dataSnapshot.getChildren()) {
@@ -156,9 +156,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
                 if (holder.favoriteView.getTag().equals(R.drawable.ic_favorite_checked)) {
                     holder.favoriteView.setImageResource(R.drawable.ic_favorite_unchecked);
                     holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
-
-                    final DatabaseReference favoriteStationBase = database.getReference(userID);
-                    favoriteStationBase.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+                    favoriteStationBase.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             eraseFromDataBase(dataSnapshot, position);
@@ -187,6 +185,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         userAuth = FirebaseAuth.getInstance();
         currentUser = userAuth.getCurrentUser();
         if (currentUser != null) {userID = currentUser.getUid();}
+        favoriteStationBase = database.getReference(userID);
     }
 
     private void eraseFromDataBase(DataSnapshot dataSnapshot, int position){
@@ -198,7 +197,6 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
     }
 
     private void saveDatabase(int position){
-        final DatabaseReference favoriteStationBase = database.getReference(userID);
         String key = Integer.toString(mStations.get(position).getNumber());
         favoriteStationBase.child(key).setValue(mStations.get(position).getNumber());
     }
