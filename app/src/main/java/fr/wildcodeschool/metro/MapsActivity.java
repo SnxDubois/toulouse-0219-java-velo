@@ -68,7 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private SeekBar mSeekbar;
     private int mProgress;
     private Singleton settings;
-    private boolean changeActivity = false;
+    private boolean fragmentActivity = false;
     private TextView mTextMessage;
     private int mFavoriteStationNumber;
 
@@ -111,7 +111,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         settings = Singleton.getInstance();
         mSettings = settings.getSettings();
         if (mSettings == null) {
-            settings.initiateSettings(mZoom, mDropOff, mLastKnownLocation, mInit, changeActivity, mTheme);
+            settings.initiateSettings(mZoom, mDropOff, mLastKnownLocation, fragmentActivity, mTheme);
             mSettings = settings.getSettings();
         }
         currentLocation();
