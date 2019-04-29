@@ -138,23 +138,6 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         });
     }
 
-
-    private void extractFavoriteStation(final StationsRecyclerAdapter.ViewHolder holder){
-        favoriteStationBase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot favoriteStationNumberData : dataSnapshot.getChildren()) {
-                    favoriteStations.add(Integer.parseInt(favoriteStationNumberData.getKey()));
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-
-            }
-        });
-    }
-
     private void stationsOnListStation(final StationsRecyclerAdapter.ViewHolder holder, final int position, final Station station){
 
 
