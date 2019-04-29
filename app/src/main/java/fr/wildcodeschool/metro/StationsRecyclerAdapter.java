@@ -67,7 +67,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         holder.distanceView.setText((Integer.toString((int)station.getDistance())));
         holder.bikesView.setText((Integer.toString(station.getAvailableBikes())));
         holder.standsView.setText((Integer.toString(station.getAvailableStands())));
-        setFavoriteStation(station, holder);
+        initiateDatabase();
         if (mSettings.isFragmentActivity()) {
             stationsOnFavoriteFragment(holder,position);
             clickOnBikeWay(holder);
@@ -75,7 +75,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         } else {
             holder.favoriteView.setImageResource(R.drawable.ic_favorite_unchecked);
             holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
-            initiateDatabase();
+            setFavoriteStation(station, holder);
             stationsOnListStation( holder,position, station);
             clickOnBikeWay(holder);
         }
@@ -121,7 +121,6 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
     }
 
     private void setFavoriteStation(Station station,final StationsRecyclerAdapter.ViewHolder holder){
-        initiateDatabase();
         favoriteStationBase.child(Integer.toString(station.getNumber())).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -139,8 +138,6 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
     }
 
     private void stationsOnListStation(final StationsRecyclerAdapter.ViewHolder holder, final int position, final Station station){
-
-
         holder.favoriteView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -162,7 +159,6 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
                     });
 
                 } else {
-                    initiateDatabase();
                     saveDatabase(position);
                     holder.favoriteView.setImageResource(R.drawable.ic_favorite_checked);
                     holder.favoriteView.setTag(R.drawable.ic_favorite_checked);
