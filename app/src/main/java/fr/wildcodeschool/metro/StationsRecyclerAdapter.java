@@ -46,7 +46,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
             this.bikesView = v.findViewById(R.id.tvBikes);
             this.standsView = v.findViewById(R.id.tvStands);
             this.favoriteView = v.findViewById(R.id.ibFavorite);
-            this.makeWayView = v.findViewById(R.id.ibMakeWay);
+            this.makeWayView = v.findViewById(R.id.ibWay);
         }
     }
 
