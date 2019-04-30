@@ -16,8 +16,8 @@ public class Singleton {
     private Singleton(){
     }
 
-    public void initiateSettings(int zoom, boolean dropOff, Location lastKnownLocation, boolean fragmentActivity, boolean theme) {
-        settings = new Settings(zoom, dropOff, lastKnownLocation, fragmentActivity, theme);
+    public void initiateSettings(int zoom, boolean dropOff, Location lastKnownLocation, boolean fragmentActivity, boolean theme, int zoomProgress) {
+        settings = new Settings(zoom, dropOff, lastKnownLocation, fragmentActivity, theme, zoomProgress);
     }
 
     public Settings getSettings() {
@@ -45,4 +45,7 @@ public class Singleton {
         settings.setFragmentActivity(fragmentActivity);
     }
 
+    public void setZoomProgress(int zoomProgress) {
+        settings.setZoomProgress(zoomProgress);
+    }
 }

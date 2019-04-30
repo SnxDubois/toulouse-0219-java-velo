@@ -8,13 +8,15 @@ public class Settings {
     private Location location;
     private boolean fragmentActivity;
     private boolean theme;
+    private int zoomProgress;
 
-    public Settings(int zoom, boolean dropOff, Location location, boolean fragmentActivity, boolean theme) {
+    public Settings(int zoom, boolean dropOff, Location location, boolean fragmentActivity, boolean theme, int zoomProgress) {
         this.zoom = zoom;
         this.dropOff = dropOff;
         this.location = location;
         this.fragmentActivity = fragmentActivity;
         this.theme = theme;
+        this.zoomProgress = zoomProgress;
     }
 
     public int getZoom() {
@@ -54,6 +56,14 @@ public class Settings {
     }
     public void setFragmentActivity(boolean fragmentActivity) {
         this.fragmentActivity = fragmentActivity;
+    }
+
+    public int getZoomProgress() {
+        return zoomProgress;
+    }
+
+    public void setZoomProgress(int zoomProgress) {
+        this.zoomProgress = zoomProgress;
     }
 }
 

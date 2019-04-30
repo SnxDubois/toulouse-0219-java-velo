@@ -36,5 +36,10 @@
     <string name="title_activity_list_station">ListStation</string>
     <string name="favorite">TODO</string>
     <string name="Theme">Theme mode</string>
+    <string name="zone1">1 km</string>
+    <string name="zone2">700 m</string>
+    <string name="zone3">600 m</string>
+    <string name="zone4">300 m</string>
+    <string name="zone5">100 m</string>
 
 </resources>

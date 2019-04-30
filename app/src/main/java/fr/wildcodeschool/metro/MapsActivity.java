@@ -2,13 +2,12 @@ package fr.wildcodeschool.metro;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SyncStatusObserver;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -23,11 +22,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -63,22 +60,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public final int REQUEST_IMAGE_CAPTURE = 1234;
     public ArrayList<Marker> mStationMarkers = new ArrayList<>();
     public ArrayList<Station> mCurrentStation = new ArrayList<>();
-    public boolean mInit = false;
     public boolean mTheme = false;
     public GoogleMap mMap;
-    public boolean mDropOff = true;
+    public boolean mDropOff = false;
     public int mZoom = 14;
     public Settings mSettings;
     public Location mLastKnownLocation;
     public Uri mFileUri = null;
     public final int REQUEST_LOCATION = 2000;
     private SeekBar mSeekbar;
-    private int mProgress;
+    private int mProgress = 0;
     private Singleton settings;
     private boolean fragmentActivity = false;
-    private TextView mTextMessage;
     private int mFavoriteStationNumber;
-    private Bitmap bm;
+    private Switch btChooseYourCase;
+
+
 
 
     @Override
@@ -91,6 +88,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         takePicIssues();
         seekBar();
         toggleButton();
+        setButtons();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -119,24 +117,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         settings = Singleton.getInstance();
         mSettings = settings.getSettings();
         if (mSettings == null) {
-            settings.initiateSettings(mZoom, mDropOff, mLastKnownLocation, fragmentActivity, mTheme);
+            settings.initiateSettings(mZoom, mDropOff, mLastKnownLocation, fragmentActivity, mTheme,mProgress);
             mSettings = settings.getSettings();
         }
         currentLocation();
-        setButtons();
     }
 
     private void switchActivity() {
-        mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.getMenu().setGroupCheckable(0, true, true);
         navigation.setSelectedItemId(R.id.navigation_home);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
-    private void setButtons() {
-
-
+    private void setButtons() {        ;
+        btChooseYourCase.setChecked(mSettings.isDropOff());
+        mSeekbar.setProgress(mSettings.getZoomProgress());
     }
 
     private void seekBar() {
@@ -159,19 +155,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (mProgress > 0 && mProgress < 20) {
                     seekBar.setProgress(0);
                     mZoom = 14;
+                    Toast.makeText(MapsActivity.this,getString(R.string.zone1), Toast.LENGTH_SHORT).show();
                 } else if (mProgress > 20 && mProgress < 40) {
                     seekBar.setProgress(25);
                     mZoom = 15;
+                    Toast.makeText(MapsActivity.this,getString(R.string.zone2), Toast.LENGTH_SHORT).show();
                 } else if (mProgress > 40 && mProgress < 60) {
                     seekBar.setProgress(50);
                     mZoom = 16;
+                    Toast.makeText(MapsActivity.this,getString(R.string.zone3), Toast.LENGTH_SHORT).show();
                 } else if (mProgress > 60 && mProgress < 80) {
                     seekBar.setProgress(75);
                     mZoom = 17;
+                    Toast.makeText(MapsActivity.this,getString(R.string.zone4), Toast.LENGTH_SHORT).show();
                 } else if (mProgress > 80 && mProgress < 100) {
                     seekBar.setProgress(100);
                     mZoom = 18;
+                    Toast.makeText(MapsActivity.this,getString(R.string.zone5), Toast.LENGTH_SHORT).show();
                 }
+                settings.setZoomProgress(mProgress);
                 settings.setZoom(mZoom);
                 currentLocation();
             }
@@ -225,7 +227,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void toggleButton() {
-        Switch btChooseYourCase = findViewById(R.id.userMode);
+        btChooseYourCase = findViewById(R.id.userMode);
         btChooseYourCase.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -342,8 +344,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     TextView amountBikeOrStand = inflatedFrame.findViewById(R.id.tvBikeOrStand);
                     if(mSettings.isDropOff()) {
                         amountBikeOrStand.setText(Integer.toString(station.getAvailableBikes()));
+                        amountBikeOrStand.setTextColor(Color.parseColor("#1ec62a"));
                     } else {
                         amountBikeOrStand.setText(Integer.toString(station.getAvailableStands()));
+                        amountBikeOrStand.setTextColor(Color.parseColor("#1ea2c6"));
 
                     }
                     Bitmap bitmap = createBitmapFromView(inflatedFrame.findViewById(R.id.screen));
