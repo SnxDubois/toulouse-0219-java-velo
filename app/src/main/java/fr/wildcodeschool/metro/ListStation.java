@@ -18,6 +18,12 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -29,6 +35,7 @@ public class ListStation extends AppCompatActivity implements NavigationView.OnN
     private Fragment mFragment;
     private RecyclerView recycleListStations;
     private ArrayList<Station> mStations = new ArrayList<>();
+    private  TextView userNameText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +45,19 @@ public class ListStation extends AppCompatActivity implements NavigationView.OnN
         navigationDrawer();
         extractStationList();
         switchActivity();
+        setUserName();
+    }
+
+    private void setUserName(){
+        FirebaseDatabase favoriteStationBase = FirebaseDatabase.getInstance();
+        FirebaseAuth userAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = userAuth.getCurrentUser();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String name = user.getDisplayName();
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        TextView navUsername = headerView.findViewById(R.id.tvUserName);
+        navUsername.setText(name);
     }
 
     private void switchActivity() {
