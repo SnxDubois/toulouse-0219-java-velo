@@ -75,7 +75,7 @@ public class FavoriteFragment extends Fragment {
             @Override
             public void onCancelled(DatabaseError error) {
 
-                Toast.makeText(getContext(), "Failed to read value.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), getString(R.string.fail), Toast.LENGTH_LONG).show();
             }
         });
         returnFloat = favoriteView.findViewById(R.id.fbReturn);

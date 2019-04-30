@@ -58,6 +58,7 @@ import static fr.wildcodeschool.metro.Helper.extractStation;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     public final int REQUEST_IMAGE_CAPTURE = 1234;
+    public final int REQUEST_LOCATION = 2000;
     public ArrayList<Marker> mStationMarkers = new ArrayList<>();
     public ArrayList<Station> mCurrentStation = new ArrayList<>();
     public boolean mTheme = false;
@@ -67,16 +68,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public Settings mSettings;
     public Location mLastKnownLocation;
     public Uri mFileUri = null;
-    public final int REQUEST_LOCATION = 2000;
     private SeekBar mSeekbar;
     private int mProgress = 0;
     private Singleton settings;
     private boolean fragmentActivity = false;
     private int mFavoriteStationNumber;
     private Switch btChooseYourCase;
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
-
-
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    return true;
+                case R.id.navigation_list:
+                    Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStation.class);
+                    startActivity(goListStationAcitvity);
+                    return true;
+            }
+            return false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +107,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
-
     private void saveToFireBase() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference favoriteStationBase = database.getReference("favoriteStationBase");
@@ -108,7 +120,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onInfoWindowClick(Marker marker) {
                 Station selectedStation = (Station) marker.getTag();
                 mFavoriteStationNumber = selectedStation.getNumber();
-                Toast.makeText(MapsActivity.this, "Stations " + selectedStation.getName() + " aded to favorites", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MapsActivity.this, String.format(getString(R.string.stringFormat), getString(R.string.stations), selectedStation.getName(), getString(R.string.addFavorites)), Toast.LENGTH_SHORT).show();
                 saveToFireBase();
             }
         });
@@ -118,7 +130,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         settings = Singleton.getInstance();
         mSettings = settings.getSettings();
         if (mSettings == null) {
-            settings.initiateSettings(mZoom, mDropOff, mLastKnownLocation, fragmentActivity, mTheme,mProgress);
+            settings.initiateSettings(mZoom, mDropOff, mLastKnownLocation, fragmentActivity, mTheme, mProgress);
             mSettings = settings.getSettings();
         }
         currentLocation();
@@ -131,7 +143,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
-    private void setButtons() {        ;
+    private void setButtons() {
+        ;
         btChooseYourCase.setChecked(mSettings.isDropOff());
         mSeekbar.setProgress(mSettings.getZoomProgress());
     }
@@ -156,23 +169,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (mProgress > 0 && mProgress < 20) {
                     seekBar.setProgress(0);
                     mZoom = 14;
-                    Toast.makeText(MapsActivity.this,getString(R.string.zone1), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MapsActivity.this, getString(R.string.zone1), Toast.LENGTH_SHORT).show();
                 } else if (mProgress > 20 && mProgress < 40) {
                     seekBar.setProgress(25);
                     mZoom = 15;
-                    Toast.makeText(MapsActivity.this,getString(R.string.zone2), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MapsActivity.this, getString(R.string.zone2), Toast.LENGTH_SHORT).show();
                 } else if (mProgress > 40 && mProgress < 60) {
                     seekBar.setProgress(50);
                     mZoom = 16;
-                    Toast.makeText(MapsActivity.this,getString(R.string.zone3), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MapsActivity.this, getString(R.string.zone3), Toast.LENGTH_SHORT).show();
                 } else if (mProgress > 60 && mProgress < 80) {
                     seekBar.setProgress(75);
                     mZoom = 17;
-                    Toast.makeText(MapsActivity.this,getString(R.string.zone4), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MapsActivity.this, getString(R.string.zone4), Toast.LENGTH_SHORT).show();
                 } else if (mProgress > 80 && mProgress < 100) {
                     seekBar.setProgress(100);
                     mZoom = 18;
-                    Toast.makeText(MapsActivity.this,getString(R.string.zone5), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MapsActivity.this, getString(R.string.zone5), Toast.LENGTH_SHORT).show();
                 }
                 settings.setZoomProgress(mProgress);
                 settings.setZoom(mZoom);
@@ -295,7 +308,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         displayRoute();
     }
 
-    private  void displayRoute(){
+    private void displayRoute() {
 
     }
 
@@ -307,7 +320,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
     private void displayDefaultTheme(final GoogleMap googleMap) {
         try {
             boolean success = googleMap.setMapStyle(
@@ -315,10 +327,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             MapsActivity.this, R.raw.mapstyle));
 
             if (!success) {
-                Log.e("MapsActivity", "Style parsing failed.");
+                Log.e("MapsActivity", getString(R.string.StyleFailed));
             }
         } catch (Resources.NotFoundException e) {
-            Log.e("MapsActivity", "Can't find style. Error: ", e);
+            Log.e("MapsActivity", getString(R.string.StyleError), e);
         }
     }
 
@@ -335,7 +347,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
     private void createStationMarker(Settings settings) {
         extractStation(MapsActivity.this, settings, new Helper.BikeStationListener() {
             @Override
@@ -346,9 +357,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Station station = stations.get(i);
                     LatLng newStation = new LatLng(station.getLatitude(), station.getLongitude());
 
-                    View inflatedFrame = getLayoutInflater().inflate(R.layout.map_layout,null);
+                    View inflatedFrame = getLayoutInflater().inflate(R.layout.map_layout, null);
                     TextView amountBikeOrStand = inflatedFrame.findViewById(R.id.tvBikeOrStand);
-                    if(mSettings.isDropOff()) {
+                    if (mSettings.isDropOff()) {
                         amountBikeOrStand.setText(Integer.toString(station.getAvailableBikes()));
                         amountBikeOrStand.setTextColor(Color.parseColor("#1ec62a"));
                     } else {
@@ -408,23 +419,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
-
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    return true;
-                case R.id.navigation_list:
-                    Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStation.class);
-                    startActivity(goListStationAcitvity);
-                    return true;
-            }
-            return false;
-        }
-    };
 
     private Bitmap createBitmapFromView(View v) {
         v.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,

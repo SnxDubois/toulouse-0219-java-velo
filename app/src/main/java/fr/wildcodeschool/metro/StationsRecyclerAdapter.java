@@ -37,22 +37,6 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         mStations = stations;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView stationNameView, stationAddressView, distanceView, bikesView, standsView;
-        ImageView favoriteView, makeWayView;
-
-        public ViewHolder(View v) {
-            super(v);
-            this.stationNameView = v.findViewById(R.id.tvStationName);
-            this.stationAddressView = v.findViewById(R.id.tvStationAddress);
-            this.distanceView = v.findViewById(R.id.tvDistance);
-            this.bikesView = v.findViewById(R.id.tvBikes);
-            this.standsView = v.findViewById(R.id.tvStands);
-            this.favoriteView = v.findViewById(R.id.ibFavorite);
-            this.makeWayView = v.findViewById(R.id.ibWay);
-        }
-    }
-
     @Override
     public StationsRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
@@ -67,19 +51,19 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         Station station = mStations.get(position);
         holder.stationNameView.setText(station.getName());
         holder.stationAddressView.setText(station.getAddress());
-        holder.distanceView.setText((Integer.toString((int)station.getDistance())) + "  meters");
+        holder.distanceView.setText((Integer.toString((int) station.getDistance())) + "  meters");
         holder.bikesView.setText((Integer.toString(station.getAvailableBikes())));
         holder.standsView.setText((Integer.toString(station.getAvailableStands())));
         initiateDatabase();
         if (mSettings.isFragmentActivity()) {
-            stationsOnFavoriteFragment(holder,position);
+            stationsOnFavoriteFragment(holder, position);
             clickOnBikeWay(holder, station);
 
         } else {
             holder.favoriteView.setImageResource(R.drawable.ic_favorite_unchecked);
             holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
             setFavoriteStation(station, holder);
-            stationsOnListStation( holder,position, station);
+            stationsOnListStation(holder, position, station);
             clickOnBikeWay(holder, station);
         }
     }
@@ -90,22 +74,22 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
 
     }
 
-    public void clickOnBikeWay(final StationsRecyclerAdapter.ViewHolder holder, final Station station){
+    public void clickOnBikeWay(final StationsRecyclerAdapter.ViewHolder holder, final Station station) {
         final LatLng stationLatLng = new LatLng(station.getLatitude(), station.getLongitude());
-        final LatLng userLatLng= new LatLng(mSettings.getLocation().getLatitude(),mSettings.getLocation().getLongitude());
+        final LatLng userLatLng = new LatLng(mSettings.getLocation().getLatitude(), mSettings.getLocation().getLongitude());
 
         holder.makeWayView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(), "The way is computing !", Toast.LENGTH_SHORT).show();
+                Toast.makeText(v.getContext(), v.getContext().getString(R.string.wayComputing), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
-                        Uri.parse("http://maps.google.com/maps?saddr="+stationLatLng.latitude+","+ stationLatLng.longitude+"&daddr="+userLatLng.latitude+","+userLatLng.longitude));
+                        Uri.parse("http://maps.google.com/maps?saddr=" + stationLatLng.latitude + "," + stationLatLng.longitude + "&daddr=" + userLatLng.latitude + "," + userLatLng.longitude));
                 v.getContext().startActivity(intent);
             }
         });
     }
 
-    private void stationsOnFavoriteFragment(final StationsRecyclerAdapter.ViewHolder holder, final int position){
+    private void stationsOnFavoriteFragment(final StationsRecyclerAdapter.ViewHolder holder, final int position) {
         holder.favoriteView.setImageResource(R.drawable.ic_clear);
         holder.favoriteView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,7 +105,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
                     @Override
                     public void onCancelled(DatabaseError error) {
 
-                        Toast.makeText(v.getContext(), "Failed to read value.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(v.getContext(), v.getContext().getString(R.string.readValueFailed), Toast.LENGTH_LONG).show();
                     }
                 });
 
@@ -129,11 +113,11 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         });
     }
 
-    private void setFavoriteStation(Station station,final StationsRecyclerAdapter.ViewHolder holder){
+    private void setFavoriteStation(Station station, final StationsRecyclerAdapter.ViewHolder holder) {
         favoriteStationBase.child(Integer.toString(station.getNumber())).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() != null){
+                if (dataSnapshot.getValue() != null) {
                     holder.favoriteView.setImageResource(R.drawable.ic_favorite_checked);
                     holder.favoriteView.setTag(R.drawable.ic_favorite_checked);
                 }
@@ -146,7 +130,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         });
     }
 
-    private void stationsOnListStation(final StationsRecyclerAdapter.ViewHolder holder, final int position, final Station station){
+    private void stationsOnListStation(final StationsRecyclerAdapter.ViewHolder holder, final int position, final Station station) {
         holder.favoriteView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -177,23 +161,25 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
 
     }
 
-    private void initiateDatabase(){
+    private void initiateDatabase() {
         database = FirebaseDatabase.getInstance();
         userAuth = FirebaseAuth.getInstance();
         currentUser = userAuth.getCurrentUser();
-        if (currentUser != null) {userID = currentUser.getUid();}
+        if (currentUser != null) {
+            userID = currentUser.getUid();
+        }
         favoriteStationBase = database.getReference(userID);
     }
 
-    private void eraseFromDataBase(DataSnapshot dataSnapshot, int position){
+    private void eraseFromDataBase(DataSnapshot dataSnapshot, int position) {
         for (DataSnapshot favoriteStationNumberData : dataSnapshot.getChildren()) {
-            if (Integer.parseInt(favoriteStationNumberData.getKey()) == mStations.get(position).getNumber() ){
+            if (Integer.parseInt(favoriteStationNumberData.getKey()) == mStations.get(position).getNumber()) {
                 favoriteStationNumberData.getRef().removeValue();
             }
         }
     }
 
-    private void saveDatabase(int position){
+    private void saveDatabase(int position) {
         String key = Integer.toString(mStations.get(position).getNumber());
         favoriteStationBase.child(key).setValue(mStations.get(position).getNumber());
     }
@@ -202,6 +188,22 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         mStations.remove(holder.getAdapterPosition());
         notifyItemRemoved(holder.getAdapterPosition());
         notifyItemRangeChanged(holder.getAdapterPosition(), mStations.size());
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView stationNameView, stationAddressView, distanceView, bikesView, standsView;
+        ImageView favoriteView, makeWayView;
+
+        public ViewHolder(View v) {
+            super(v);
+            this.stationNameView = v.findViewById(R.id.tvStationName);
+            this.stationAddressView = v.findViewById(R.id.tvStationAddress);
+            this.distanceView = v.findViewById(R.id.tvDistance);
+            this.bikesView = v.findViewById(R.id.tvBikes);
+            this.standsView = v.findViewById(R.id.tvStands);
+            this.favoriteView = v.findViewById(R.id.ibFavorite);
+            this.makeWayView = v.findViewById(R.id.ibWay);
+        }
     }
 
 }
