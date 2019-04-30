@@ -244,6 +244,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (location != null && mMap != null) {
                     mLastKnownLocation = location;
                     removeMarkers();
+                    //designMarkers();
                     mMap.setMyLocationEnabled(true);
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), mSettings.getZoom()));
                     mMap.getUiSettings().setZoomControlsEnabled(true);
@@ -396,5 +397,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return false;
         }
     };
+
+    /*private void designMarkers() {
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+        Bitmap bmp = Bitmap.createBitmap(80, 80, conf);
+        Canvas canvas1 = new Canvas(bmp);
+
+// paint defines the text color, stroke width and size
+        Paint color = new Paint();
+        color.setTextSize(35);
+        color.setColor(Color.BLACK);
+
+// modify canvas
+        canvas1.drawBitmap(BitmapFactory.decodeResource(getResources(),
+                R.drawable.user_picture_image), 0,0, color);
+        canvas1.drawText("User Name!", 30, 40, color);
+
+// add marker to Map
+        mMap.addMarker(new MarkerOptions()
+                .position(mLastKnownLocation)
+                .icon(BitmapDescriptorFactory.fromBitmap(bmp))
+                // Specifies the anchor to be at a particular point in the marker image.
+                .anchor(0.5f, 1));
+    }*/
 }
 
