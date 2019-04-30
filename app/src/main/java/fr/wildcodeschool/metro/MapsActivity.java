@@ -41,6 +41,8 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -71,6 +73,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean changeActivity = false;
     private TextView mTextMessage;
     private int mFavoriteStationNumber;
+    private String userID;
 
 
     @Override
@@ -89,10 +92,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void saveToFireBase() {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference favoriteStationBase = database.getReference("favoriteStationBase");
-        String key = Integer.toString(mFavoriteStationNumber);
-        favoriteStationBase.child(key).setValue(mFavoriteStationNumber);
+        FirebaseDatabase favoriteStationBase = FirebaseDatabase.getInstance();
+        FirebaseAuth userAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = userAuth.getCurrentUser();
+        if (currentUser != null) {
+            userID = currentUser.getUid();
+        }
+        DatabaseReference favoriteStationReference = favoriteStationBase.getReference(userID);
     }
 
     private void selectMarker(GoogleMap googleMap) {
@@ -101,7 +107,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onInfoWindowClick(Marker marker) {
                 Station selectedStation = (Station) marker.getTag();
                 mFavoriteStationNumber = selectedStation.getNumber();
-                Toast.makeText(MapsActivity.this, "Stations " + selectedStation.getName() + " aded to favorites", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MapsActivity.this, getString(R.string.stations) + selectedStation.getName() + getString(R.string.addFavorite), Toast.LENGTH_SHORT).show();
                 saveToFireBase();
             }
         });

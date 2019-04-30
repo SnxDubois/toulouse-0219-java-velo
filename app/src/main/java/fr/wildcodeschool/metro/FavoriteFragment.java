@@ -41,12 +41,13 @@ public class FavoriteFragment extends Fragment {
         FirebaseDatabase favoriteStationBase = FirebaseDatabase.getInstance();
         FirebaseAuth userAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = userAuth.getCurrentUser();
-        if (currentUser != null) {userID = currentUser.getUid();}
+        if (currentUser != null) {
+            userID = currentUser.getUid();
+        }
         DatabaseReference favoriteStationReference = favoriteStationBase.getReference(userID);
         favoriteStationReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Toast.makeText(getContext(),"dzfzargreg",Toast.LENGTH_SHORT).show();
                 for (DataSnapshot favoriteStationNumberData : dataSnapshot.getChildren()) {
                     mFavoriteStationNumber = Integer.parseInt(favoriteStationNumberData.getKey());
                     mFavoriteStationNumbers.add(mFavoriteStationNumber);

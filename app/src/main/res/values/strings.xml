@@ -36,5 +36,9 @@
     <string name="title_activity_list_station">ListStation</string>
     <string name="favorite">TODO</string>
     <string name="Theme">Theme mode</string>
+    <string name="stations">Stations</string>
+    <string name="addFavorite">aded to favorites</string>
+    <string name="fail">Failed to read value.</string>
+    <string name="computing">The way is computing !</string>
 
 </resources>
