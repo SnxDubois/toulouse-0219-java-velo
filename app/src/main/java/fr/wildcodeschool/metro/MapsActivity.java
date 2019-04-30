@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -342,8 +343,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     TextView amountBikeOrStand = inflatedFrame.findViewById(R.id.tvBikeOrStand);
                     if(mSettings.isDropOff()) {
                         amountBikeOrStand.setText(Integer.toString(station.getAvailableBikes()));
+                        amountBikeOrStand.setTextColor(Color.parseColor("#1ec62a"));
                     } else {
                         amountBikeOrStand.setText(Integer.toString(station.getAvailableStands()));
+                        amountBikeOrStand.setTextColor(Color.parseColor("#1ea2c6"));
 
                     }
                     Bitmap bitmap = createBitmapFromView(inflatedFrame.findViewById(R.id.screen));
