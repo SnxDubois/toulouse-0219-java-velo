@@ -252,6 +252,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else {
                     Toast.makeText(MapsActivity.this, getString(R.string.dropBike), Toast.LENGTH_SHORT).show();
                 }
+                removeMarkers();
                 createStationMarker(mSettings);
             }
         });
