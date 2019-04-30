@@ -2,9 +2,13 @@ package fr.wildcodeschool.metro;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SyncStatusObserver;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -19,11 +23,14 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -71,6 +78,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean fragmentActivity = false;
     private TextView mTextMessage;
     private int mFavoriteStationNumber;
+    private Bitmap bm;
 
 
     @Override
@@ -228,10 +236,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else {
                     Toast.makeText(MapsActivity.this, getString(R.string.dropBike), Toast.LENGTH_SHORT).show();
                 }
-
+                createStationMarker(mSettings);
             }
         });
-
     }
 
     @SuppressLint("MissingPermission")
@@ -330,8 +337,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 for (int i = 0; i < stations.size(); i++) {
                     Station station = stations.get(i);
                     LatLng newStation = new LatLng(station.getLatitude(), station.getLongitude());
+
+                    View inflatedFrame = getLayoutInflater().inflate(R.layout.map_layout,null);
+                    TextView amountBikeOrStand = inflatedFrame.findViewById(R.id.tvBikeOrStand);
+                    if(mSettings.isDropOff()) {
+                        amountBikeOrStand.setText(Integer.toString(station.getAvailableBikes()));
+                    } else {
+                        amountBikeOrStand.setText(Integer.toString(station.getAvailableStands()));
+
+                    }
+                    Bitmap bitmap = createBitmapFromView(inflatedFrame.findViewById(R.id.screen));
+
                     Marker marker = mMap.addMarker((new MarkerOptions().position(newStation)
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon))
+                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
                             .title(station.getAddress()).snippet(station.getName())));
                     marker.setTag(station);
                     mStationMarkers.add(marker);
@@ -398,27 +416,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     };
 
-    /*private void designMarkers() {
-        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-        Bitmap bmp = Bitmap.createBitmap(80, 80, conf);
-        Canvas canvas1 = new Canvas(bmp);
+    private Bitmap createBitmapFromView(View v) {
+        v.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT));
+        v.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        v.layout(0, 0, v.getMeasuredWidth(), v.getMeasuredHeight());
+        Bitmap bitmap = Bitmap.createBitmap(v.getMeasuredWidth(),
+                v.getMeasuredHeight(),
+                Bitmap.Config.ARGB_8888);
 
-// paint defines the text color, stroke width and size
-        Paint color = new Paint();
-        color.setTextSize(35);
-        color.setColor(Color.BLACK);
+        Canvas c = new Canvas(bitmap);
+        v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
+        v.draw(c);
+        return bitmap;
+    }
 
-// modify canvas
-        canvas1.drawBitmap(BitmapFactory.decodeResource(getResources(),
-                R.drawable.user_picture_image), 0,0, color);
-        canvas1.drawText("User Name!", 30, 40, color);
+    private void setInfoMarker() {
 
-// add marker to Map
-        mMap.addMarker(new MarkerOptions()
-                .position(mLastKnownLocation)
-                .icon(BitmapDescriptorFactory.fromBitmap(bmp))
-                // Specifies the anchor to be at a particular point in the marker image.
-                .anchor(0.5f, 1));
-    }*/
+    }
 }
 
