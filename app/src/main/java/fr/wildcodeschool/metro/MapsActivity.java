@@ -94,6 +94,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
+
     private void saveToFireBase() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference favoriteStationBase = database.getReference("favoriteStationBase");
@@ -291,6 +292,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         checkPermission();
         setTheme(googleMap);
         selectMarker(googleMap);
+        displayRoute();
+    }
+
+    private  void displayRoute(){
+
     }
 
     private void setTheme(GoogleMap googleMap) {

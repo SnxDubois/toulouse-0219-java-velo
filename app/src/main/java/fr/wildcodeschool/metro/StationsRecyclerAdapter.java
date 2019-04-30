@@ -1,5 +1,7 @@
 package fr.wildcodeschool.metro;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -70,14 +73,14 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         initiateDatabase();
         if (mSettings.isFragmentActivity()) {
             stationsOnFavoriteFragment(holder,position);
-            clickOnBikeWay(holder);
+            clickOnBikeWay(holder, station);
 
         } else {
             holder.favoriteView.setImageResource(R.drawable.ic_favorite_unchecked);
             holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
             setFavoriteStation(station, holder);
             stationsOnListStation( holder,position, station);
-            clickOnBikeWay(holder);
+            clickOnBikeWay(holder, station);
         }
     }
 
@@ -87,11 +90,17 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
 
     }
 
-    public void clickOnBikeWay(final StationsRecyclerAdapter.ViewHolder holder){
+    public void clickOnBikeWay(final StationsRecyclerAdapter.ViewHolder holder, final Station station){
+        final LatLng stationLatLng = new LatLng(station.getLatitude(), station.getLongitude());
+        final LatLng userLatLng= new LatLng(mSettings.getLocation().getLatitude(),mSettings.getLocation().getLongitude());
+
         holder.makeWayView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(v.getContext(), "The way is computing !", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                        Uri.parse("http://maps.google.com/maps?saddr="+stationLatLng.latitude+","+ stationLatLng.longitude+"&daddr="+userLatLng.latitude+","+userLatLng.longitude));
+                v.getContext().startActivity(intent);
             }
         });
     }
