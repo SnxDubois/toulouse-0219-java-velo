@@ -44,7 +44,7 @@
     <string name="fail">Failed to read value.</string>
     <string name="StyleFailed">Style parsing failed.</string>
     <string name="StyleError">Can\'t find style. Error:</string>
-    <string name="stations">Stations</string>
+    <string name="station">Stations</string>
     <string name="addFavorites">aded to favorites</string>
     <string name="wayComputing">The way is computing !</string>
     <string name="readValueFailed">Failed to read value.</string>

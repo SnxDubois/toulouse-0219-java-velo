@@ -120,7 +120,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onInfoWindowClick(Marker marker) {
                 Station selectedStation = (Station) marker.getTag();
                 mFavoriteStationNumber = selectedStation.getNumber();
-                Toast.makeText(MapsActivity.this, String.format(getString(R.string.stringFormat), getString(R.string.stations), selectedStation.getName(), getString(R.string.addFavorites)), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MapsActivity.this, String.format(getString(R.string.stringFormat), getString(R.string.station), selectedStation.getName(), getString(R.string.addFavorites)), Toast.LENGTH_SHORT).show();
                 saveToFireBase();
             }
         });
