@@ -49,5 +49,7 @@
     <string name="wayComputing">The way is computing !</string>
     <string name="readValueFailed">Failed to read value.</string>
     <string name="stringFormat">%s%s%s</string>
+    <string name="addedToFavorites">Added to favorite !</string>
+    <string name="failedToReadValue">Failed to read value</string>
 
 </resources>

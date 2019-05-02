@@ -51,7 +51,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         Station station = mStations.get(position);
         holder.stationNameView.setText(station.getName());
         holder.stationAddressView.setText(station.getAddress());
-        holder.distanceView.setText((Integer.toString((int) station.getDistance())) + "  meters");
+        holder.distanceView.setText(String.format("%s  meters",(int) station.getDistance()));
         holder.bikesView.setText((Integer.toString(station.getAvailableBikes())));
         holder.standsView.setText((Integer.toString(station.getAvailableStands())));
         initiateDatabase();
@@ -134,7 +134,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
         holder.favoriteView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                Toast.makeText(v.getContext(), "Added to favorite !", Toast.LENGTH_SHORT).show();
+                Toast.makeText(v.getContext(), v.getContext().getString(R.string.addedToFavorites), Toast.LENGTH_SHORT).show();
                 if (holder.favoriteView.getTag().equals(R.drawable.ic_favorite_checked)) {
                     holder.favoriteView.setImageResource(R.drawable.ic_favorite_unchecked);
                     holder.favoriteView.setTag(R.drawable.ic_favorite_unchecked);
@@ -147,7 +147,7 @@ public class StationsRecyclerAdapter extends RecyclerView.Adapter<StationsRecycl
                         @Override
                         public void onCancelled(DatabaseError error) {
 
-                            Toast.makeText(v.getContext(), "Failed to read value.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(v.getContext(), v.getContext().getString(R.string.failedToReadValue), Toast.LENGTH_LONG).show();
                         }
                     });
 

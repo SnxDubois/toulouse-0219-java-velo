@@ -63,7 +63,7 @@ public class Helper {
                                         Station station = new Station(number, name, address, latitude, longitude, stands, availableBike, availabeStands, status, stationDistance);
                                         stations.add(station);
                                     }
-                                }else if (mSettings.isFragmentActivity()) {
+                                } else if (mSettings.isFragmentActivity()) {
                                     Station station = new Station(number, name, address, latitude, longitude, stands, availableBike, availabeStands, status, stationDistance);
                                     stations.add(station);
                                 }

@@ -143,8 +143,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
-    private void setButtons() {
-        ;
+    private void setButtons() {        ;
         btChooseYourCase.setChecked(mSettings.isDropOff());
         mSeekbar.setProgress(mSettings.getZoomProgress());
     }
@@ -160,7 +159,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
 
-
             }
 
             @Override
@@ -172,18 +170,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Toast.makeText(MapsActivity.this, getString(R.string.zone1), Toast.LENGTH_SHORT).show();
                 } else if (mProgress > 20 && mProgress < 40) {
                     seekBar.setProgress(25);
+                    mProgress = 25;
                     mZoom = 15;
                     Toast.makeText(MapsActivity.this, getString(R.string.zone2), Toast.LENGTH_SHORT).show();
                 } else if (mProgress > 40 && mProgress < 60) {
                     seekBar.setProgress(50);
+                    mProgress = 50;
                     mZoom = 16;
                     Toast.makeText(MapsActivity.this, getString(R.string.zone3), Toast.LENGTH_SHORT).show();
                 } else if (mProgress > 60 && mProgress < 80) {
                     seekBar.setProgress(75);
+                    mProgress = 75;
                     mZoom = 17;
                     Toast.makeText(MapsActivity.this, getString(R.string.zone4), Toast.LENGTH_SHORT).show();
                 } else if (mProgress > 80 && mProgress < 100) {
                     seekBar.setProgress(100);
+                    mProgress = 100;
                     mZoom = 18;
                     Toast.makeText(MapsActivity.this, getString(R.string.zone5), Toast.LENGTH_SHORT).show();
                 }
