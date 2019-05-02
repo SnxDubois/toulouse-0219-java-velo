@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="116dp"
     android:padding="8dp"
@@ -11,7 +12,7 @@
         android:id="@+id/card_view"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        card_view:cardBackgroundColor="#f2f5df"
+        card_view:cardBackgroundColor="#f9f9eb"
         card_view:cardCornerRadius="4dp">
 
 
@@ -22,11 +23,14 @@
 
             <TextView
                 android:id="@+id/tvStationName"
-                android:layout_width="286dp"
-                android:layout_height="18dp"
+                android:layout_width="276dp"
+                android:layout_height="20dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:fontFamily="@font/abeezee"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -40,40 +44,54 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
+                app:fontFamily="@font/abeezee"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvStationName" />
 
             <TextView
                 android:id="@+id/tvStands"
-                android:layout_width="90dp"
+                android:layout_width="25dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:textSize="18sp"
+                app:fontFamily="@font/abeezee"
+                app:layout_constraintEnd_toStartOf="@+id/ibPark"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvStationAddress" />
 
             <TextView
                 android:id="@+id/tvBikes"
-                android:layout_width="90dp"
+                android:layout_width="25dp"
                 android:layout_height="20dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
-                app:layout_constraintStart_toEndOf="@+id/tvStands"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:textSize="18sp"
+                app:fontFamily="@font/abeezee"
+                app:layout_constraintEnd_toStartOf="@+id/ibBike"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/ibPark"
                 app:layout_constraintTop_toBottomOf="@+id/tvStationAddress" />
 
             <TextView
                 android:id="@+id/tvDistance"
-                android:layout_width="90dp"
-                android:layout_height="0dp"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
-                app:layout_constraintStart_toEndOf="@+id/tvBikes"
+                android:layout_marginEnd="32dp"
+                android:layout_marginRight="32dp"
+                app:fontFamily="@font/abeezee"
+                app:layout_constraintEnd_toStartOf="@+id/ibWay"
                 app:layout_constraintTop_toBottomOf="@+id/tvStationAddress" />
 
             <ImageButton
@@ -83,21 +101,42 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/ic_favorite_unchecked"
+                android:backgroundTint="#f9f9eb"
                 app:layout_constraintStart_toEndOf="@+id/tvStationName"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
-                android:id="@+id/ibMakeWay"
+                android:id="@+id/ibBike"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginStart="136dp"
+                android:layout_marginLeft="136dp"
+                android:layout_marginTop="4dp"
                 android:background="@drawable/ic_directions_bike"
-                app:layout_constraintStart_toEndOf="@+id/tvDistance"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvStationAddress"
                 card_view:srcCompat="@drawable/supress" />
+
+            <ImageButton
+                android:id="@+id/ibWay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@drawable/ic_directions"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvBikes" />
+
+            <ImageButton
+                android:id="@+id/ibPark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="44dp"
+                android:layout_marginLeft="44dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/ic_local_parking"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvStationAddress" />
 
 
         </android.support.constraint.ConstraintLayout>

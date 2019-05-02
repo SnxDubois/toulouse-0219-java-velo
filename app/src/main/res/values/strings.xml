@@ -24,7 +24,7 @@
     <string name="title_activity_list_station_drawer">ListStationDrawer</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_title">Liberty Bike</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
@@ -36,6 +36,21 @@
     <string name="title_activity_list_station">ListStation</string>
     <string name="favorite">TODO</string>
     <string name="Theme">Theme mode</string>
+    <string name="zone1">1 km</string>
+    <string name="zone2">700 m</string>
+    <string name="zone3">600 m</string>
+    <string name="zone4">300 m</string>
+    <string name="zone5">100 m</string>
+    <string name="fail">Failed to read value.</string>
+    <string name="StyleFailed">Style parsing failed.</string>
+    <string name="StyleError">Can\'t find style. Error:</string>
+    <string name="stations">Stations</string>
+    <string name="addFavorites">aded to favorites</string>
+    <string name="wayComputing">The way is computing !</string>
+    <string name="readValueFailed">Failed to read value.</string>
+    <string name="stringFormat">%s%s%s</string>
+    <string name="addedToFavorites">Added to favorite !</string>
+    <string name="failedToReadValue">Failed to read value</string>
 
     <string name="addFavorite">aded to favorites</string>
     <string name="fail">Failed to read value.</string>

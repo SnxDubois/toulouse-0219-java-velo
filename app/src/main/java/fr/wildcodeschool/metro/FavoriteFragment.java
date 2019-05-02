@@ -38,6 +38,7 @@ public class FavoriteFragment extends Fragment {
         final View favoriteView = inflater.inflate(R.layout.fragment_favorite, container, false);
         settings = Singleton.getInstance();
         mSettings = settings.getSettings();
+        settings.setFragmentActivity(true);
         FirebaseDatabase favoriteStationBase = FirebaseDatabase.getInstance();
         FirebaseAuth userAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = userAuth.getCurrentUser();
@@ -74,13 +75,14 @@ public class FavoriteFragment extends Fragment {
             @Override
             public void onCancelled(DatabaseError error) {
 
-                Toast.makeText(getContext(), "Failed to read value.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), getString(R.string.fail), Toast.LENGTH_LONG).show();
             }
         });
         returnFloat = favoriteView.findViewById(R.id.fbReturn);
         returnFloat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                settings.setFragmentActivity(false);
                 Intent goListStationActivity = new Intent(getActivity(), ListStation.class);
                 startActivity(goListStationActivity);
             }

@@ -5,6 +5,9 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -24,10 +27,11 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -41,8 +45,6 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -56,25 +58,38 @@ import static fr.wildcodeschool.metro.Helper.extractStation;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     public final int REQUEST_IMAGE_CAPTURE = 1234;
+    public final int REQUEST_LOCATION = 2000;
     public ArrayList<Marker> mStationMarkers = new ArrayList<>();
     public ArrayList<Station> mCurrentStation = new ArrayList<>();
-    public boolean mInit = false;
     public boolean mTheme = false;
     public GoogleMap mMap;
-    public boolean mDropOff = true;
+    public boolean mDropOff = false;
     public int mZoom = 14;
     public Settings mSettings;
     public Location mLastKnownLocation;
     public Uri mFileUri = null;
-    public final int REQUEST_LOCATION = 2000;
     private SeekBar mSeekbar;
-    private int mProgress;
+    private int mProgress = 0;
     private Singleton settings;
-    private boolean changeActivity = false;
-    private TextView mTextMessage;
+    private boolean fragmentActivity = false;
     private int mFavoriteStationNumber;
-    private String userID;
+    private Switch btChooseYourCase;
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    return true;
+                case R.id.navigation_list:
+                    Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStation.class);
+                    startActivity(goListStationAcitvity);
+                    return true;
+            }
+            return false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,19 +101,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         takePicIssues();
         seekBar();
         toggleButton();
+        setButtons();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
     private void saveToFireBase() {
-        FirebaseDatabase favoriteStationBase = FirebaseDatabase.getInstance();
-        FirebaseAuth userAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = userAuth.getCurrentUser();
-        if (currentUser != null) {
-            userID = currentUser.getUid();
-        }
-        DatabaseReference favoriteStationReference = favoriteStationBase.getReference(userID);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference favoriteStationBase = database.getReference("favoriteStationBase");
+        String key = Integer.toString(mFavoriteStationNumber);
+        favoriteStationBase.child(key).setValue(mFavoriteStationNumber);
     }
 
     private void selectMarker(GoogleMap googleMap) {
@@ -107,7 +120,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onInfoWindowClick(Marker marker) {
                 Station selectedStation = (Station) marker.getTag();
                 mFavoriteStationNumber = selectedStation.getNumber();
-                Toast.makeText(MapsActivity.this, String.format(getString(R.string.addToFavorite), getString(R.string.stations), selectedStation.getName()), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MapsActivity.this, String.format(getString(R.string.stringFormat), getString(R.string.stations), selectedStation.getName(), getString(R.string.addFavorites)), Toast.LENGTH_SHORT).show();
                 saveToFireBase();
             }
         });
@@ -117,24 +130,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         settings = Singleton.getInstance();
         mSettings = settings.getSettings();
         if (mSettings == null) {
-            settings.initiateSettings(mZoom, mDropOff, mLastKnownLocation, mInit, changeActivity, mTheme);
+            settings.initiateSettings(mZoom, mDropOff, mLastKnownLocation, fragmentActivity, mTheme, mProgress);
             mSettings = settings.getSettings();
         }
         currentLocation();
-        setButtons();
     }
 
     private void switchActivity() {
-        mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.getMenu().setGroupCheckable(0, true, true);
         navigation.setSelectedItemId(R.id.navigation_home);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
-    private void setButtons() {
-
-
+    private void setButtons() {        ;
+        btChooseYourCase.setChecked(mSettings.isDropOff());
+        mSeekbar.setProgress(mSettings.getZoomProgress());
     }
 
     private void seekBar() {
@@ -148,7 +159,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
 
-
             }
 
             @Override
@@ -157,19 +167,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (mProgress > 0 && mProgress < 20) {
                     seekBar.setProgress(0);
                     mZoom = 14;
+                    Toast.makeText(MapsActivity.this, getString(R.string.zone1), Toast.LENGTH_SHORT).show();
                 } else if (mProgress > 20 && mProgress < 40) {
                     seekBar.setProgress(25);
+                    mProgress = 25;
                     mZoom = 15;
+                    Toast.makeText(MapsActivity.this, getString(R.string.zone2), Toast.LENGTH_SHORT).show();
                 } else if (mProgress > 40 && mProgress < 60) {
                     seekBar.setProgress(50);
+                    mProgress = 50;
                     mZoom = 16;
+                    Toast.makeText(MapsActivity.this, getString(R.string.zone3), Toast.LENGTH_SHORT).show();
                 } else if (mProgress > 60 && mProgress < 80) {
                     seekBar.setProgress(75);
+                    mProgress = 75;
                     mZoom = 17;
+                    Toast.makeText(MapsActivity.this, getString(R.string.zone4), Toast.LENGTH_SHORT).show();
                 } else if (mProgress > 80 && mProgress < 100) {
                     seekBar.setProgress(100);
+                    mProgress = 100;
                     mZoom = 18;
+                    Toast.makeText(MapsActivity.this, getString(R.string.zone5), Toast.LENGTH_SHORT).show();
                 }
+                settings.setZoomProgress(mProgress);
                 settings.setZoom(mZoom);
                 currentLocation();
             }
@@ -223,7 +243,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void toggleButton() {
-        final ToggleButton btChooseYourCase = findViewById(R.id.toggleButton);
+        btChooseYourCase = findViewById(R.id.userMode);
         btChooseYourCase.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -234,10 +254,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else {
                     Toast.makeText(MapsActivity.this, getString(R.string.dropBike), Toast.LENGTH_SHORT).show();
                 }
-
+                removeMarkers();
+                createStationMarker(mSettings);
             }
         });
-
     }
 
     @SuppressLint("MissingPermission")
@@ -250,6 +270,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (location != null && mMap != null) {
                     mLastKnownLocation = location;
                     removeMarkers();
+                    //designMarkers();
                     mMap.setMyLocationEnabled(true);
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), mSettings.getZoom()));
                     mMap.getUiSettings().setZoomControlsEnabled(true);
@@ -287,6 +308,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         checkPermission();
         setTheme(googleMap);
         selectMarker(googleMap);
+        displayRoute();
+    }
+
+    private void displayRoute() {
+
     }
 
     private void setTheme(GoogleMap googleMap) {
@@ -297,7 +323,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
     private void displayDefaultTheme(final GoogleMap googleMap) {
         try {
             boolean success = googleMap.setMapStyle(
@@ -305,10 +330,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             MapsActivity.this, R.raw.mapstyle));
 
             if (!success) {
-                Log.e("MapsActivity", "Style parsing failed.");
+                Log.e("MapsActivity", getString(R.string.StyleFailed));
             }
         } catch (Resources.NotFoundException e) {
-            Log.e("MapsActivity", "Can't find style. Error: ", e);
+            Log.e("MapsActivity", getString(R.string.StyleError), e);
         }
     }
 
@@ -325,7 +350,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
     private void createStationMarker(Settings settings) {
         extractStation(MapsActivity.this, settings, new Helper.BikeStationListener() {
             @Override
@@ -335,8 +359,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 for (int i = 0; i < stations.size(); i++) {
                     Station station = stations.get(i);
                     LatLng newStation = new LatLng(station.getLatitude(), station.getLongitude());
+
+                    View inflatedFrame = getLayoutInflater().inflate(R.layout.map_layout, null);
+                    TextView amountBikeOrStand = inflatedFrame.findViewById(R.id.tvBikeOrStand);
+                    if (mSettings.isDropOff()) {
+                        amountBikeOrStand.setText(Integer.toString(station.getAvailableBikes()));
+                        amountBikeOrStand.setTextColor(Color.parseColor("#1ec62a"));
+                    } else {
+                        amountBikeOrStand.setText(Integer.toString(station.getAvailableStands()));
+                        amountBikeOrStand.setTextColor(Color.parseColor("#1ea2c6"));
+
+                    }
+                    Bitmap bitmap = createBitmapFromView(inflatedFrame.findViewById(R.id.screen));
+
                     Marker marker = mMap.addMarker((new MarkerOptions().position(newStation)
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon))
+                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
                             .title(station.getAddress()).snippet(station.getName())));
                     marker.setTag(station);
                     mStationMarkers.add(marker);
@@ -386,21 +423,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+    private Bitmap createBitmapFromView(View v) {
+        v.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT));
+        v.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        v.layout(0, 0, v.getMeasuredWidth(), v.getMeasuredHeight());
+        Bitmap bitmap = Bitmap.createBitmap(v.getMeasuredWidth(),
+                v.getMeasuredHeight(),
+                Bitmap.Config.ARGB_8888);
 
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    return true;
-                case R.id.navigation_list:
-                    Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStation.class);
-                    startActivity(goListStationAcitvity);
-                    return true;
-            }
-            return false;
-        }
-    };
+        Canvas c = new Canvas(bitmap);
+        v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
+        v.draw(c);
+        return bitmap;
+    }
+
+    private void setInfoMarker() {
+
+    }
 }
 

@@ -19,7 +19,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
+        android:background="?android:attr/windowBackground"
         app:headerLayout="@layout/nav_header_list_station"
-        app:menu="@menu/list_station_menu" />
+        app:menu="@menu/list_station_menu"/>
 
 </android.support.v4.widget.DrawerLayout>

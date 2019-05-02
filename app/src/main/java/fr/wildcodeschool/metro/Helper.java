@@ -24,9 +24,12 @@ public class Helper {
     private final static String API_KEY = "6dcf293ec6f59ca711dd9d89646478ef2acb872d";
     private static ArrayList<Station> stations = new ArrayList<>();
 
+
     public static void extractStation(Context context, final Settings settings, final BikeStationListener listener) {
         String url = "https://api.jcdecaux.com/vls/v1/stations?contract=Toulouse&apiKey=" + API_KEY;
         final RequestQueue requestQueue = Volley.newRequestQueue(context);
+        Singleton settingsSingleton = Singleton.getInstance();
+        final Settings mSettings = settingsSingleton.getSettings();
 
         final JsonArrayRequest jsonArrayRequestRequest = new JsonArrayRequest(
                 Request.Method.GET, url, null,
@@ -55,11 +58,14 @@ public class Helper {
                                 stationLocation.setLongitude(longitude);
                                 float stationDistance = stationLocation.distanceTo(settings.getLocation());
                                 float askPerimeter = settings.getZoom() == 18 ? 100f : settings.getZoom() == 17 ? 200f : settings.getZoom() == 16 ? 500f : settings.getZoom() == 15 ? 700f : 1000f;
-                                if (stationDistance <= askPerimeter) {
+                                if (stationDistance <= askPerimeter && !mSettings.isFragmentActivity()) {
                                     if ((bikeStation.get("status").equals("OPEN") && availableBike != 0 && settings.isDropOff()) || (bikeStation.get("status").equals("OPEN") && availabeStands != 0 && !settings.isDropOff())) {
                                         Station station = new Station(number, name, address, latitude, longitude, stands, availableBike, availabeStands, status, stationDistance);
                                         stations.add(station);
                                     }
+                                } else if (mSettings.isFragmentActivity()) {
+                                    Station station = new Station(number, name, address, latitude, longitude, stands, availableBike, availabeStands, status, stationDistance);
+                                    stations.add(station);
                                 }
                             }
                             Collections.sort(stations);
