@@ -5,49 +5,26 @@
     android:layout_height="match_parent"
     android:background="@drawable/customborder">
 
-    android:padding="10dp">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/tvTitle"
+            android:id="@+id/tvTitle"/>
+
+        <ImageButton
+            android:id="@+id/ibFavorite"
             android:layout_gravity="center_horizontal"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="#000"
-            android:textSize="14sp"
-            android:textStyle="bold"/>
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_height="60dp"
+            android:layout_width="60dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/ic_favorite_checked" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="10"
-            android:textSize="14sp"
-            android:textColor="#000"
-            android:id="@+id/tvSnippet"/>
-
-        <TextView
-            android:id="@+id/tvAvailableBike"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="10"
-            android:textColor="#000"
-            android:textSize="14sp" />
-        <TextView
-            android:id="@+id/tvAvailableStands"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="10"
-            android:textColor="#000"
-            android:textSize="14sp" />
     </LinearLayout>
-
 </LinearLayout>

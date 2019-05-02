@@ -33,5 +33,14 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="ic_home">Home</string>
     <string name="ic_list">Stations List</string>
+    <string name="title_activity_list_station">ListStation</string>
+    <string name="favorite">TODO</string>
+    <string name="Theme">Theme mode</string>
+
+    <string name="addFavorite">aded to favorites</string>
+    <string name="fail">Failed to read value.</string>
+    <string name="computing">The way is computing !</string>
+    <string name="addToFavorite">%s%saded to favorites</string>
+    <string name="stations">Stations</string>
 
 </resources>

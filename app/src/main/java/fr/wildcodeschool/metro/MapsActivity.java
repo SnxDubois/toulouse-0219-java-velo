@@ -41,6 +41,10 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,7 +57,7 @@ import static fr.wildcodeschool.metro.Helper.extractStation;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     public final int REQUEST_IMAGE_CAPTURE = 1234;
     public ArrayList<Marker> mStationMarkers = new ArrayList<>();
-    public ArrayList<Station> currentStation = new ArrayList<>();
+    public ArrayList<Station> mCurrentStation = new ArrayList<>();
     public boolean mInit = false;
     public boolean mTheme = false;
     public GoogleMap mMap;
@@ -63,12 +67,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public Location mLastKnownLocation;
     public Uri mFileUri = null;
     public final int REQUEST_LOCATION = 2000;
-    private SeekBar seekbar;
+    private SeekBar mSeekbar;
     private int mProgress;
     private Singleton settings;
     private boolean changeActivity = false;
     private TextView mTextMessage;
-    private int selectiveIndex;
+    private int mFavoriteStationNumber;
+    private String userID;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,24 +91,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
-    private void selectMarker(GoogleMap googleMap){
+    private void saveToFireBase() {
+        FirebaseDatabase favoriteStationBase = FirebaseDatabase.getInstance();
+        FirebaseAuth userAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = userAuth.getCurrentUser();
+        if (currentUser != null) {
+            userID = currentUser.getUid();
+        }
+        DatabaseReference favoriteStationReference = favoriteStationBase.getReference(userID);
+    }
+
+    private void selectMarker(GoogleMap googleMap) {
         googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 Station selectedStation = (Station) marker.getTag();
-
-                for (int i=0; i<currentStation.size(); i++){
-                    if (currentStation.get(i).getNumber() == selectedStation.getNumber()){
-                        selectiveIndex = i;
-                    }
-                }
-                Toast.makeText(MapsActivity.this, Integer.toString(currentStation.get(selectiveIndex).getNumber()), Toast.LENGTH_SHORT).show();
+                mFavoriteStationNumber = selectedStation.getNumber();
+                Toast.makeText(MapsActivity.this, String.format(getString(R.string.addToFavorite), getString(R.string.stations), selectedStation.getName()), Toast.LENGTH_SHORT).show();
+                saveToFireBase();
             }
-
         });
-
     }
-
 
     private void getSettings() {
         settings = Singleton.getInstance();
@@ -115,9 +124,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setButtons();
     }
 
-    private void switchActivity(){
+    private void switchActivity() {
         mTextMessage = (TextView) findViewById(R.id.message);
-        BottomNavigationView navigation =findViewById(R.id.navigation);
+        BottomNavigationView navigation = findViewById(R.id.navigation);
+        navigation.getMenu().setGroupCheckable(0, true, true);
+        navigation.setSelectedItemId(R.id.navigation_home);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
@@ -127,8 +138,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void seekBar() {
-        seekbar = findViewById(R.id.seekBar);
-        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        mSeekbar = findViewById(R.id.seekBar);
+        mSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
@@ -272,17 +283,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
-        checkPermission();
         mMap = googleMap;
+        checkPermission();
+        setTheme(googleMap);
+        selectMarker(googleMap);
+    }
 
+    private void setTheme(GoogleMap googleMap) {
         if (mSettings.isTheme()) {
             displayDarkTheme(googleMap);
         } else {
             displayDefaultTheme(googleMap);
         }
-        selectMarker(googleMap);
     }
-
 
 
     private void displayDefaultTheme(final GoogleMap googleMap) {
@@ -317,7 +330,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         extractStation(MapsActivity.this, settings, new Helper.BikeStationListener() {
             @Override
             public void onResult(ArrayList<Station> stations) {
-                currentStation = stations;
+                mCurrentStation = stations;
 
                 for (int i = 0; i < stations.size(); i++) {
                     Station station = stations.get(i);
@@ -382,14 +395,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 case R.id.navigation_home:
                     return true;
                 case R.id.navigation_list:
-                    Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStationDrawer.class);
+                    Intent goListStationAcitvity = new Intent(MapsActivity.this, ListStation.class);
                     startActivity(goListStationAcitvity);
                     return true;
             }
             return false;
         }
     };
-
-
 }
 
